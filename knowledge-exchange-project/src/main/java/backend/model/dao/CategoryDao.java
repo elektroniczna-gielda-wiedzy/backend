@@ -2,9 +2,13 @@ package backend.model.dao;
 
 import backend.model.CategoryType;
 import jakarta.persistence.*;
+import lombok.Getter;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "Category")
+@Getter
 public class CategoryDao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,4 +24,11 @@ public class CategoryDao {
 
     @Column(name = "is_deleted")
     private Boolean isDeleted;
+
+    @ManyToMany(mappedBy = "categories")
+    private Set<EntryDao> entries;
+
+    @OneToMany(mappedBy = "category")
+    private Set<CategoryTranslation> categoryTranslations;
+
 }

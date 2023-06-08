@@ -19,7 +19,7 @@ public class EntryDao {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserDao user;
+    private UserDao author;
 
     @ManyToOne
     @JoinColumn(name = "entry_type_id")
@@ -55,5 +55,21 @@ public class EntryDao {
             inverseJoinColumns = { @JoinColumn(name = "image_id")}
     )
     private Set<ImageDao> images;
+
+    @ManyToMany
+    @JoinTable(
+            name = "EntryCategory",
+            joinColumns = {@JoinColumn(name = "entry_id")},
+            inverseJoinColumns = { @JoinColumn(name = "category_id")}
+    )
+    private Set<CategoryDao> categories;
+
+    @ManyToMany
+    @JoinTable(
+            name = "Favorites",
+            joinColumns = {@JoinColumn(name = "entry_id")},
+            inverseJoinColumns = { @JoinColumn(name = "user_id")}
+    )
+    private Set<UserDao> likedBy;
 
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Entity
 @Table(name = "Users")
@@ -29,7 +30,11 @@ public class UserDao {
     private Timestamp createdAt;
     @Column(name = "last_login")
     private Timestamp lastLogin;
+    @Column(name = "is_admin")
+    private Boolean isAdmin;
     @Column(name = "is_active")
     private Boolean isActive;
+    @ManyToMany(mappedBy = "likedBy")
+    private Set<EntryDao> favorites;
 
 }

@@ -4,8 +4,9 @@ import backend.model.StandardResponse;
 import backend.model.dto.EntryDto;
 import backend.services.EntryService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/entry")
@@ -20,8 +21,10 @@ public class EntryController {
     private final EntryService entryService;
 
     @GetMapping()
-    public ResponseEntity<StandardResponse> getEntryList() {
-        return entryService.getEntryList();
+    public ResponseEntity<StandardResponse> getEntryList(
+            @RequestParam Map<String,String> params
+    ) {
+        return entryService.getEntryList(params);
     }
 
     @GetMapping("/{entry_id}")
@@ -34,7 +37,8 @@ public class EntryController {
 
     @PostMapping()
     public ResponseEntity<StandardResponse> createEntry(
-            @RequestBody EntryDto entryDto) {
+            @RequestBody EntryDto entryDto
+    ) {
         return entryService.createEntry(
                 entryDto
         );
