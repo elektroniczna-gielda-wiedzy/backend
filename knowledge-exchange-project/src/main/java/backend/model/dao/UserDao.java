@@ -29,6 +29,8 @@ public class UserDao {
     private Timestamp createdAt;
     @Column(name = "last_login")
     private Timestamp lastLogin;
+    @Column(name = "is_admin")
+    private Boolean isAdmin;
     @Column(name = "is_active")
     private Boolean isActive;
 
