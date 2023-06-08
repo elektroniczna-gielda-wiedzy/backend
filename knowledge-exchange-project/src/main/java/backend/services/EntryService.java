@@ -40,82 +40,96 @@ public class EntryService {
         Integer userId = 1;
 
         Session session = sessionFactory.openSession();
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-        CriteriaQuery<EntryDao> criteriaQuery = criteriaBuilder.createQuery(EntryDao.class);
-        Root<EntryDao> root = criteriaQuery.from(EntryDao.class);
-        List<Predicate> predicateList = new ArrayList<>();
-        if (params.containsKey("query")) {
-            //TODO
-            Predicate contentContainsQuery = criteriaBuilder.like(root.get("content"), params.get("query"));
-            Predicate titleContainsQuery = criteriaBuilder.like(root.get("title"), params.get("query"));
-            Predicate criteriaFulfilled = criteriaBuilder.or(contentContainsQuery, titleContainsQuery);
-            predicateList.add(criteriaFulfilled);
-        }
-        if (params.containsKey("type")) {
-            Predicate typeMatchesEntry = criteriaBuilder.equal(root.get("entryType"), Integer.parseInt(params.get("type")));
-            predicateList.add(typeMatchesEntry);
-        }
-
-        if (params.containsKey("author")) {
-            //TODO
-            Predicate isAuthoredBy = criteriaBuilder.equal(root.get("author"), params.get("author"));
-            predicateList.add(isAuthoredBy);
-        }
-        if (params.containsKey("order")) {
-            if(params.get("order").equalsIgnoreCase("ASC")) {
-                criteriaQuery.orderBy(criteriaBuilder.asc(root.get("createdAt")));
+        try {
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            CriteriaQuery<EntryDao> criteriaQuery = criteriaBuilder.createQuery(EntryDao.class);
+            Root<EntryDao> root = criteriaQuery.from(EntryDao.class);
+            List<Predicate> predicateList = new ArrayList<>();
+            if (params.containsKey("query")) {
+                //TODO
+                Predicate contentContainsQuery = criteriaBuilder.like(root.get("content"), params.get("query"));
+                Predicate titleContainsQuery = criteriaBuilder.like(root.get("title"), params.get("query"));
+                Predicate criteriaFulfilled = criteriaBuilder.or(contentContainsQuery, titleContainsQuery);
+                predicateList.add(criteriaFulfilled);
             }
-            if(params.get("order").equalsIgnoreCase("DESC")) {
-                criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createdAt")));
+            if (params.containsKey("type")) {
+                Predicate typeMatchesEntry = criteriaBuilder.equal(root.get("entryType"), Integer.parseInt(params.get("type")));
+                predicateList.add(typeMatchesEntry);
             }
 
-        }
-        if (params.containsKey("favorites") && Boolean.parseBoolean(params.get("favorites"))) {
-            //TODO
-            Join<EntryDao, UserDao> entryDaoUserDaoJoin = root.join("likedBy");
-            Predicate favoPredicate = criteriaBuilder.and(
-                    criteriaBuilder.equal(entryDaoUserDaoJoin.get("user_id"), userId),
-                    criteriaBuilder.isNotEmpty(entryDaoUserDaoJoin.get("entry_id"))
-            );
-            predicateList.add(favoPredicate);
-        }
-        if(predicateList.size() != 0) {
-            Predicate concatPredicate = predicateList.get(0);
-            for (int i = 1; i < predicateList.size(); i++) {
-                concatPredicate = criteriaBuilder.and(concatPredicate, predicateList.get(i));
+            if (params.containsKey("author")) {
+                //TODO
+                Predicate isAuthoredBy = criteriaBuilder.equal(root.get("author"), params.get("author"));
+                predicateList.add(isAuthoredBy);
             }
-            criteriaQuery.where(concatPredicate);
-        }
-        List<EntryDao> entries = session.createQuery(criteriaQuery).getResultList();
-        if (params.containsKey("category_ids")) {
-            List<Integer> categories = ExchangeAppUtils.convertCategoriesStrToList(params.get("category_ids"));
-            entries = entries.stream().filter(entry ->
-                categories.stream().allMatch(category -> entry.getCategories().stream().anyMatch(entryCategory ->
-                        category.equals(entryCategory.getCategoryId())))
-            ).toList();
-        }
-        StandardResponse response = StandardResponse.builder().success(true)
-            .messages(List.of())
-            .result(entries.stream().map(entryDao -> {
-                        EntryDto result = EntryDaoDtoConverter.convertToDto(entryDao);
-                        result.setFavorite(isEntryFavorite(userId, entryDao));
-                        return result;
-                    }
-            ).toList()).build();
+            if (params.containsKey("order")) {
+                if(params.get("order").equalsIgnoreCase("ASC")) {
+                    criteriaQuery.orderBy(criteriaBuilder.asc(root.get("createdAt")));
+                }
+                if(params.get("order").equalsIgnoreCase("DESC")) {
+                    criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createdAt")));
+                }
 
-        return ResponseEntity.ok(response);
+            }
+            if (params.containsKey("favorites") && Boolean.parseBoolean(params.get("favorites"))) {
+                //TODO
+                Join<EntryDao, UserDao> entryDaoUserDaoJoin = root.join("likedBy");
+                Predicate favoPredicate = criteriaBuilder.and(
+                        criteriaBuilder.equal(entryDaoUserDaoJoin.get("user_id"), userId),
+                        criteriaBuilder.isNotEmpty(entryDaoUserDaoJoin.get("entry_id"))
+                );
+                predicateList.add(favoPredicate);
+            }
+            if(predicateList.size() != 0) {
+                Predicate concatPredicate = predicateList.get(0);
+                for (int i = 1; i < predicateList.size(); i++) {
+                    concatPredicate = criteriaBuilder.and(concatPredicate, predicateList.get(i));
+                }
+                criteriaQuery.where(concatPredicate);
+            }
+            List<EntryDao> entries = session.createQuery(criteriaQuery).getResultList();
+            if (params.containsKey("category_ids")) {
+                List<Integer> categories = ExchangeAppUtils.convertCategoriesStrToList(params.get("category_ids"));
+                entries = entries.stream().filter(entry ->
+                        categories.stream().allMatch(category -> entry.getCategories().stream().anyMatch(entryCategory ->
+                                category.equals(entryCategory.getCategoryId())))
+                ).toList();
+            }
+            StandardResponse response = StandardResponse.builder().success(true)
+                    .messages(List.of())
+                    .result(entries.stream().map(entryDao -> {
+                                EntryDto result = EntryDaoDtoConverter.convertToDto(entryDao);
+                                result.setFavorite(isEntryFavorite(userId, entryDao));
+                                return result;
+                            }
+                    ).toList()).build();
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(StandardResponse.builder()
+                            .success(false)
+                            .messages(List.of(e.getMessage()))
+                            .result(List.of()).build());
+
+        } finally {
+            session.close();
+        }
+
     }
 
     private boolean isEntryFavorite(Integer userId, EntryDao entry) {
-        Session session = sessionFactory.openSession();
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-        CriteriaQuery<UserDao> criteriaQuery = criteriaBuilder.createQuery(UserDao.class);
-        Root<UserDao> userDaoRoot = criteriaQuery.from(UserDao.class);
-        Predicate userIdPredicate = criteriaBuilder.equal(userDaoRoot.get("userId"), userId);
-        criteriaQuery.where(userIdPredicate);
-        UserDao user = session.createQuery(criteriaQuery).getSingleResult();
-        session.close();
-        return user.getFavorites().stream().anyMatch(favoEntry -> favoEntry.getEntryId().equals(entry.getEntryId()));
+        Session session = sessionFactory.openSession(); try {
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            CriteriaQuery<UserDao> criteriaQuery = criteriaBuilder.createQuery(UserDao.class);
+            Root<UserDao> userDaoRoot = criteriaQuery.from(UserDao.class);
+            Predicate userIdPredicate = criteriaBuilder.equal(userDaoRoot.get("userId"), userId);
+            criteriaQuery.where(userIdPredicate);
+            UserDao user = session.createQuery(criteriaQuery).getSingleResult();
+            return user.getFavorites().stream().anyMatch(favoEntry -> favoEntry.getEntryId().equals(entry.getEntryId()));
+        } finally {
+            session.close();
+        }
     }
 
 
@@ -170,6 +184,8 @@ public class EntryService {
                     .messages(List.of(e.getMessage()))
                     .result(List.of()).
                     build());
+        } finally {
+            session.close();
         }
     }
 
