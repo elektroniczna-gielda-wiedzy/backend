@@ -86,6 +86,7 @@ INSERT INTO users(first_name, last_name, email, password, is_email_auth, created
 ('Adrian', 'Król', 'adriankrol@student.agh.edu.pl', 'password', true, current_timestamp, current_timestamp, false, true),
 ('Patryk', 'Markowski', 'patrykmarkowski@student.agh.edu.pl', 'password', true, current_timestamp, current_timestamp, false, true);
 
+ALTER TABLE entry ALTER COLUMN content TYPE VARCHAR(1000);
 INSERT INTO entry(user_id, entry_type_id, title, content, created_at, updated_at, is_deleted) VALUES
 (1, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '10 minutes', current_timestamp, false),
 (1, 1, 'Tytuł notatki z obrazem', 'Content notatki', current_timestamp, current_timestamp, false),
