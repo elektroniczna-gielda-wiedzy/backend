@@ -21,7 +21,7 @@ public class CategoryController {
 
     @GetMapping()
     public ResponseEntity<StandardResponse> getCategoryList() {
-        return ResponseUtil.getNotImplementedResponse();
+        return categoryService.getCategoryList();
     }
 
     @PostMapping()
