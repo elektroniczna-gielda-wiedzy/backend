@@ -92,11 +92,47 @@ INSERT INTO entry(user_id, entry_type_id, title, content, created_at, updated_at
 (1, 1, 'Tytuł notatki z obrazem', 'Content notatki', current_timestamp, current_timestamp, false),
 (1, 3, 'Tytuł postu z obrazem', 'Content postu', current_timestamp - INTERVAL '20 minutes', current_timestamp, false),
 (2, 1, 'Tytuł notatki', 'Content notatki', current_timestamp - INTERVAL '30 minutes', current_timestamp, false),
-(2, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '40 days', current_timestamp, false),
-(2, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '50 days', current_timestamp, false),
-(3, 1, 'Tytuł notatki', 'Content notatki', current_timestamp - INTERVAL '60 days', current_timestamp, false),
+(2, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '3 days', current_timestamp, false),
+(2, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '7 days', current_timestamp, false),
+(3, 1, 'Tytuł notatki', 'Content notatki', current_timestamp - INTERVAL '8 days', current_timestamp, false),
 (3, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '70 days', current_timestamp, false),
-(3, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '80 days', current_timestamp, false);
+(3, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '200 days', current_timestamp, false),
+(4, 2, 'Korepetycje z analizy matematycznej', 'Cześć, jestem studentem czwartego roku matematyki. Posiadam dobre zrozumienie analizy matematycznej i oferuję pomoc w zrozumieniu trudnych koncepcji oraz przygotowaniu do egzaminu. Materiały z lekcji mogę dostarczyć w formie elektronicznej. Zajęcia mogą odbywać się online lub osobiście, w zależności od Twojej preferencji.
+
+Sesje mogą obejmować następujące tematy:
+- Ciągi liczbowe
+- Szeregi liczbowe
+- Pochodne funkcji jednej zmiennej
+- Całki niewłaściwe
+- Szeregi funkcji
+- Równania różniczkowe
+
+Stawka to 30 zł / godzina.
+
+Chętnych do nauki proszę o nawiązanie kontaktu poprzez system czatowy w aplikacji.',
+ current_timestamp - INTERVAL '70 minutes', current_timestamp, false),
+
+
+(4, 1, 'Zrozumienie zasad termodynamiki', 'Notatka ta ma na celu zrozumienie podstawowych zasad termodynamiki, kluczowej dziedziny fizyki, która jest niezbędna dla zrozumienia szeregu zjawisk naturalnych i technologicznych. W notatce zawarte są szczegółowe wyjaśnienia, rysunki oraz przykładowe zadania.
+
+Tematyka notatki obejmuje:
+- Podstawowe prawa termodynamiki
+- Pojęcie energii wewnętrznej
+- Procesy izotermiczne i adiabatyczne
+- Pojęcie entropii
+- Przemiany fazowe
+- Maszyny cieplne
+
+Plik znajduję się na moim dysku google, poniżej wklejam link do niego
+
+https://drive.google.com/file/d/1NPnrH_UrqTQdgfdFOIJ05DGDEC5sdfYPsNU/view?usp=sharing
+
+Na zamieszczonym zdjęciu znajduje się pierwsza strona notatek',
+ current_timestamp - INTERVAL '160 minutes', current_timestamp, false),
+
+(4, 3, 'Problem z nieskończoną pętlą w algorytmie Bubble Sort', 'Cześć wszystkim, mam problem z implementacją algorytmu sortowania bąbelkowego w Pythonie. Poniżej znajduje się kod, który napisałem, ale niestety program wpada w nieskończoną pętlę. Czy mógłby mi ktoś pomóc?',
+ current_timestamp - INTERVAL '10 minutes', current_timestamp, false);
+
 
 INSERT INTO entry_category(entry_id, category_id) VALUES (1, 1),
                                                          (1, 4),
@@ -130,15 +166,29 @@ INSERT INTO entry_category(entry_id, category_id) VALUES (1, 1),
                                                             (9, 2),
                                                             (9, 10),
                                                             (9, 14),
-                                                            (9, 22);
+                                                            (9, 22),
+                                                            (10, 14),
+                                                            (10, 21),
+                                                            (10, 1),
+                                                            (10, 6),
+                                                            (11, 15),
+                                                            (11, 24),
+                                                            (12, 1),
+                                                            (12, 15),
+                                                            (12, 6),
+                                                            (12, 16);
 
 INSERT INTO image(image) VALUES
 ('http://localhost:8080/image1.jpg'),
-('http://localhost:8080/image2.jpg');
+('http://localhost:8080/image2.jpg'),
+('http://localhost:8080/image3.jpg'),
+('http://localhost:8080/image4.jpg');
 
 INSERT INTO image_item(image_item_id, image_id) VALUES
 (2, 1),
-(3, 2);
+(3, 2),
+(11, 4),
+(12, 3);
 
 
 
