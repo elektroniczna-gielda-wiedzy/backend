@@ -10,7 +10,9 @@ repositories {
 }
 
 dependencies {
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '3.1.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testImplementation 'junit:junit:4.13.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     implementation group: 'org.springframework', name: 'spring-core', version: '6.0.9'
     implementation group: 'org.springframework', name: 'spring-context', version: '6.0.9'
@@ -24,6 +26,12 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
     implementation group: 'com.h2database', name: 'h2', version: '2.1.214'
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
+    implementation group: 'org.springframework.security', name: 'spring-security-web', version: '6.1.0'
+    implementation group: 'org.springframework.security', name: 'spring-security-config', version: '6.1.0'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-gson', version: '0.11.5'
+
 }
 
 test {

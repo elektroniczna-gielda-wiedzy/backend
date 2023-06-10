@@ -1,9 +1,11 @@
 package backend.controllers;
 
+import backend.model.AppUserDetails;
 import backend.model.StandardResponse;
 import backend.model.dto.EntryDto;
 import backend.services.EntryService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -37,10 +39,11 @@ public class EntryController {
 
     @PostMapping()
     public ResponseEntity<StandardResponse> createEntry(
+            @AuthenticationPrincipal AppUserDetails userDetails,
             @RequestBody EntryDto entryDto
     ) {
         return entryService.createEntry(
-                entryDto
+                entryDto, userDetails
         );
     }
 

@@ -1,5 +1,6 @@
 package backend.services;
 
+import backend.model.AppUserDetails;
 import backend.model.StandardResponse;
 import backend.model.dao.*;
 import backend.model.dto.CategoryDto;
@@ -15,6 +16,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -140,13 +142,12 @@ public class EntryService {
     }
 
     public ResponseEntity<StandardResponse> createEntry(
-            EntryDto entryDto) {
-        Integer userId = 3;
+            EntryDto entryDto, AppUserDetails userDetails) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
 
-            UserDao user = userRepository.findUserDaoByUserId(userId);
+            UserDao user = userRepository.findUserDaoByUserId(userDetails.getId());
 
             EntryDao entryDao = new EntryDao();
             EntryTypeDao entryType = new EntryTypeDao();

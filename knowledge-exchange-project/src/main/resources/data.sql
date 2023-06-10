@@ -78,13 +78,13 @@ INSERT INTO entry_type(name) VALUES ('Notatka'),
                                     ('Post');
 
 INSERT INTO users(first_name, last_name, email, password, is_email_auth, created_at, last_login, is_admin, is_active) VALUES
-('Adam', 'Kowalski', 'adamkowalski@student.agh.edu.pl', 'password', true, current_timestamp, current_timestamp, false, true),
-('Maria', 'Kowalska', 'mariakowalska@student.agh.edu.pl', 'password', true, current_timestamp, current_timestamp, false, true),
-('Marek', 'Król', 'marekkrol@student.agh.edu.pl', 'password', true, current_timestamp, current_timestamp, false, true),
-('Patryk', 'Kowal', 'patrykkowal@student.agh.edu.pl', 'password', true, current_timestamp, current_timestamp, false, true),
-('Michał', 'Markowski', 'michalmarkowski@student.agh.edu.pl', 'password', true, current_timestamp, current_timestamp, false, true),
-('Adrian', 'Król', 'adriankrol@student.agh.edu.pl', 'password', true, current_timestamp, current_timestamp, false, true),
-('Patryk', 'Markowski', 'patrykmarkowski@student.agh.edu.pl', 'password', true, current_timestamp, current_timestamp, false, true);
+('Adam', 'Kowalski', 'adamkowalski@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
+('Maria', 'Kowalska', 'mariakowalska@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
+('Marek', 'Król', 'marekkrol@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
+('Patryk', 'Kowal', 'patrykkowal@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
+('Michał', 'Markowski', 'michalmarkowski@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
+('Adrian', 'Król', 'adriankrol@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
+('Patryk', 'Markowski', 'patrykmarkowski@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true);
 
 ALTER TABLE entry ALTER COLUMN content TYPE VARCHAR(1000);
 INSERT INTO entry(user_id, entry_type_id, title, content, created_at, updated_at, is_deleted) VALUES
