@@ -198,7 +198,7 @@ INSERT INTO favorites(user_id, entry_id) VALUES (1, 1), (1, 2);
 
 INSERT INTO answer(answer_id, entry_id, user_id, content, created_at, is_deleted, top_answer) VALUES
 (50, 12, 1, 'Dzięki! Niedługo mam kolokwium z termodynamiki, z pewnością się przydadzą', current_timestamp - INTERVAL '150 minutes', false, true),
-(51, 12, 2, 'Mógłbyś proszę napisać, co to za przekształcenie w punkcie 3?', current_timestamp - INTERVAL '145 minutes', false, true)
+(51, 12, 2, 'Mógłbyś proszę napisać, co to za przekształcenie w punkcie 3?', current_timestamp - INTERVAL '145 minutes', false, false)
 
 
 
