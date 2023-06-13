@@ -38,8 +38,11 @@ public class SecurityConfig {
                 .anyRequest().authenticated());
         http.csrf().disable();
         http.addFilterBefore(new JwtFilter(userRepository), AuthorizationFilter.class);
+        http.cors().and().authorizeHttpRequests();
         return http.build();
     }
+
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
