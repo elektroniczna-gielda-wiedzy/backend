@@ -6,6 +6,7 @@ import backend.model.dao.*;
 import backend.model.dto.CategoryDto;
 import backend.model.dto.EntryDto;
 import backend.repositories.CategoryRepository;
+import backend.repositories.ImageRepository;
 import backend.repositories.UserRepository;
 import backend.util.EntryDaoDtoConverter;
 import backend.util.ExchangeAppUtils;
@@ -21,21 +22,21 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class EntryService {
     private CategoryRepository categoryRepository;
     private SessionFactory sessionFactory;
     private UserRepository userRepository;
+    private ImageRepository imageRepository;
 
-    public EntryService(CategoryRepository categoryRepository, SessionFactory sessionFactory, UserRepository userRepository) {
+    public EntryService(CategoryRepository categoryRepository, SessionFactory sessionFactory, UserRepository userRepository,
+                        ImageRepository imageRepository) {
         this.categoryRepository = categoryRepository;
         this.sessionFactory = sessionFactory;
         this.userRepository = userRepository;
+        this.imageRepository = imageRepository;
     }
 
     public ResponseEntity<StandardResponse> getEntryList(Map<String, String> params) {
@@ -160,13 +161,16 @@ public class EntryService {
             Set<CategoryDao> categories = categoryRepository.getCategoryDaosByCategoryIdIsIn(entryDto.getCategories().stream()
                     .map(CategoryDto::getCategoryId).toList());
             entryDao.setCategories(categories);
+
+            session.persist(entryDao);
+            session.flush();
             if (entryDto.getImage() != null) {
                 ImageDao imageDao = new ImageDao();
+                imageDao.setImage(imageRepository.savePicture(entryDto.getImage(), String.format("image-%d-%d-%d.jpg", userDetails.getId(),
+                        entryDao.getEntryId(), new Random().nextInt(10000))));
                 session.persist(imageDao);
-                imageDao.setImage(entryDto.getImage());
                 entryDao.setImages(Set.of(imageDao));
             }
-            session.persist(entryDao);
             transaction.commit();
             StandardResponse response = StandardResponse.builder()
                 .success(true)
