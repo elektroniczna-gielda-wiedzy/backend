@@ -24,9 +24,10 @@ public class EntryController {
 
     @GetMapping()
     public ResponseEntity<StandardResponse> getEntryList(
+            @AuthenticationPrincipal AppUserDetails userDetails,
             @RequestParam Map<String,String> params
     ) {
-        return entryService.getEntryList(params);
+        return entryService.getEntryList(params, userDetails);
     }
 
     @GetMapping("/{entry_id}")

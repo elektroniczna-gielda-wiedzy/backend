@@ -183,10 +183,10 @@ INSERT INTO entry_category(entry_id, category_id) VALUES (1, 1),
                                                          (12, 17);
 
 INSERT INTO image(image) VALUES
-('http://localhost:8080/image1.jpg'),
-('http://localhost:8080/image2.jpg'),
-('http://localhost:8080/image3.jpg'),
-('http://localhost:8080/image4.jpg');
+('image1.jpg'),
+('image2.jpg'),
+('image3.jpg'),
+('image4.jpg');
 
 INSERT INTO image_item(image_item_id, image_id) VALUES
 (2, 1),

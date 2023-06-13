@@ -24,10 +24,12 @@ public class EntryDto {
     private Integer entryTypeId;
     @JsonProperty("title")
     private String title;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("content")
     private String content;
     @JsonProperty("created_at")
     private Date createdAt;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("image")
     private String image;
     @JsonProperty("author")

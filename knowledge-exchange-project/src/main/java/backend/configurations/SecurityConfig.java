@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 
 @EnableWebSecurity
@@ -32,9 +33,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((authz) ->
-                authz.anyRequest().permitAll());
+                authz
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                .anyRequest().authenticated());
         http.csrf().disable();
-        http.addFilterAfter(new JwtFilter(userRepository), WebAsyncManagerIntegrationFilter.class);
+        http.addFilterBefore(new JwtFilter(userRepository), AuthorizationFilter.class);
         return http.build();
     }
     @Bean

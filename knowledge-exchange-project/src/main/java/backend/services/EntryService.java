@@ -42,8 +42,8 @@ public class EntryService {
         this.entryRepository = entryRepository;
     }
 
-    public ResponseEntity<StandardResponse> getEntryList(Map<String, String> params) {
-        Integer userId = 1;
+    public ResponseEntity<StandardResponse> getEntryList(Map<String, String> params, AppUserDetails userDetails) {
+        Integer userId = userDetails.getId();
 
         Session session = sessionFactory.openSession();
         try {
@@ -103,7 +103,7 @@ public class EntryService {
             StandardResponse response = StandardResponse.builder().success(true)
                     .messages(List.of())
                     .result(entries.stream().map(entryDao -> {
-                                EntryDto result = EntryDaoDtoConverter.convertToDto(entryDao, false);
+                                EntryDto result = EntryDaoDtoConverter.convertToDto(entryDao, false, false, false);
                                 result.setFavorite(isEntryFavorite(userId, entryDao));
                                 return result;
                             }
@@ -150,7 +150,7 @@ public class EntryService {
                 StandardResponse.builder()
                     .success(true)
                     .messages(List.of())
-                    .result(List.of(EntryDaoDtoConverter.convertToDto(dao, true)))
+                    .result(List.of(EntryDaoDtoConverter.convertToDto(dao, true, true, true)))
                     .build()
             );
         } catch (Exception e) {
@@ -200,7 +200,7 @@ public class EntryService {
             StandardResponse response = StandardResponse.builder()
                 .success(true)
                 .messages(List.of())
-                .result(List.of(EntryDaoDtoConverter.convertToDto(entryDao, false)))
+                .result(List.of(EntryDaoDtoConverter.convertToDto(entryDao, false, true, true)))
                 .build();
             return ResponseEntity.status(
                     HttpStatus.CREATED
