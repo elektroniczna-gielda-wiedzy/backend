@@ -97,6 +97,7 @@ INSERT INTO entry(user_id, entry_type_id, title, content, created_at, updated_at
 (3, 1, 'Tytuł notatki', 'Content notatki', current_timestamp - INTERVAL '8 days', current_timestamp, false),
 (3, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '70 days', current_timestamp, false),
 (3, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '200 days', current_timestamp, false),
+(3, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '200 days', current_timestamp, false),
 (4, 2, 'Korepetycje z analizy matematycznej', 'Cześć, jestem studentem czwartego roku matematyki. Posiadam dobre zrozumienie analizy matematycznej i oferuję pomoc w zrozumieniu trudnych koncepcji oraz przygotowaniu do egzaminu. Materiały z lekcji mogę dostarczyć w formie elektronicznej. Zajęcia mogą odbywać się online lub osobiście, w zależności od Twojej preferencji.
 
 Sesje mogą obejmować następujące tematy:
@@ -176,7 +177,8 @@ INSERT INTO entry_category(entry_id, category_id) VALUES (1, 1),
                                                             (12, 1),
                                                             (12, 15),
                                                             (12, 6),
-                                                            (12, 16);
+                                                            (12, 16),
+                                                         (12, 17);
 
 INSERT INTO image(image) VALUES
 ('http://localhost:8080/image1.jpg'),
@@ -190,6 +192,7 @@ INSERT INTO image_item(image_item_id, image_id) VALUES
 (11, 4),
 (12, 3);
 
+INSERT INTO favorites(user_id, entry_id) VALUES (1, 1), (1, 2);
 
 
 
