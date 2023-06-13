@@ -60,10 +60,10 @@ public class EntryService {
             }
 
             if (params.containsKey("author")) {
-                //TODO
-                Predicate isAuthoredBy = criteriaBuilder.equal(root.get("author"), params.get("author"));
+                Predicate isAuthoredBy = criteriaBuilder.equal(root.get("author"), Integer.parseInt(params.get("author")));
                 predicateList.add(isAuthoredBy);
             }
+
             if (params.containsKey("order")) {
                 if(params.get("order").equalsIgnoreCase("ASC")) {
                     criteriaQuery.orderBy(criteriaBuilder.asc(root.get("createdAt")));
@@ -73,13 +73,12 @@ public class EntryService {
                 }
 
             }
+
             if (params.containsKey("favorites") && Boolean.parseBoolean(params.get("favorites"))) {
                 //TODO
                 Join<EntryDao, UserDao> entryDaoUserDaoJoin = root.join("likedBy");
-                Predicate favoPredicate = criteriaBuilder.and(
-                        criteriaBuilder.equal(entryDaoUserDaoJoin.get("user_id"), userId),
-                        criteriaBuilder.isNotEmpty(entryDaoUserDaoJoin.get("entry_id"))
-                );
+
+                Predicate favoPredicate = criteriaBuilder.equal(entryDaoUserDaoJoin.get("userId"), userId);
                 predicateList.add(favoPredicate);
             }
             if(predicateList.size() != 0) {
