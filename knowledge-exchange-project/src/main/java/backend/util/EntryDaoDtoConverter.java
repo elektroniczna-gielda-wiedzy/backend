@@ -7,10 +7,10 @@ import backend.repositories.ImageRepository;
 import java.util.Date;
 
 public class EntryDaoDtoConverter {
-    public static EntryDto convertToDto(EntryDao entryDao) {
+    public static EntryDto convertToDto(EntryDao entryDao, boolean includeAnswers) {
 
 
-        return EntryDto.builder()
+        EntryDto.EntryDtoBuilder builder = EntryDto.builder()
             .entryId(entryDao.getEntryId())
             .entryTypeId(entryDao.getEntryType().getEntryTypeId())
             .title(entryDao.getTitle())
@@ -21,6 +21,13 @@ public class EntryDaoDtoConverter {
             .createdAt(new Date(entryDao.getCreatedAt().getTime()))
             .categories(entryDao.getCategories().stream().map(
                     CategoriesDaoDtoConverter::convertToDto
-            ).toList()).build();
+            ).toList());
+        if(includeAnswers) {
+            builder.answersList(entryDao.getAnswers().stream().map(
+                    AnswerDaoDtoConverter::convertToDto
+            ).toList());
+        }
+
+        return builder.build();
     }
 }

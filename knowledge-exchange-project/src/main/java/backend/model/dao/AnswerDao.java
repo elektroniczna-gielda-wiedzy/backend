@@ -13,7 +13,8 @@ import java.util.Set;
 @Setter
 public class AnswerDao {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "answer_id_sequence")
+    @SequenceGenerator(name = "answer_id_sequence", sequenceName = "entry_answer_id_sequence", allocationSize = 1, initialValue = 1000)
     @Column(name = "answer_id")
     private Integer answerId;
 

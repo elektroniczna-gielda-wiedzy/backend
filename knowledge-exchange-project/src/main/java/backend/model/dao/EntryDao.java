@@ -13,7 +13,8 @@ import java.util.Set;
 @Setter
 public class EntryDao {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "entry_id_sequence")
+    @SequenceGenerator(name = "entry_id_sequence", sequenceName = "entry_answer_id_sequence", allocationSize = 1, initialValue = 1000)
     @Column(name = "entry_id")
     private Integer entryId;
 
@@ -71,5 +72,8 @@ public class EntryDao {
             inverseJoinColumns = { @JoinColumn(name = "user_id")}
     )
     private Set<UserDao> likedBy;
+
+    @OneToMany(mappedBy = "entry")
+    private Set<AnswerDao> answers;
 
 }

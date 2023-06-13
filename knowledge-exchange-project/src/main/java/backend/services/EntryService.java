@@ -6,6 +6,7 @@ import backend.model.dao.*;
 import backend.model.dto.CategoryDto;
 import backend.model.dto.EntryDto;
 import backend.repositories.CategoryRepository;
+import backend.repositories.EntryRepository;
 import backend.repositories.ImageRepository;
 import backend.repositories.UserRepository;
 import backend.util.EntryDaoDtoConverter;
@@ -30,13 +31,15 @@ public class EntryService {
     private SessionFactory sessionFactory;
     private UserRepository userRepository;
     private ImageRepository imageRepository;
+    private EntryRepository entryRepository;
 
     public EntryService(CategoryRepository categoryRepository, SessionFactory sessionFactory, UserRepository userRepository,
-                        ImageRepository imageRepository) {
+                        ImageRepository imageRepository, EntryRepository entryRepository) {
         this.categoryRepository = categoryRepository;
         this.sessionFactory = sessionFactory;
         this.userRepository = userRepository;
         this.imageRepository = imageRepository;
+        this.entryRepository = entryRepository;
     }
 
     public ResponseEntity<StandardResponse> getEntryList(Map<String, String> params) {
@@ -100,7 +103,7 @@ public class EntryService {
             StandardResponse response = StandardResponse.builder().success(true)
                     .messages(List.of())
                     .result(entries.stream().map(entryDao -> {
-                                EntryDto result = EntryDaoDtoConverter.convertToDto(entryDao);
+                                EntryDto result = EntryDaoDtoConverter.convertToDto(entryDao, false);
                                 result.setFavorite(isEntryFavorite(userId, entryDao));
                                 return result;
                             }
@@ -138,7 +141,30 @@ public class EntryService {
 
     public ResponseEntity<StandardResponse> getEntry(
             Integer entryId) {
-        return ResponseUtil.getNotImplementedResponse();
+        try {
+            EntryDao dao = entryRepository.getEntryDaoByEntryId(entryId);
+            if(dao == null) {
+                throw new RuntimeException("Requested entry does not exist");
+            }
+            return ResponseEntity.ok(
+                StandardResponse.builder()
+                    .success(true)
+                    .messages(List.of())
+                    .result(List.of(EntryDaoDtoConverter.convertToDto(dao, true)))
+                    .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(
+                    HttpStatus.BAD_REQUEST
+            ).body(
+                StandardResponse.builder()
+                    .success(false)
+                    .messages(List.of(e.getMessage()))
+                    .result(List.of())
+                    .build()
+            );
+        }
+
     }
 
     public ResponseEntity<StandardResponse> createEntry(
@@ -174,7 +200,7 @@ public class EntryService {
             StandardResponse response = StandardResponse.builder()
                 .success(true)
                 .messages(List.of())
-                .result(List.of(EntryDaoDtoConverter.convertToDto(entryDao)))
+                .result(List.of(EntryDaoDtoConverter.convertToDto(entryDao, false)))
                 .build();
             return ResponseEntity.status(
                     HttpStatus.CREATED

@@ -37,4 +37,8 @@ public class EntryDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("favorite")
     private boolean favorite;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("answers")
+    private List<AnswerDto> answersList;
+
 }
