@@ -1,16 +1,38 @@
 package backend.repositories;
 
 import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.base64.Base64;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
+import org.yaml.snakeyaml.util.ArrayUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
-import static backend.configurations.WebConfig.IMAGES_PATH;
 
 @Repository
 public class ImageFileRepository implements ImageRepository {
+
+    public ImageFileRepository() {
+        createImagesDirIfNotExists();
+    }
+
+    public static final String IMAGES_PATH = System.getProperty("user.dir").replace("\\", "/") + "/images/";
+    private String createImagesDirIfNotExists() {
+        try {
+            Files.createDirectory(Path.of(IMAGES_PATH));
+            return IMAGES_PATH;
+        } catch (IOException e) {
+            System.out.println("Failure during image dir creation. Image directory may already exist.");
+        }
+        return IMAGES_PATH;
+    }
+
 
 
     @Override
@@ -21,6 +43,12 @@ public class ImageFileRepository implements ImageRepository {
         fos.write(imgData);
         fos.close();
         return filename;
+    }
+
+    public byte[] getImage(String filename) throws IOException {
+        Path path = Paths.get(IMAGES_PATH + filename);
+        byte[] bytes = Files.readAllBytes(path);
+        return bytes;
     }
 
 }
