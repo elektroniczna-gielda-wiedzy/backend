@@ -201,15 +201,16 @@ INSERT INTO image(image) VALUES
                              ('image1.jpg'),
                              ('image2.jpg'),
                              ('image3.jpg'),
-                             ('image4.jpg');
---                              ('image5.jpg');
+                             ('image4.jpg'),
+                             ('image5.jpg');
 
 
 INSERT INTO favorites(user_id, entry_id) VALUES (1, 1), (1, 2);
 
-INSERT INTO image_item(image_item_id, image_id) VALUES
+INSERT INTO image_entry(image_item_id, image_id) VALUES
                                                     (5, 1),
                                                     (6, 2),
                                                     (3, 3),
                                                     (1, 4);
---                                                     (50, 5);
+INSERT INTO image_answer(image_item_id, image_id) VALUES
+                                                    (50, 5);

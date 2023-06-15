@@ -48,7 +48,7 @@ public class AnswerDao {
 
     @ManyToMany
     @JoinTable(
-            name = "ImageItem",
+            name = "ImageAnswer",
             joinColumns = {@JoinColumn(name = "image_item_id")},
             inverseJoinColumns = { @JoinColumn(name = "image_id")}
     )
