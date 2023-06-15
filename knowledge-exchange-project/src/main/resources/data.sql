@@ -80,43 +80,17 @@ INSERT INTO entry_type(name) VALUES ('Notatka'),
                                     ('Post');
 
 INSERT INTO users(first_name, last_name, email, password, is_email_auth, created_at, last_login, is_admin, is_active) VALUES
-('Adam', 'Kowalski', 'adamkowalski@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
-('Maria', 'Kowalska', 'mariakowalska@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
-('Marek', 'Król', 'marekkrol@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
-('Patryk', 'Kowal', 'patrykkowal@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
-('Michał', 'Markowski', 'michalmarkowski@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
-('Adrian', 'Król', 'adriankrol@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
-('Patryk', 'Markowski', 'patrykmarkowski@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true);
+                                                                                                                          ('Adam', 'Kowalski', 'adamkowalski@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
+                                                                                                                          ('Maria', 'Kowalska', 'mariakowalska@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
+                                                                                                                          ('Marek', 'Król', 'marekkrol@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
+                                                                                                                          ('Patryk', 'Kowal', 'patrykkowal@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
+                                                                                                                          ('Michał', 'Markowski', 'michalmarkowski@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
+                                                                                                                          ('Adrian', 'Król', 'adriankrol@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true),
+                                                                                                                          ('Patryk', 'Markowski', 'patrykmarkowski@student.agh.edu.pl', '$2a$10$mraQzwvvxI0GK.u.IvAwV.esajUJb5d2l.qpfNWIAx.kwu6Yy44QK', true, current_timestamp, current_timestamp, false, true);
 
 ALTER TABLE entry ALTER COLUMN content TYPE VARCHAR(1000);
 INSERT INTO entry(entry_id, user_id, entry_type_id, title, content, created_at, updated_at, is_deleted) VALUES
-(1, 1, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '10 minutes', current_timestamp, false),
-(2, 1, 1, 'Tytuł notatki z obrazem', 'Content notatki', current_timestamp, current_timestamp, false),
-(3, 1, 3, 'Tytuł postu z obrazem', 'Content postu', current_timestamp - INTERVAL '20 minutes', current_timestamp, false),
-(4, 2, 1, 'Tytuł notatki', 'Content notatki', current_timestamp - INTERVAL '30 minutes', current_timestamp, false),
-(5, 2, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '3 days', current_timestamp, false),
-(6, 2, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '7 days', current_timestamp, false),
-(7, 3, 1, 'Tytuł notatki', 'Content notatki', current_timestamp - INTERVAL '8 days', current_timestamp, false),
-(8, 3, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '70 days', current_timestamp, false),
-(9, 3, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '200 days', current_timestamp, false),
-(10, 3, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '200 days', current_timestamp, false),
-(11, 4, 2, 'Korepetycje z analizy matematycznej', 'Cześć, jestem studentem czwartego roku matematyki. Posiadam dobre zrozumienie analizy matematycznej i oferuję pomoc w zrozumieniu trudnych koncepcji oraz przygotowaniu do egzaminu. Materiały z lekcji mogę dostarczyć w formie elektronicznej. Zajęcia mogą odbywać się online lub osobiście, w zależności od Twojej preferencji.
-
-Sesje mogą obejmować następujące tematy:
-- Ciągi liczbowe
-- Szeregi liczbowe
-- Pochodne funkcji jednej zmiennej
-- Całki niewłaściwe
-- Szeregi funkcji
-- Równania różniczkowe
-
-Stawka to 30 zł / godzina.
-
-Chętnych do nauki proszę o nawiązanie kontaktu poprzez system czatowy w aplikacji.',
- current_timestamp - INTERVAL '70 minutes', current_timestamp, false),
-
-
-(12, 4, 1, 'Zrozumienie zasad termodynamiki', 'Notatka ta ma na celu zrozumienie podstawowych zasad termodynamiki, kluczowej dziedziny fizyki, która jest niezbędna dla zrozumienia szeregu zjawisk naturalnych i technologicznych. W notatce zawarte są szczegółowe wyjaśnienia, rysunki oraz przykładowe zadania.
+                                                                                                            (1, 4, 1, 'Zrozumienie zasad termodynamiki', 'Notatka ta ma na celu zrozumienie podstawowych zasad termodynamiki, kluczowej dziedziny fizyki, która jest niezbędna dla zrozumienia szeregu zjawisk naturalnych i technologicznych. W notatce zawarte są szczegółowe wyjaśnienia, rysunki oraz przykładowe zadania.
 
 Tematyka notatki obejmuje:
 - Podstawowe prawa termodynamiki
@@ -131,75 +105,111 @@ Plik znajduję się na moim dysku google, poniżej wklejam link do niego
 https://drive.google.com/file/d/1NPnrH_UrqTQdgfdFOIJ05DGDEC5sdfYPsNU/view?usp=sharing
 
 Na zamieszczonym zdjęciu znajduje się pierwsza strona notatek',
- current_timestamp - INTERVAL '160 minutes', current_timestamp, false),
+                                                                                                             current_timestamp - INTERVAL '160 minutes', current_timestamp, false),
 
-(13, 4, 3, 'Problem z nieskończoną pętlą w algorytmie Bubble Sort', 'Cześć wszystkim, mam problem z implementacją algorytmu sortowania bąbelkowego w Pythonie. Poniżej znajduje się kod, który napisałem, ale niestety program wpada w nieskończoną pętlę. Czy mógłby mi ktoś pomóc?',
- current_timestamp - INTERVAL '10 minutes', current_timestamp, false);
+                                                                                                            (2, 4, 2, 'Korepetycje z analizy matematycznej', 'Cześć, jestem studentem czwartego roku matematyki. Posiadam dobre zrozumienie analizy matematycznej i oferuję pomoc w zrozumieniu trudnych koncepcji oraz przygotowaniu do egzaminu. Materiały z lekcji mogę dostarczyć w formie elektronicznej. Zajęcia mogą odbywać się online lub osobiście, w zależności od Twojej preferencji.
+
+Sesje mogą obejmować następujące tematy:
+- Ciągi liczbowe
+- Szeregi liczbowe
+- Pochodne funkcji jednej zmiennej
+- Całki niewłaściwe
+- Szeregi funkcji
+- Równania różniczkowe
+
+Stawka to 30 zł / godzina.
+
+Chętnych do nauki proszę o nawiązanie kontaktu poprzez system czatowy w aplikacji.',
+                                                                                                             current_timestamp - INTERVAL '70 minutes', current_timestamp, false),
 
 
-INSERT INTO entry_category(entry_id, category_id) VALUES (1, 1),
-                                                         (1, 4),
-                                                         (1, 14),
-                                                         (1, 20),
-                                                         (2, 3),
-                                                         (2, 12),
-                                                         (2, 15),
-                                                         (3, 2),
-                                                         (3, 10),
-                                                         (3, 14),
-                                                         (3, 22),
-                                                            (4, 1),
-                                                            (4, 4),
-                                                            (4, 14),
-                                                            (4, 20),
-                                                            (5, 3),
-                                                            (5, 12),
-                                                            (5, 15),
-                                                            (6, 2),
-                                                            (6, 10),
-                                                            (6, 14),
-                                                            (6, 22),
-                                                            (7, 1),
-                                                            (7, 4),
-                                                            (7, 14),
-                                                            (7, 20),
-                                                            (8, 3),
-                                                            (8, 12),
-                                                            (8, 15),
-                                                            (9, 2),
-                                                            (9, 10),
-                                                            (9, 14),
-                                                            (9, 22),
-                                                            (10, 14),
-                                                            (10, 21),
-                                                            (10, 1),
-                                                            (10, 6),
-                                                            (11, 15),
-                                                            (11, 24),
-                                                            (12, 1),
-                                                            (12, 15),
-                                                            (12, 6),
-                                                            (12, 16),
+
+
+                                                                                                            (3, 4, 3, 'Problem z nieskończoną pętlą w algorytmie Bubble Sort', 'Cześć wszystkim, mam problem z implementacją algorytmu sortowania bąbelkowego w Pythonie. Poniżej znajduje się kod, który napisałem, ale niestety program wpada w nieskończoną pętlę. Czy mógłby mi ktoś pomóc?',
+                                                                                                             current_timestamp - INTERVAL '90 minutes', current_timestamp, false),
+
+                                                                                                            (4, 1, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '10 minutes', current_timestamp, false),
+                                                                                                            (5, 1, 1, 'Tytuł notatki z obrazem', 'Content notatki', current_timestamp, current_timestamp, false),
+                                                                                                            (6, 1, 3, 'Tytuł postu z obrazem', 'Content postu', current_timestamp - INTERVAL '20 minutes', current_timestamp, false),
+                                                                                                            (7, 2, 1, 'Tytuł notatki', 'Content notatki', current_timestamp - INTERVAL '30 minutes', current_timestamp, false),
+                                                                                                            (8, 2, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '3 days', current_timestamp, false),
+                                                                                                            (9, 2, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '7 days', current_timestamp, false),
+                                                                                                            (10, 3, 1, 'Tytuł notatki', 'Content notatki', current_timestamp - INTERVAL '8 days', current_timestamp, false),
+                                                                                                            (11, 3, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '70 days', current_timestamp, false),
+                                                                                                            (12, 3, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '200 days', current_timestamp, false),
+                                                                                                            (13, 3, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '200 days', current_timestamp, false);
+
+INSERT INTO entry_category(entry_id, category_id) VALUES
+                                                         (1, 15),
+                                                         (1, 24),
+                                                         (2, 14),
+                                                         (2, 21),
+                                                         (2, 1),
+                                                         (2, 6),
+                                                         (3, 1),
+                                                         (3, 6),
+                                                         (3, 13),
+                                                         (3, 16),
+                                                         (4, 1),
+                                                         (4, 4),
+                                                         (4, 14),
+                                                         (4, 20),
+                                                         (5, 3),
+                                                         (5, 12),
+                                                         (5, 15),
+                                                         (6, 2),
+                                                         (6, 10),
+                                                         (6, 14),
+                                                         (6, 22),
+                                                         (7, 1),
+                                                         (7, 4),
+                                                         (7, 14),
+                                                         (7, 20),
+                                                         (8, 3),
+                                                         (8, 12),
+                                                         (8, 15),
+                                                         (9, 2),
+                                                         (9, 10),
+                                                         (9, 14),
+                                                         (9, 22),
+                                                         (10, 14),
+                                                         (10, 21),
+                                                         (10, 1),
+                                                         (10, 6),
+                                                         (11, 15),
+                                                         (11, 24),
+                                                         (12, 1),
+                                                         (12, 15),
+                                                         (12, 6),
+                                                         (12, 16),
                                                          (12, 17);
 
-INSERT INTO image(image) VALUES
-('image1.jpg'),
-('image2.jpg'),
-('image3.jpg'),
-('image4.jpg');
 
-INSERT INTO image_item(image_item_id, image_id) VALUES
-(2, 1),
-(3, 2),
-(11, 4),
-(12, 3);
+
+ALTER TABLE answer ALTER COLUMN content TYPE VARCHAR(1000);
+INSERT INTO answer(answer_id, entry_id, user_id, content, created_at, is_deleted, top_answer) VALUES
+                                                                                                  (51, 3, 2, '
+Hej, może powinieneś spróbować użyć algorytmu sortowania przez wstawianie. Jest zazwyczaj szybszy niż sortowanie bąbelkowe.', current_timestamp - INTERVAL '3 minutes', false, false),
+                                                                                                  (50, 3, 1, '
+Problemem jest logika Twojego kodu. W rzeczywistości, kiedy sortowanie bąbelkowe zaczyna porównywanie elementów, powinno początkowo założyć, że lista jest posortowana. Jeśli znajdzie jakiekolwiek dwa elementy, które są w złej kolejności, powinno ustawić flagę informującą, że lista jest niesortowana. Ta flaga pozostanie prawdziwa tylko wtedy, gdy wszystkie elementy są w prawidłowej kolejności.
+
+Dodatkowo warte wspomnienia jest to, że python umożliwia prostrzą zamianę wartości zmiennych bez tworzenia zmiennej tymczasowej',
+                                                                                                   current_timestamp - INTERVAL '60 minutes', false, true);
+
+
+INSERT INTO image(image) VALUES
+                             ('image1.jpg'),
+                             ('image2.jpg'),
+                             ('image3.jpg'),
+                             ('image4.jpg');
+--                              ('image5.jpg');
+
 
 INSERT INTO favorites(user_id, entry_id) VALUES (1, 1), (1, 2);
 
-INSERT INTO answer(answer_id, entry_id, user_id, content, created_at, is_deleted, top_answer) VALUES
-(50, 12, 1, 'Dzięki! Niedługo mam kolokwium z termodynamiki, z pewnością się przydadzą', current_timestamp - INTERVAL '150 minutes', false, true),
-(51, 12, 2, 'Mógłbyś proszę napisać, co to za przekształcenie w punkcie 3?', current_timestamp - INTERVAL '145 minutes', false, false)
-
-
-
-
+INSERT INTO image_item(image_item_id, image_id) VALUES
+                                                    (5, 1),
+                                                    (6, 2),
+                                                    (3, 3),
+                                                    (1, 4);
+--                                                     (50, 5);
