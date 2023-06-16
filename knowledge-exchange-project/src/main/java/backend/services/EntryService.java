@@ -53,8 +53,9 @@ public class EntryService {
             List<Predicate> predicateList = new ArrayList<>();
             if (params.containsKey("query")) {
                 //TODO
-                Predicate contentContainsQuery = criteriaBuilder.like(root.get("content"), params.get("query"));
-                Predicate titleContainsQuery = criteriaBuilder.like(root.get("title"), params.get("query"));
+                String query = "%" + params.get("query") + "%";
+                Predicate contentContainsQuery = criteriaBuilder.like(root.get("content"), query);
+                Predicate titleContainsQuery = criteriaBuilder.like(root.get("title"), query);
                 Predicate criteriaFulfilled = criteriaBuilder.or(contentContainsQuery, titleContainsQuery);
                 predicateList.add(criteriaFulfilled);
             }

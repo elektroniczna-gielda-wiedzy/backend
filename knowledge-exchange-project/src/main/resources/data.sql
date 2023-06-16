@@ -121,68 +121,132 @@ Stawka to 30 zł / godzina.
 
 Chętnych do nauki proszę o nawiązanie kontaktu poprzez system czatowy w aplikacji.',
                                                                                                              current_timestamp - INTERVAL '70 minutes', current_timestamp, false),
-
-
-
-
                                                                                                             (3, 4, 3, 'Problem z nieskończoną pętlą w algorytmie Bubble Sort', 'Cześć wszystkim, mam problem z implementacją algorytmu sortowania bąbelkowego w Pythonie. Poniżej znajduje się kod, który napisałem, ale niestety program wpada w nieskończoną pętlę. Czy mógłby mi ktoś pomóc?',
                                                                                                              current_timestamp - INTERVAL '90 minutes', current_timestamp, false),
+                                                                                                            (4, 1, 1, 'Najlepsze praktyki z zakresu cyberbezpieczeństwa', 'Ta notatka omówi niektóre z najważniejszych zasad cyberbezpieczeństwa, które mogą być użyte do ochrony Twoich informacji. Dowiesz się jak stosować najlepsze praktyki z zakresu haseł, bezpiecznych nawyków przeglądania, dwuskładnikowego uwierzytelniania, i więcej. Zajrzyj pod poniższy link' ||
+                                                                                                                                                                          '
 
-                                                                                                            (4, 1, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '10 minutes', current_timestamp, false),
-                                                                                                            (5, 1, 1, 'Tytuł notatki z obrazem', 'Content notatki', current_timestamp, current_timestamp, false),
-                                                                                                            (6, 1, 3, 'Tytuł postu z obrazem', 'Content postu', current_timestamp - INTERVAL '20 minutes', current_timestamp, false),
-                                                                                                            (7, 2, 1, 'Tytuł notatki', 'Content notatki', current_timestamp - INTERVAL '30 minutes', current_timestamp, false),
-                                                                                                            (8, 2, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '3 days', current_timestamp, false),
-                                                                                                            (9, 2, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '7 days', current_timestamp, false),
-                                                                                                            (10, 3, 1, 'Tytuł notatki', 'Content notatki', current_timestamp - INTERVAL '8 days', current_timestamp, false),
-                                                                                                            (11, 3, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '70 days', current_timestamp, false),
-                                                                                                            (12, 3, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '200 days', current_timestamp, false),
-                                                                                                            (13, 3, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '200 days', current_timestamp, false);
+                                                                                                                                                                          https://drive.google.com/file/d/1NPnrH_UrqTQdgfdFOIJ05DGDEC5sdfYPsNU/view?usp=sharing', current_timestamp - INTERVAL '160 minutes', current_timestamp, false),
+                                                                                                            (5, 1, 3, 'Badanie wpływu kultury w erze cyfrowej post z obrazem', 'Ten post omówi sposoby, w jakie technologia cyfrowa, internet i media społecznościowe wpływają na kulturę, w tym na sposób, w jaki komunikujemy się, jak postrzegamy siebie i jak odnosimy się do innych.', current_timestamp, current_timestamp, false),
+                                                                                                            (6, 1, 1, 'Piękno matematyki dyskretnej notatka z obrazem', 'Głębokie zanurzenie w piękny świat matematyki dyskretnej. W tej notatce wyjaśniam, jak matematyka dyskretna pomaga w rozwiązywaniu skomplikowanych problemów informatyki.', current_timestamp - INTERVAL '20 minutes', current_timestamp, false),
+                                                                                                            (7, 2, 2, 'Pomoc w zadaniach domowych z algebry', 'Jeśli ktokolwiek ma problemy z zadaniem domowym z algebry, śmiało pisz. Mogę pomóc w tematach obejmujących równania liniowe, nierówności, wykresy, macierze, wielomiany i wyrażenia pierwiastkowe, równania i funkcje kwadratowe, wyrażenia wykładnicze i logarytmiczne, sekwencje i serie, prawdopodobieństwo i więcej.', current_timestamp - INTERVAL '30 minutes', current_timestamp, false),
+                                                                                                            (8, 3, 1, 'Zrozumienie pochodnych w analizie matematycznej', 'W tej notatce wyjaśniłem pojęcie pochodnych w analizie matematycznej. Notatka zaczyna się od podstawowej definicji, po której następują reguły różniczkowania i zastosowania. Znajdują się tam przykłady i problemy do samodzielnego rozwiązania.' ||
+                                                                                                                                                                          '
+                                                                                                                                                                         https://drive.google.com/file/d/1NPnrH_UrqTQdgfdFOIJ05DGDEC5sdfYPsNU/view?usp=sharing', current_timestamp - INTERVAL '60 minutes', current_timestamp, false),
+                                                                                                            (9, 3, 2, 'Poszukiwanie grupy studenckiej do nauki termodynamiki', 'Cześć wszystkim, staram się zorganizować grupę studiującą do nadchodzącego egzaminu z termodynamiki. Jeśli jesteś zainteresowany, proszę napisz do mnie wiadomość. Planujemy spotykać się dwa razy w tygodniu, aby omówić koncepcje, rozwiązać problemy i pomóc sobie nawzajem zrozumieć materiał.', current_timestamp - INTERVAL '70 minutes', current_timestamp, false),
+                                                                                                            (10, 3, 3, 'Problem z programowaniem obiektowym', 'Mam problem ze zrozumieniem koncepcji dziedziczenia i polimorfizmu w programowaniu obiektowym. Czy ktoś mógłby to wyjaśnić za pomocą przykładu? Używam C++ na moim kursie.', current_timestamp - INTERVAL '80 minutes', current_timestamp, false),
+                                                                                                            (11, 3, 2, 'Szukam partnera do nauki struktur danych', 'Szukam partnera do nauki na nadchodzący kurs struktur danych. Moim celem jest wspólne studiowanie i zdobycie 5.0 na tym kursie. Jeśli jesteś zainteresowany, odpisz na ten post.', current_timestamp - INTERVAL '90 minutes', current_timestamp, false),
+
+                                                                                                            (12, 1, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '10 minutes', current_timestamp, false),
+                                                                                                            (13, 1, 1, 'Tytuł notatki', 'Content notatki', current_timestamp, current_timestamp, false),
+                                                                                                            (14, 1, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '20 minutes', current_timestamp, false),
+                                                                                                            (15, 2, 1, 'Tytuł notatki', 'Content notatki', current_timestamp - INTERVAL '30 minutes', current_timestamp, false),
+                                                                                                            (16, 2, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '3 days', current_timestamp, false),
+                                                                                                            (17, 2, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '7 days', current_timestamp, false),
+                                                                                                            (18, 3, 1, 'Tytuł notatki', 'Content notatki', current_timestamp - INTERVAL '8 days', current_timestamp, false),
+                                                                                                            (19, 3, 2, 'Tytuł ogłoszenia', 'Content ogłoszenia', current_timestamp - INTERVAL '70 days', current_timestamp, false),
+                                                                                                            (20, 3, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '200 days', current_timestamp, false),
+                                                                                                            (21, 3, 3, 'Tytuł postu', 'Content postu', current_timestamp - INTERVAL '200 days', current_timestamp, false);
 
 INSERT INTO entry_category(entry_id, category_id) VALUES
                                                          (1, 15),
                                                          (1, 24),
+
                                                          (2, 14),
                                                          (2, 21),
                                                          (2, 1),
                                                          (2, 6),
+
                                                          (3, 1),
                                                          (3, 6),
                                                          (3, 13),
                                                          (3, 16),
-                                                         (4, 1),
+
                                                          (4, 4),
-                                                         (4, 14),
-                                                         (4, 20),
+                                                         (4, 1),
+                                                         (4, 13),
+
                                                          (5, 3),
                                                          (5, 12),
-                                                         (5, 15),
-                                                         (6, 2),
-                                                         (6, 10),
-                                                         (6, 14),
+
                                                          (6, 22),
-                                                         (7, 1),
-                                                         (7, 4),
-                                                         (7, 14),
+                                                         (6, 13),
+                                                         (6, 1),
+                                                         (6, 6),
+
                                                          (7, 20),
-                                                         (8, 3),
-                                                         (8, 12),
-                                                         (8, 15),
-                                                         (9, 2),
-                                                         (9, 10),
-                                                         (9, 14),
-                                                         (9, 22),
-                                                         (10, 14),
-                                                         (10, 21),
-                                                         (10, 1),
-                                                         (10, 6),
-                                                         (11, 15),
-                                                         (11, 24),
-                                                         (12, 1),
-                                                         (12, 15),
-                                                         (12, 6),
-                                                         (12, 16),
-                                                         (12, 17);
+                                                         (7, 14),
+                                                         (7, 1),
+                                                         (7, 6),
+
+                                                         (8, 21),
+                                                        (8, 1),
+                                                        (8, 6),
+                                                        (8, 14),
+
+                                                        (9, 2),
+                                                        (9, 10),
+                                                        (9, 15),
+                                                        (9, 24),
+
+                                                        (10, 13),
+                                                        (10, 18),
+
+                                                        (11, 16),
+                                                        (11, 13),
+                                                        (11, 1),
+                                                        (11, 6),
+
+                                                        (12, 1),
+                                                        (12, 15),
+                                                        (12, 6),
+                                                        (12, 16),
+                                                        (12, 17),
+
+                                                        (13, 1),
+                                                        (13, 6),
+                                                        (13, 13),
+                                                        (13, 16),
+
+                                                        (14, 1),
+                                                        (14, 6),
+                                                        (14, 13),
+                                                        (14, 16),
+
+                                                        (15, 1),
+                                                        (15, 6),
+                                                        (15, 13),
+                                                        (15, 16),
+
+                                                        (16, 1),
+                                                        (16, 6),
+                                                        (16, 13),
+                                                        (16, 16),
+
+                                                        (17, 1),
+                                                        (17, 6),
+                                                        (17, 13),
+                                                        (17, 16),
+
+                                                        (18, 1),
+                                                        (18, 7),
+                                                        (18, 13),
+                                                        (18, 16),
+
+                                                        (19, 1),
+                                                        (19, 7),
+                                                        (19, 13),
+                                                        (19, 16),
+
+                                                        (20, 2),
+                                                        (20, 9),
+                                                        (20, 13),
+                                                        (20, 16),
+
+                                                        (21, 2),
+                                                        (21, 9),
+                                                        (21, 13),
+                                                        (21, 16);
 
 
 
