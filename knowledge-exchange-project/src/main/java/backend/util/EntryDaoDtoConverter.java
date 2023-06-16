@@ -1,9 +1,11 @@
 package backend.util;
 
 import backend.model.dao.EntryDao;
+import backend.model.dto.AnswerDto;
 import backend.model.dto.EntryDto;
 import backend.repositories.ImageRepository;
 
+import java.util.Comparator;
 import java.util.Date;
 
 public class EntryDaoDtoConverter {
@@ -29,7 +31,16 @@ public class EntryDaoDtoConverter {
         if(includeAnswers) {
             builder.answersList(entryDao.getAnswers().stream().map(
                     AnswerDaoDtoConverter::convertToDto
-            ).toList());
+            ).sorted((o1, o2) -> {
+                long res = o1.getCreatedAt().getTime() - o2.getCreatedAt().getTime();
+                if (res < 0) {
+                    return -1;
+                }
+                if (res > 0) {
+                    return 1;
+                }
+                return 0;
+            }).toList());
         }
 
         return builder.build();

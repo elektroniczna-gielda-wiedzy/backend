@@ -1,9 +1,11 @@
 package backend.controllers;
 
+import backend.model.AppUserDetails;
 import backend.model.StandardResponse;
 import backend.model.dto.AnswerDto;
 import backend.services.AnswerService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,11 +28,13 @@ public class AnswerController {
     @PostMapping("{entry_id}/answer")
     public ResponseEntity<StandardResponse> addNewAnswer(
             @PathVariable("entry_id") Integer entryId,
-            @RequestBody AnswerDto answerDto
+            @RequestBody AnswerDto answerDto,
+            @AuthenticationPrincipal AppUserDetails userDetails
             ) {
         return answerService.addNewAnswer(
                 entryId,
-                answerDto
+                answerDto,
+                userDetails
         );
     }
 

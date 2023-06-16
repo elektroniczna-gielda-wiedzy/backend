@@ -1,5 +1,6 @@
 package backend.util;
 
+import backend.model.dto.AnswerDto;
 import backend.model.dto.UserRegisterDto;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ public class RequestValidator {
     public static final String EMPTY_FIRST_NAME = "First name cannot be empty";
     public static final String EMPTY_PASSWORD = "Password cannot be empty";
     public static final String EMPTY_LAST_NAME = "Last name cannot be empty";
+    public static final String EMPTY_ANSWER_CONTENT = "Answer content cannot be empty";
 
 
     /**
@@ -30,6 +32,14 @@ public class RequestValidator {
         }
         if(userRegisterDto.getPassword() == null) {
             errors.add(EMPTY_PASSWORD);
+        }
+        return errors;
+    }
+
+    public static List<String> validateAnswerAdding(AnswerDto answerDto) {
+        List<String> errors = new ArrayList<>();
+        if(answerDto.getContent() == null) {
+            errors.add(EMPTY_ANSWER_CONTENT);
         }
         return errors;
     }
