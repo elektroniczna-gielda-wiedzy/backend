@@ -262,7 +262,8 @@ public class EntryService {
             }
 
             if (entryDto.getImage() != null) {
-                entryDao.getImages().stream().findFirst().ifPresent(oldImageDao -> imageRepository.deletePicture(oldImageDao.getImage()));
+                entryDao.getImages().stream().findFirst().ifPresent(oldImageDao -> {imageRepository.deletePicture(oldImageDao.getImage());
+                session.remove(session.merge(oldImageDao));});
 
                 ImageDao imageDao = new ImageDao();
                 imageDao.setImage(imageRepository.savePicture(entryDto.getImage(), String.format("image-%d-%d-%d.jpg", userDetails.getId(),
