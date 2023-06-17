@@ -51,4 +51,11 @@ public class ImageFileRepository implements ImageRepository {
         return bytes;
     }
 
+    public boolean deletePicture(String filename) {
+        File file = new File(IMAGES_PATH + filename);
+        if(file.exists()) {
+            return file.delete();
+        }
+        return false;
+    }
 }
