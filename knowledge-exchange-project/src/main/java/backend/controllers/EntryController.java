@@ -50,19 +50,20 @@ public class EntryController {
 
     @PutMapping("/{entry_id}")
     public ResponseEntity<StandardResponse> updateEntry(
+            @AuthenticationPrincipal AppUserDetails userDetails,
             @PathVariable("entry_id") Integer entryId,
             @RequestBody EntryDto entryDto) {
         return entryService.updateEntry(
                 entryId,
-                entryDto
+                entryDto,
+                userDetails
         );
     }
 
     @DeleteMapping("/{entry_id}")
     public ResponseEntity<StandardResponse> deleteEntry(
+            @AuthenticationPrincipal AppUserDetails userDetails,
             @PathVariable("entry_id") Integer entryId) {
-        return entryService.deleteEntry(
-                entryId
-        );
+        return entryService.deleteEntry(entryId, userDetails);
     }
 }
