@@ -38,8 +38,8 @@ public class EntryDao {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isDeleted = false;
 
     @ManyToMany
     @JoinTable(
