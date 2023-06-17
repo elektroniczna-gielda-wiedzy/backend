@@ -18,6 +18,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +52,10 @@ public class EntryService {
             CriteriaQuery<EntryDao> criteriaQuery = criteriaBuilder.createQuery(EntryDao.class);
             Root<EntryDao> root = criteriaQuery.from(EntryDao.class);
             List<Predicate> predicateList = new ArrayList<>();
+
+            Predicate isNotDeleted = criteriaBuilder.equal(root.get("isDeleted"), false);
+            predicateList.add(isNotDeleted);
+
             if (params.containsKey("query")) {
                 //TODO
                 String query = "%" + params.get("query") + "%";
@@ -86,14 +91,14 @@ public class EntryService {
                 Predicate favoPredicate = criteriaBuilder.equal(entryDaoUserDaoJoin.get("userId"), userId);
                 predicateList.add(favoPredicate);
             }
-            if(predicateList.size() != 0) {
-                Predicate concatPredicate = predicateList.get(0);
-                for (int i = 1; i < predicateList.size(); i++) {
-                    concatPredicate = criteriaBuilder.and(concatPredicate, predicateList.get(i));
-                }
-                criteriaQuery.where(concatPredicate);
+
+            Predicate concatPredicate = predicateList.get(0);
+            for (int i = 1; i < predicateList.size(); i++) {
+                concatPredicate = criteriaBuilder.and(concatPredicate, predicateList.get(i));
             }
+            criteriaQuery.where(concatPredicate);
             List<EntryDao> entries = session.createQuery(criteriaQuery).getResultList();
+
             if (params.containsKey("category_ids")) {
                 List<Integer> categories = ExchangeAppUtils.convertCategoriesStrToList(params.get("category_ids"));
                 entries = entries.stream().filter(entry ->
@@ -101,6 +106,7 @@ public class EntryService {
                                 category.equals(entryCategory.getCategoryId())))
                 ).toList();
             }
+
             StandardResponse response = StandardResponse.builder().success(true)
                     .messages(List.of())
                     .result(entries.stream().map(entryDao -> {
@@ -147,6 +153,11 @@ public class EntryService {
             if(dao == null) {
                 throw new RuntimeException("Requested entry does not exist");
             }
+
+            if (dao.getIsDeleted()) {
+                throw new RuntimeException("Requested entry is deleted");
+            }
+
             return ResponseEntity.ok(
                 StandardResponse.builder()
                     .success(true)
@@ -222,12 +233,107 @@ public class EntryService {
 
     public ResponseEntity<StandardResponse> updateEntry(
             Integer entryId,
-            EntryDto entryDto) {
-        return ResponseUtil.getNotImplementedResponse();
+            EntryDto entryDto,
+            AppUserDetails userDetails) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            EntryDao entryDao = entryRepository.getEntryDaoByEntryId(entryId);
+            if(entryDao == null) {
+                throw new RuntimeException("Requested entry does not exist");
+            }
+
+            if (entryDao.getIsDeleted()) {
+                throw new RuntimeException("Requested entry is deleted");
+            }
+
+            if(!entryDao.getAuthor().getUserId().equals(userDetails.getId())
+                    && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) {
+                throw new RuntimeException("You are not allowed to update this entry");
+            }
+
+            entryDao.setTitle(Optional.ofNullable(entryDto.getTitle()).orElse(entryDao.getTitle()));
+            entryDao.setContent(Optional.ofNullable(entryDto.getContent()).orElse(entryDao.getContent()));
+            entryDao.setUpdatedAt(Timestamp.from(Instant.now()));
+            if (entryDto.getCategories() != null) {
+                Set<CategoryDao> categories = categoryRepository.getCategoryDaosByCategoryIdIsIn(entryDto.getCategories().stream()
+                        .map(CategoryDto::getCategoryId).toList());
+                entryDao.setCategories(categories);
+            }
+
+            if (entryDto.getImage() != null) {
+                entryDao.getImages().stream().findFirst().ifPresent(oldImageDao -> {imageRepository.deletePicture(oldImageDao.getImage());
+                session.remove(session.merge(oldImageDao));});
+
+                ImageDao imageDao = new ImageDao();
+                imageDao.setImage(imageRepository.savePicture(entryDto.getImage(), String.format("image-%d-%d-%d.jpg", userDetails.getId(),
+                        entryDao.getEntryId(), new Random().nextInt(10000))));
+                session.persist(imageDao);
+                entryDao.setImages(Set.of(imageDao));
+            }
+            session.merge(entryDao);
+            session.flush();
+            transaction.commit();
+            StandardResponse response = StandardResponse.builder()
+                    .success(true)
+                    .messages(List.of("Entry updated successfully"))
+                    .result(List.of(EntryDaoDtoConverter.convertToDto(entryDao, false, true, true)))
+                    .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            transaction.rollback();
+            return ResponseEntity.status(
+                    HttpStatus.BAD_REQUEST
+            ).body(StandardResponse.builder()
+                    .success(false)
+                    .messages(List.of(e.getMessage()))
+                    .result(List.of()).
+                            build());
+        } finally {
+            session.close();
+        }
     }
 
     public ResponseEntity<StandardResponse> deleteEntry(
-            Integer entryId) {
-        return ResponseUtil.getNotImplementedResponse();
+            Integer entryId,
+            AppUserDetails userDetails) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            EntryDao entryDao = entryRepository.getEntryDaoByEntryId(entryId);
+            if(entryDao == null) {
+                throw new RuntimeException("Requested entry does not exist");
+            }
+
+            if (entryDao.getIsDeleted()) {
+                throw new RuntimeException("Requested entry is already deleted");
+            }
+
+            if(!entryDao.getAuthor().getUserId().equals(userDetails.getId())
+                    && !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) {
+                throw new RuntimeException("You are not allowed to delete this entry");
+            }
+            entryDao.setIsDeleted(true);
+            session.merge(entryDao);
+            transaction.commit();
+            return ResponseEntity.ok(
+                    StandardResponse.builder()
+                            .success(true)
+                            .messages(List.of("Entry deleted successfully"))
+                            .result(List.of())
+                            .build()
+            );
+        } catch (Exception e) {
+            transaction.rollback();
+            return ResponseEntity.status(
+                    HttpStatus.BAD_REQUEST
+            ).body(StandardResponse.builder()
+                    .success(false)
+                    .messages(List.of(e.getMessage()))
+                    .result(List.of()).
+                            build());
+        } finally {
+            session.close();
+        }
     }
 }
