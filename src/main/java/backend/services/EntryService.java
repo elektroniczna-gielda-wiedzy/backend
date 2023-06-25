@@ -5,6 +5,8 @@ import backend.model.StandardResponse;
 import backend.model.dao.*;
 import backend.model.dto.CategoryDto;
 import backend.model.dto.EntryDto;
+import backend.model.validators.EntryDtoValidator;
+import backend.model.validators.ValidationFailedException;
 import backend.repositories.CategoryRepository;
 import backend.repositories.EntryRepository;
 import backend.repositories.ImageRepository;
@@ -181,6 +183,21 @@ public class EntryService {
 
     public ResponseEntity<StandardResponse> createEntry(
             EntryDto entryDto, AppUserDetails userDetails) {
+        try {
+            EntryDtoValidator.builder()
+                    .entryTypeRequired(true)
+                    .contentRequired(true)
+                    .categoriesRequired(true)
+                    .titleRequired(true)
+                    .build().validate(entryDto);
+        } catch (ValidationFailedException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(StandardResponse.builder()
+                            .success(false)
+                            .messages(e.getFailedValidations())
+                            .result(List.of()).build());
+        }
+
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
