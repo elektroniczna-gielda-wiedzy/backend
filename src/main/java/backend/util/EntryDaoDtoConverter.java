@@ -2,6 +2,7 @@ package backend.util;
 
 import backend.model.dao.EntryDao;
 import backend.model.dto.AnswerDto;
+import backend.model.dto.CategoryDto;
 import backend.model.dto.EntryDto;
 import backend.repositories.ImageRepository;
 
@@ -27,7 +28,7 @@ public class EntryDaoDtoConverter {
             builder.createdAt(new Date(entryDao.getCreatedAt().getTime()))
             .categories(entryDao.getCategories().stream().map(
                     CategoriesDaoDtoConverter::convertToDto
-            ).toList());
+            ).sorted(Comparator.comparingInt(CategoryDto::getCategoryId)).toList());
         if(includeAnswers) {
             builder.answersList(entryDao.getAnswers().stream().map(
                     AnswerDaoDtoConverter::convertToDto

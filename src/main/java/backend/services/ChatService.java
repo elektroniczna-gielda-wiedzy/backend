@@ -131,7 +131,15 @@ public class ChatService {
                     return null;
                 }
 
-            }).filter((Objects::nonNull)).toList();
+            }).filter((Objects::nonNull)).sorted((chatDto1, chatDto2) -> {
+                if (chatDto1.getLastMessage().getDateSent().before(chatDto2.getLastMessage().getDateSent())) {
+                    return 1;
+                } else if (chatDto1.getLastMessage().getDateSent().after(chatDto2.getLastMessage().getDateSent())){
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }).toList();
 
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -158,12 +166,7 @@ public class ChatService {
             ) {
         try {
             ChatDao chatDao = chatRepository.findChatDaoByChatId(chatId);
-            Integer otherUserId;
-            if(userDetails.getId().equals(chatDao.getUserTwoDao().getUserId())) {
-                otherUserId = chatDao.getUserOneDao().getUserId();
-            } else if(userDetails.getId().equals(chatDao.getUserOneDao().getUserId())) {
-                otherUserId = chatDao.getUserTwoDao().getUserId();
-            } else {
+            if(!userDetails.getId().equals(chatDao.getUserTwoDao().getUserId()) && !userDetails.getId().equals(chatDao.getUserOneDao().getUserId())) {
                 throw new AccessDeniedException("You do not have access to this chat");
             }
             List<MessageDao> messages = messageRepository.findMessageDaosByChatDao(chatDao);
