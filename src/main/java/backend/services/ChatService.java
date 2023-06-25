@@ -216,11 +216,6 @@ public class ChatService {
         //temporary solution
         chatDao.setUserTwoLastRead(Timestamp.from(Instant.now().minusSeconds(60)));
         chatRepository.save(chatDao);
-        try {
-            this.simpMessagingTemplate.convertAndSendToUser(userTwoDao.getEmail(), "/queue/notification", new ObjectMapper().writeValueAsString(ChatDto.builder().chatId(chatDao.getChatId()).build()));
-        } catch (JsonProcessingException e) {
-            System.out.println(e.getMessage());
-        }
         return getChat(userDetails, chatDao.getChatId());
     }
 
