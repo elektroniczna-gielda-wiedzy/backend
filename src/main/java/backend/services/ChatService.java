@@ -115,10 +115,18 @@ public class ChatService {
                 List<MessageDao> messageDaos = session.createQuery(criteriaQuery).setMaxResults(1).getResultList();
                 MessageDao lastMessage;
                 if(messageDaos.size() > 0) {
+                    Boolean isRead = true;
                     lastMessage = messageDaos.get(0);
+                    if(!lastMessage.getSenderUserDao().getUserId().equals(userDetails.getId())) {
+                        Timestamp currentUserLastRead = ExchangeAppUtils.getCurrentUserLastRead(userDetails.getId(), chatDao);
+                        if(lastMessage.getDateSent().after(currentUserLastRead)) {
+                            isRead = false;
+                        }
+                    }
                     return ChatDto.builder()
                             .chatId(chatDao.getChatId())
                             .otherUser(UserDaoDtoConverter.convertToDto(ExchangeAppUtils.getOppositeUser(userDao.getUserId(), chatDao)))
+                            .isRead(isRead)
                             .lastMessage(MessageDto.builder()
                                     .messageId(lastMessage.getMessageId())
                                     .sender(UserDaoDtoConverter.convertToDto(lastMessage.getSenderUserDao()))
@@ -132,13 +140,22 @@ public class ChatService {
                 }
 
             }).filter((Objects::nonNull)).sorted((chatDto1, chatDto2) -> {
-                if (chatDto1.getLastMessage().getDateSent().before(chatDto2.getLastMessage().getDateSent())) {
-                    return 1;
-                } else if (chatDto1.getLastMessage().getDateSent().after(chatDto2.getLastMessage().getDateSent())){
-                    return -1;
+                if(chatDto1.getIsRead().equals(chatDto2.getIsRead())) {
+                    if (chatDto1.getLastMessage().getDateSent().before(chatDto2.getLastMessage().getDateSent())) {
+                        return 1;
+                    } else if (chatDto1.getLastMessage().getDateSent().after(chatDto2.getLastMessage().getDateSent())){
+                        return -1;
+                    } else {
+                        return 0;
+                    }
                 } else {
-                    return 0;
+                    if(!chatDto1.getIsRead()) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
                 }
+
             }).toList();
 
         } catch(Exception e) {

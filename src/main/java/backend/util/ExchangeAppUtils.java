@@ -3,6 +3,7 @@ package backend.util;
 import backend.model.dao.ChatDao;
 import backend.model.dao.UserDao;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,6 +33,14 @@ public class ExchangeAppUtils {
             return chatDao.getUserOneDao();
         } else {
             return chatDao.getUserTwoDao();
+        }
+    }
+
+    public static Timestamp getCurrentUserLastRead(Integer currentUserId, ChatDao chatDao) {
+        if(currentUserId.equals(chatDao.getUserOneDao().getUserId())) {
+            return chatDao.getUserOneLastRead();
+        } else {
+            return chatDao.getUserTwoLastRead();
         }
     }
 }

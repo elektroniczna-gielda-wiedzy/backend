@@ -23,9 +23,11 @@ public class ChatDto {
     @JsonProperty("messages")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<MessageDto> messageDtoList;
-
     @JsonProperty("last_message")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private MessageDto lastMessage;
+    @JsonProperty("is_read")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean isRead;
 
 }
