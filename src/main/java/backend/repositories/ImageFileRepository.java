@@ -22,7 +22,7 @@ public class ImageFileRepository implements ImageRepository {
         createImagesDirIfNotExists();
     }
 
-    public static final String IMAGES_PATH = System.getProperty("user.dir").replace("\\", "/") + "/images/";
+    public static final String IMAGES_PATH = System.getProperty("user.dir") + File.separator + "images" + File.separator;
     private String createImagesDirIfNotExists() {
         try {
             Files.createDirectory(Path.of(IMAGES_PATH));
