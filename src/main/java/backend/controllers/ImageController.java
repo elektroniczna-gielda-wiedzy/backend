@@ -13,7 +13,7 @@ import java.util.List;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 @RestController
-@RequestMapping("/images")
+@RequestMapping("/api/v1/images")
 public class ImageController {
 
     private ImageRepository imageRepository;
