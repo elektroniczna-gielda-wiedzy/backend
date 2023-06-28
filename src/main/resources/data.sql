@@ -279,3 +279,21 @@ INSERT INTO image_entry(image_item_id, image_id) VALUES
                                                     (1, 4);
 INSERT INTO image_answer(image_item_id, image_id) VALUES
                                                     (50, 5);
+INSERT INTO chat(user_one_last_read, user_two_last_read, user_one_id, user_two_id) VALUES
+(current_timestamp - INTERVAL '92 minutes', current_timestamp - INTERVAL '89 minutes', 1, 2),
+(current_timestamp - INTERVAL '55 minutes', current_timestamp - INTERVAL '55 minutes', 3, 1),
+(current_timestamp - INTERVAL '70 minutes', current_timestamp - INTERVAL '67 minutes', 1, 4);
+
+INSERT INTO messages(content, date_sent, chat_id, sender_id) VALUES
+('Cześć, świetne notatki! Bardzo mi pomogły w ostatnim kolokwium. Masz może jeszcze jakieś z algebry?', current_timestamp - INTERVAL '90 minutes', 1, 2),
+('Cześć, chciałbym się umówić na korepetycje z matematyki.', current_timestamp - INTERVAL '170 minutes', 2, 3),
+('Cześć, jaki termin by ci odpowiadał?.', current_timestamp - INTERVAL '165 minutes', 2, 1),
+('Najbardziej by mi odpowiadały czwartek lub wtorek w godzinach 16:00 - 18:00.', current_timestamp - INTERVAL '150 minutes', 2, 3),
+('We wtorek w tym terminie mam zajęcia :( ale w czwartek nie ma problemu.', current_timestamp - INTERVAL '100 minutes', 2, 1),
+('Świetnie! Do zobaczenia!', current_timestamp - INTERVAL '56 minutes', 2, 3),
+('Cześć, widziałem twoje notatki z fizyki, czy prowadzisz też korepetycje?', current_timestamp - INTERVAL '300 minutes', 3, 4),
+('Cześć, z fizyki nigdy nie prowadziłem ale mogę spróbować.', current_timestamp - INTERVAL '150 minutes', 3, 1),
+('Świetnie! Czy odpowiadałaby ci sobota o 12:00?', current_timestamp - INTERVAL '68 minutes', 3, 4);
+
+
+

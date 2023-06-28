@@ -12,8 +12,6 @@ import backend.repositories.EntryRepository;
 import backend.repositories.ImageRepository;
 import backend.repositories.UserRepository;
 import backend.util.AnswerDaoDtoConverter;
-import backend.util.RequestValidationException;
-import backend.util.RequestValidator;
 import backend.util.ResponseUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -60,14 +58,14 @@ public class AnswerService {
             AnswerDto answerDto,
             AppUserDetails userDetails
             ) {
-        List<String> errors = RequestValidator.validateAnswerAdding(answerDto);
+        //List<String> errors = RequestValidator.validateAnswerAdding(answerDto);
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
 
-            if(errors.size() > 0) {
-                throw new RequestValidationException("Request validation error");
-            }
+            //if(errors.size() > 0) {
+          //      throw new RequestValidationException("Request validation error");
+            //}
 
             EntryDao entryDao = entryRepository.getEntryDaoByEntryId(entryId);
             AnswerDao newAnswer = new AnswerDao();
@@ -85,7 +83,7 @@ public class AnswerService {
                     imageDao.setImage(imageRepository.savePicture(answerDto.getImage(), String.format("image-%d-%d-%d.jpg", userDetails.getId(),
                             entryDao.getEntryId(), new Random().nextInt(10000))));
                 } catch(IOException e) {
-                    errors.add("Image could not be saved");
+                    //errors.add("Image could not be saved");
                     throw e;
                 }
                 newAnswer.setImages(Set.of(imageDao));
@@ -112,7 +110,7 @@ public class AnswerService {
                     StandardResponse
                         .builder()
                         .success(false)
-                        .messages(errors)
+                        //.messages(errors)
                         .result(List.of())
                         .build()
                 );

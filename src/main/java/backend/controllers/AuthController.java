@@ -6,15 +6,15 @@ import backend.model.dao.UserDao;
 import backend.model.dto.AuthTokenDto;
 import backend.model.dto.UserAuthDto;
 import backend.model.dto.UserRegisterDto;
+import backend.model.validators.UserAuthDtoValidator;
+import backend.model.validators.UserRegisterDtoValidator;
+import backend.model.validators.ValidationFailedException;
 import backend.repositories.UserRepository;
-import backend.services.AppUserDetailService;
 import backend.services.JwtService;
-import backend.util.RequestValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -55,6 +55,11 @@ public class AuthController {
     @PostMapping("/sign_in")
     public ResponseEntity<StandardResponse> login(@RequestBody UserAuthDto authDto) {
         try {
+            UserAuthDtoValidator.builder()
+                    .emailRequired(true)
+                    .passwordRequired(true)
+                    .emailValidationRequired(true)
+                    .build().validate(authDto);
             Authentication auth = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authDto.getEmail(), authDto.getPassword())
             );
@@ -83,20 +88,30 @@ public class AuthController {
                     .messages(List.of("Bad email or password"))
                     .result(List.of())
                     .build());
+        } catch (ValidationFailedException e) {
+            return ResponseEntity.status(
+                    HttpStatus.BAD_REQUEST
+            ).body(StandardResponse.builder()
+                    .success(false)
+                    .messages(e.getFailedValidations())
+                    .result(List.of())
+                    .build());
         }
     }
 
     @PostMapping("/sign_up")
     public ResponseEntity<StandardResponse> register(@RequestBody UserRegisterDto registerDto) {
-        List<String> errors = RequestValidator.validateRegister(registerDto);
         try {
-            if (errors.size() > 0) {
-                throw new RuntimeException("Request validation error");
-            }
+            UserRegisterDtoValidator.builder()
+                    .emailRequired(true)
+                    .passwordRequired(true)
+                    .firstNameRequired(true)
+                    .lastNameRequired(true)
+                    .emailValidationRequired(true)
+                    .build().validate(registerDto);
             UserDao userDao = userRepository.findUserDaoByEmail(registerDto.getEmail());
             if(userDao != null) {
-                errors.add("User with given email exists");
-                throw new RuntimeException("User with given email exists");
+                throw new ValidationFailedException(List.of("User with given email already exists"));
             }
             UserDao dao = new UserDao();
             dao.setEmail(registerDto.getEmail());
@@ -113,17 +128,17 @@ public class AuthController {
                 .body(
                     StandardResponse.builder()
                         .success(true)
-                        .messages(errors)
+                        .messages(List.of())
                         .result(List.of())
                         .build()
             );
-        } catch (Exception e) {
+        } catch (ValidationFailedException e) {
             return ResponseEntity.status(
                     HttpStatus.BAD_REQUEST
             ).body(
                 StandardResponse.builder()
                     .success(false)
-                    .messages(errors)
+                    .messages(e.getFailedValidations())
                     .result(List.of())
                     .build()
             );

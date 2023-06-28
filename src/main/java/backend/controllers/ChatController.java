@@ -2,6 +2,7 @@ package backend.controllers;
 
 import backend.model.AppUserDetails;
 import backend.model.StandardResponse;
+import backend.model.dto.ChatDto;
 import backend.services.ChatService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -51,11 +52,11 @@ public class ChatController {
     @PostMapping()
     public ResponseEntity<StandardResponse> createChat(
             @AuthenticationPrincipal AppUserDetails userDetails,
-            @RequestBody Integer userId
+            @RequestBody ChatDto chatDto
     ) {
         return this.chatService.createChat(
                 userDetails,
-                userId
+                chatDto.getOtherUserId()
         );
     }
 
