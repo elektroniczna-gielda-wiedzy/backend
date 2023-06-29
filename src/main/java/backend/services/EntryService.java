@@ -1,6 +1,7 @@
 package backend.services;
 
 import backend.model.AppUserDetails;
+import backend.model.CategoryType;
 import backend.model.StandardResponse;
 import backend.model.dao.*;
 import backend.model.dto.CategoryDto;
@@ -102,11 +103,26 @@ public class EntryService {
             List<EntryDao> entries = session.createQuery(criteriaQuery).getResultList();
 
             if (params.containsKey("category_ids")) {
-                List<Integer> categories = ExchangeAppUtils.convertCategoriesStrToList(params.get("category_ids"));
-                entries = entries.stream().filter(entry ->
-                        categories.stream().allMatch(category -> entry.getCategories().stream().anyMatch(entryCategory ->
-                                category.equals(entryCategory.getCategoryId())))
-                ).toList();
+                List<Integer> categoriesIds = ExchangeAppUtils.convertCategoriesStrToList(params.get("category_ids"));
+                Set<CategoryDao> categories = categoryRepository.getCategoryDaosByCategoryIdIsIn(categoriesIds);
+                List<Integer> fieldsIds = categories.stream()
+                        .filter(category -> category.getCategoryType() == CategoryType.FIELD)
+                        .map(CategoryDao::getCategoryId)
+                        .toList();
+                List<Integer> departamentsIds = categories.stream()
+                        .filter(category -> category.getCategoryType() == CategoryType.DEPARTAMENT)
+                        .map(CategoryDao::getCategoryId)
+                        .toList();
+
+                entries = entries.stream().filter(entry -> {
+                    boolean matchFields = fieldsIds.isEmpty() || entry.getCategories().stream()
+                            .filter(category -> category.getCategoryType() == CategoryType.FIELD)
+                            .anyMatch(category -> fieldsIds.contains(category.getCategoryId()));
+                    boolean matchDepartaments = departamentsIds.isEmpty() || entry.getCategories().stream()
+                            .filter(category -> category.getCategoryType() == CategoryType.DEPARTAMENT)
+                            .anyMatch(category -> departamentsIds.contains(category.getCategoryId()));
+                    return matchFields && matchDepartaments;
+                }).toList();
             }
 
             StandardResponse response = StandardResponse.builder().success(true)
