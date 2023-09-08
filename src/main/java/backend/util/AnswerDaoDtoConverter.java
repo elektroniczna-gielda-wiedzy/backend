@@ -13,8 +13,14 @@ public class AnswerDaoDtoConverter {
                 .createdAt(answerDao.getCreatedAt())
                 .isTopAnswer(answerDao.getIsTopAnswer())
                 .votes(answerDao.getVotes().size())
-                .image(answerDao.getImages() != null && answerDao.getImages().stream().toList().size() > 0?
-                        ImageRepository.urlPrefix + answerDao.getImages().stream().toList().get(0).getImage():null)
+                .image(answerDao.getImages() != null && answerDao.getImages()
+                        .stream()
+                        .toList()
+                        .size() > 0 ? ImageRepository.urlPrefix + answerDao.getImages()
+                        .stream()
+                        .toList()
+                        .get(0)
+                        .getImage() : null)
                 .build();
     }
 }

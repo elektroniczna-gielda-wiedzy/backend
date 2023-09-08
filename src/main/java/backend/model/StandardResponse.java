@@ -11,6 +11,8 @@ import java.util.List;
 @Setter
 public class StandardResponse {
     private boolean success;
+
     private List<String> messages;
+
     private List<?> result;
 }

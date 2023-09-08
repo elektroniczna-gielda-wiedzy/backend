@@ -4,8 +4,8 @@ import backend.model.StandardResponse;
 import backend.model.dao.CategoryDao;
 import backend.model.dto.CategoryDto;
 import backend.repositories.CategoryRepository;
-import backend.util.ResponseUtil;
 import backend.util.CategoriesDaoDtoConverter;
+import backend.util.ResponseUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,8 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
-
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     public CategoryService(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
@@ -39,26 +38,22 @@ public class CategoryService {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(StandardResponse.builder()
-                            .success(false)
-                            .messages(List.of(e.getMessage()))
-                            .result(List.of())
-                            .build());
+                                  .success(false)
+                                  .messages(List.of(e.getMessage()))
+                                  .result(List.of())
+                                  .build());
         }
     }
 
-    public ResponseEntity<StandardResponse> addCategory(
-            CategoryDto categoryDto) {
+    public ResponseEntity<StandardResponse> addCategory(CategoryDto categoryDto) {
         return ResponseUtil.getNotImplementedResponse();
     }
 
-    public ResponseEntity<StandardResponse> editCategory(
-            Integer categoryId,
-            CategoryDto categoryDto) {
+    public ResponseEntity<StandardResponse> editCategory(Integer categoryId, CategoryDto categoryDto) {
         return ResponseUtil.getNotImplementedResponse();
     }
 
-    public ResponseEntity<StandardResponse> deleteCategory(
-            Integer categoryId) {
+    public ResponseEntity<StandardResponse> deleteCategory(Integer categoryId) {
         return ResponseUtil.getNotImplementedResponse();
     }
 }

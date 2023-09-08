@@ -8,20 +8,18 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ExchangeAppUtils {
-
     public static String REQUIRED_VALUE_ERROR_FORMAT = "field %s is required";
+
     public static String BAD_EMAIL_ERROR = "The email does not come from authorized entity";
 
     public static List<Integer> convertCategoriesStrToList(String list) {
-        String cleanList = list.replace("[","").replace("]","");
+        String cleanList = list.replace("[", "").replace("]", "");
         String[] categoriesArr = cleanList.split(",");
-        return Arrays.stream(categoriesArr).map(
-                Integer::parseInt
-        ).toList();
+        return Arrays.stream(categoriesArr).map(Integer::parseInt).toList();
     }
 
     public static UserDao getOppositeUser(Integer currentUserId, ChatDao chatDao) {
-        if(currentUserId.equals(chatDao.getUserOneDao().getUserId())) {
+        if (currentUserId.equals(chatDao.getUserOneDao().getUserId())) {
             return chatDao.getUserTwoDao();
         } else {
             return chatDao.getUserOneDao();
@@ -29,7 +27,7 @@ public class ExchangeAppUtils {
     }
 
     public static UserDao getCurrentUserDao(Integer currentUserId, ChatDao chatDao) {
-        if(currentUserId.equals(chatDao.getUserOneDao().getUserId())) {
+        if (currentUserId.equals(chatDao.getUserOneDao().getUserId())) {
             return chatDao.getUserOneDao();
         } else {
             return chatDao.getUserTwoDao();
@@ -37,7 +35,7 @@ public class ExchangeAppUtils {
     }
 
     public static Timestamp getCurrentUserLastRead(Integer currentUserId, ChatDao chatDao) {
-        if(currentUserId.equals(chatDao.getUserOneDao().getUserId())) {
+        if (currentUserId.equals(chatDao.getUserOneDao().getUserId())) {
             return chatDao.getUserOneLastRead();
         } else {
             return chatDao.getUserTwoLastRead();

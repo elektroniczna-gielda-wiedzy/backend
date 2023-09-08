@@ -6,10 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 
 public class AuthService {
+    private final AuthenticationManager authManager;
 
-    private AuthenticationManager authManager;
-
-    private JwtService jwtService;
+    private final JwtService jwtService;
 
     public AuthService(JwtService jwtService, AuthenticationManager authManager) {
         this.jwtService = jwtService;
@@ -19,6 +18,4 @@ public class AuthService {
     public ResponseEntity<StandardResponse> login(UserAuthDto authDto) {
         return null;
     }
-
-
 }

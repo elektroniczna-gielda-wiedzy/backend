@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface ChatRepository extends JpaRepository<ChatDao, Integer> {
     ChatDao findChatDaoByChatId(Integer chatId);
-    public List<ChatDao> findChatDaosByUserOneDaoOrUserTwoDao(UserDao userOneDao, UserDao userTwoDao);
-    public List<ChatDao> findChatDaosByUserOneDaoInAndUserTwoDaoIn(Collection<UserDao> userOneDao, Collection<UserDao> userTwoDao);
+
+    List<ChatDao> findChatDaosByUserOneDaoOrUserTwoDao(UserDao userOneDao, UserDao userTwoDao);
+
+    List<ChatDao> findChatDaosByUserOneDaoInAndUserTwoDaoIn(Collection<UserDao> userOneDao,
+                                                                   Collection<UserDao> userTwoDao);
 }

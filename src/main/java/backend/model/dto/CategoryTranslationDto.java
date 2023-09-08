@@ -11,6 +11,7 @@ import lombok.Setter;
 public class CategoryTranslationDto {
     @JsonProperty("lang_id")
     private Integer languageId;
+
     @JsonProperty("name")
     private String translatedName;
 }

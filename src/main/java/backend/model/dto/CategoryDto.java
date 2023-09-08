@@ -11,27 +11,26 @@ import java.util.List;
 @Setter
 @Builder
 public class CategoryDto {
+    @JsonProperty("category_id")
+    private Integer categoryId;
+
+    @JsonProperty("type")
+    private Integer categoryType;
+
+    @JsonProperty("names")
+    private List<CategoryTranslationDto> names;
+
+    @JsonProperty("parent_id")
+    private Integer parentId;
 
     public CategoryDto(Integer categoryId) {
         this.categoryId = categoryId;
     }
 
-    public CategoryDto(Integer categoryId,
-                       Integer categoryType,
-                       List<CategoryTranslationDto> names,
-                       Integer parentId) {
+    public CategoryDto(Integer categoryId, Integer categoryType, List<CategoryTranslationDto> names, Integer parentId) {
         this.categoryId = categoryId;
         this.categoryType = categoryType;
         this.names = names;
         this.parentId = parentId;
     }
-
-    @JsonProperty("category_id")
-    private Integer categoryId;
-    @JsonProperty("type")
-    private Integer categoryType;
-    @JsonProperty("names")
-    private List<CategoryTranslationDto> names;
-    @JsonProperty("parent_id")
-    private Integer parentId;
 }

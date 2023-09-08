@@ -3,7 +3,6 @@ package backend.services;
 import backend.model.AppUserDetails;
 import backend.model.StandardResponse;
 import backend.model.dao.ChatDao;
-import backend.model.dao.EntryDao;
 import backend.model.dao.MessageDao;
 import backend.model.dao.UserDao;
 import backend.model.dto.ChatDto;
@@ -12,7 +11,6 @@ import backend.repositories.ChatRepository;
 import backend.repositories.MessageRepository;
 import backend.repositories.UserRepository;
 import backend.util.ExchangeAppUtils;
-import backend.util.ResponseUtil;
 import backend.util.UserDaoDtoConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +22,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -34,19 +31,24 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
-
 
 @Service
 public class ChatService {
     private final SimpMessagingTemplate simpMessagingTemplate;
+
     private final UserRepository userRepository;
+
     private final ChatRepository chatRepository;
+
     private final MessageRepository messageRepository;
+
     private final SessionFactory sessionFactory;
 
-    public ChatService(SimpMessagingTemplate simpMessagingTemplate, ChatRepository chatRepository, UserRepository userRepository,
-                       MessageRepository messageRepository, SessionFactory sessionFactory) {
+    public ChatService(SimpMessagingTemplate simpMessagingTemplate,
+                       ChatRepository chatRepository,
+                       UserRepository userRepository,
+                       MessageRepository messageRepository,
+                       SessionFactory sessionFactory) {
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.chatRepository = chatRepository;
         this.userRepository = userRepository;
@@ -54,11 +56,7 @@ public class ChatService {
         this.sessionFactory = sessionFactory;
     }
 
-    public void handleNewMessage(
-            AppUserDetails userDetails,
-            String chatId,
-            String chatMessage
-    ) {
+    public void handleNewMessage(AppUserDetails userDetails, String chatId, String chatMessage) {
         Integer userId = userDetails.getId();
 
         System.out.println("New chat message from user with id: " + userId + "\nContent: " + chatMessage);
@@ -71,11 +69,10 @@ public class ChatService {
         try {
             MessageDto messageDto = new ObjectMapper().readValue(chatMessage, MessageDto.class);
             messageDao.setContent(messageDto.getContent());
-        } catch(JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             System.out.println(e.getMessage());
             return;
         }
-
 
         messageDao.setDateSent(Timestamp.from(Instant.now()));
         messageDao.setSenderUserDao(ExchangeAppUtils.getCurrentUserDao(userId, chat));
@@ -88,7 +85,12 @@ public class ChatService {
                 .chatId(messageDao.getChatDao().getChatId())
                 .build();
         try {
-            this.simpMessagingTemplate.convertAndSendToUser(oppositeUser.getEmail(), "/queue/notification", new ObjectMapper().writeValueAsString(ChatDto.builder().chatId(Integer.parseInt(chatId)).build()));
+            this.simpMessagingTemplate.convertAndSendToUser(oppositeUser.getEmail(),
+                                                            "/queue/notification",
+                                                            new ObjectMapper().writeValueAsString(ChatDto.builder()
+                                                                                                          .chatId(Integer.parseInt(
+                                                                                                                  chatId))
+                                                                                                          .build()));
         } catch (JsonProcessingException e) {
             System.out.println(e.getMessage());
         }
@@ -97,9 +99,7 @@ public class ChatService {
     }
 
     //tested
-    public ResponseEntity<StandardResponse> getChatList(
-            AppUserDetails userDetails
-            ) {
+    public ResponseEntity<StandardResponse> getChatList(AppUserDetails userDetails) {
         UserDao userDao = userRepository.findUserDaoByUserId(userDetails.getId());
         List<ChatDao> chatDaos = chatRepository.findChatDaosByUserOneDaoOrUserTwoDao(userDao, userDao);
         Session session = sessionFactory.openSession();
@@ -114,116 +114,109 @@ public class ChatService {
                 criteriaQuery.where(belongsToChat);
                 List<MessageDao> messageDaos = session.createQuery(criteriaQuery).setMaxResults(1).getResultList();
                 MessageDao lastMessage;
-                if(messageDaos.size() > 0) {
+                if (messageDaos.size() > 0) {
                     Boolean isRead = true;
                     lastMessage = messageDaos.get(0);
-                    if(!lastMessage.getSenderUserDao().getUserId().equals(userDetails.getId())) {
-                        Timestamp currentUserLastRead = ExchangeAppUtils.getCurrentUserLastRead(userDetails.getId(), chatDao);
-                        if(lastMessage.getDateSent().after(currentUserLastRead)) {
+                    if (!lastMessage.getSenderUserDao().getUserId().equals(userDetails.getId())) {
+                        Timestamp currentUserLastRead = ExchangeAppUtils.getCurrentUserLastRead(userDetails.getId(),
+                                                                                                chatDao);
+                        if (lastMessage.getDateSent().after(currentUserLastRead)) {
                             isRead = false;
                         }
                     }
                     return ChatDto.builder()
                             .chatId(chatDao.getChatId())
-                            .otherUser(UserDaoDtoConverter.convertToDto(ExchangeAppUtils.getOppositeUser(userDao.getUserId(), chatDao)))
+                            .otherUser(UserDaoDtoConverter.convertToDto(ExchangeAppUtils.getOppositeUser(userDao.getUserId(),
+                                                                                                         chatDao)))
                             .isRead(isRead)
                             .lastMessage(MessageDto.builder()
-                                    .messageId(lastMessage.getMessageId())
-                                    .sender(UserDaoDtoConverter.convertToDto(lastMessage.getSenderUserDao()))
-                                    .content(lastMessage.getContent())
-                                    .dateSent(new Date(lastMessage.getDateSent().getTime()))
-                                    .chatId(chatDao.getChatId())
-                                    .build())
+                                                 .messageId(lastMessage.getMessageId())
+                                                 .sender(UserDaoDtoConverter.convertToDto(lastMessage.getSenderUserDao()))
+                                                 .content(lastMessage.getContent())
+                                                 .dateSent(new Date(lastMessage.getDateSent().getTime()))
+                                                 .chatId(chatDao.getChatId())
+                                                 .build())
                             .build();
                 } else {
                     return null;
                 }
-
             }).filter((Objects::nonNull)).sorted((chatDto1, chatDto2) -> {
-                if(chatDto1.getIsRead().equals(chatDto2.getIsRead())) {
+                if (chatDto1.getIsRead().equals(chatDto2.getIsRead())) {
                     if (chatDto1.getLastMessage().getDateSent().before(chatDto2.getLastMessage().getDateSent())) {
                         return 1;
-                    } else if (chatDto1.getLastMessage().getDateSent().after(chatDto2.getLastMessage().getDateSent())){
+                    } else if (chatDto1.getLastMessage().getDateSent().after(chatDto2.getLastMessage().getDateSent())) {
                         return -1;
                     } else {
                         return 0;
                     }
                 } else {
-                    if(!chatDto1.getIsRead()) {
+                    if (!chatDto1.getIsRead()) {
                         return -1;
                     } else {
                         return 1;
                     }
                 }
-
             }).toList();
-
-        } catch(Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(StandardResponse.builder()
-                    .success(false)
-                    .messages(List.of(e.getMessage()))
-                    .result(List.of())
-                    .build());
-
-        } finally {
-            session.close();
-        }
-        return ResponseEntity.ok(StandardResponse.builder()
-                .success(true)
-                .messages(List.of())
-                .result(chatDtos)
-                .build());
-    }
-
-    //tested
-    public ResponseEntity<StandardResponse> getChat(
-            AppUserDetails userDetails,
-            Integer chatId
-            ) {
-        try {
-            ChatDao chatDao = chatRepository.findChatDaoByChatId(chatId);
-            if(!userDetails.getId().equals(chatDao.getUserTwoDao().getUserId()) && !userDetails.getId().equals(chatDao.getUserOneDao().getUserId())) {
-                throw new AccessDeniedException("You do not have access to this chat");
-            }
-            List<MessageDao> messages = messageRepository.findMessageDaosByChatDao(chatDao);
-            List<MessageDto> messagesReturned = messages.stream().map((message) -> MessageDto.builder()
-                .messageId(message.getMessageId())
-                .sender(UserDaoDtoConverter.convertToDto(message.getSenderUserDao()))
-                .chatId(chatDao.getChatId())
-                .content(message.getContent())
-                .dateSent(message.getDateSent()).build()).toList();
-            return ResponseEntity.ok(
-                StandardResponse.builder()
-                    .success(true)
-                    .messages(List.of())
-                    .result(List.of(ChatDto.builder()
-                        .chatId(chatDao.getChatId())
-                        .otherUserId(ExchangeAppUtils.getOppositeUser(userDetails.getId(), chatDao).getUserId())
-                        .messageDtoList(messagesReturned)
-                        .build()))
-                    .build()
-            );
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(StandardResponse.builder()
-                            .success(false)
-                            .messages(List.of(e.getMessage()))
-                            .result(List.of())
-                            .build());
+                                  .success(false)
+                                  .messages(List.of(e.getMessage()))
+                                  .result(List.of())
+                                  .build());
+        } finally {
+            session.close();
         }
-
+        return ResponseEntity.ok(StandardResponse.builder().success(true).messages(List.of()).result(chatDtos).build());
     }
 
-    public ResponseEntity<StandardResponse> createChat(
-            AppUserDetails userDetails,
-            Integer userId
-            ) {
+    //tested
+    public ResponseEntity<StandardResponse> getChat(AppUserDetails userDetails, Integer chatId) {
+        try {
+            ChatDao chatDao = chatRepository.findChatDaoByChatId(chatId);
+            if (!userDetails.getId().equals(chatDao.getUserTwoDao().getUserId()) && !userDetails.getId()
+                    .equals(chatDao.getUserOneDao().getUserId())) {
+                throw new AccessDeniedException("You do not have access to this chat");
+            }
+            List<MessageDao> messages = messageRepository.findMessageDaosByChatDao(chatDao);
+            List<MessageDto> messagesReturned = messages.stream()
+                    .map((message) -> MessageDto.builder()
+                            .messageId(message.getMessageId())
+                            .sender(UserDaoDtoConverter.convertToDto(message.getSenderUserDao()))
+                            .chatId(chatDao.getChatId())
+                            .content(message.getContent())
+                            .dateSent(message.getDateSent())
+                            .build())
+                    .toList();
+            return ResponseEntity.ok(StandardResponse.builder()
+                                             .success(true)
+                                             .messages(List.of())
+                                             .result(List.of(ChatDto.builder()
+                                                                     .chatId(chatDao.getChatId())
+                                                                     .otherUserId(ExchangeAppUtils.getOppositeUser(
+                                                                             userDetails.getId(),
+                                                                             chatDao).getUserId())
+                                                                     .messageDtoList(messagesReturned)
+                                                                     .build()))
+                                             .build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(StandardResponse.builder()
+                                  .success(false)
+                                  .messages(List.of(e.getMessage()))
+                                  .result(List.of())
+                                  .build());
+        }
+    }
+
+    public ResponseEntity<StandardResponse> createChat(AppUserDetails userDetails, Integer userId) {
         UserDao userOneDao = userRepository.findUserDaoByUserId(userDetails.getId());
         UserDao userTwoDao = userRepository.findUserDaoByUserId(userId);
-        List<ChatDao> usersChats = chatRepository.findChatDaosByUserOneDaoInAndUserTwoDaoIn(List.of(userOneDao, userTwoDao),
-                List.of(userOneDao, userTwoDao));
-        if(usersChats.size() > 0) {
+        List<ChatDao> usersChats = chatRepository.findChatDaosByUserOneDaoInAndUserTwoDaoIn(List.of(userOneDao,
+                                                                                                    userTwoDao),
+                                                                                            List.of(userOneDao,
+                                                                                                    userTwoDao));
+        if (usersChats.size() > 0) {
             return getChat(userDetails, usersChats.get(0).getChatId());
         }
         ChatDao chatDao = new ChatDao();
@@ -236,50 +229,46 @@ public class ChatService {
         return getChat(userDetails, chatDao.getChatId());
     }
 
-    public ResponseEntity<StandardResponse> getUnreadChatList(
-            AppUserDetails userDetails
-            ) {
+    public ResponseEntity<StandardResponse> getUnreadChatList(AppUserDetails userDetails) {
         UserDao userDao = userRepository.findUserDaoByUserId(userDetails.getId());
         List<ChatDao> userChats = chatRepository.findChatDaosByUserOneDaoOrUserTwoDao(userDao, userDao);
         int noUnreadChats = userChats.stream().filter((userChat) -> {
             UserDao oppositeUser;
             Timestamp currentUserLastReadDate;
-            if(userDetails.getId().equals(userChat.getUserOneDao().getUserId())) {
+            if (userDetails.getId().equals(userChat.getUserOneDao().getUserId())) {
                 oppositeUser = userChat.getUserTwoDao();
                 currentUserLastReadDate = userChat.getUserOneLastRead();
             } else {
                 oppositeUser = userChat.getUserOneDao();
                 currentUserLastReadDate = userChat.getUserTwoLastRead();
             }
-            List<MessageDao> unreadMessages = messageRepository.findMessageDaosBySenderUserDaoAndDateSentGreaterThan(oppositeUser, currentUserLastReadDate);
+            List<MessageDao> unreadMessages = messageRepository.findMessageDaosBySenderUserDaoAndDateSentGreaterThan(
+                    oppositeUser,
+                    currentUserLastReadDate);
             return unreadMessages.size() > 0;
         }).toList().size();
-        StandardResponse response = StandardResponse.builder().success(true)
+        StandardResponse response = StandardResponse.builder()
+                .success(true)
                 .messages(List.of())
-                .result(
-                        List.of(noUnreadChats) // number of unread chats
-                ).build();
+                .result(List.of(noUnreadChats) // number of unread chats
+                )
+                .build();
 
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<StandardResponse> readChat(
-            AppUserDetails userDetails,
-            Integer chatId
-            ) {
+    public ResponseEntity<StandardResponse> readChat(AppUserDetails userDetails, Integer chatId) {
         ChatDao chatDao = chatRepository.findChatDaoByChatId(chatId);
-        if(userDetails.getId().equals(chatDao.getUserOneDao().getUserId())) {
+        if (userDetails.getId().equals(chatDao.getUserOneDao().getUserId())) {
             chatDao.setUserOneLastRead(Timestamp.from(Instant.now()));
         } else {
             chatDao.setUserTwoLastRead(Timestamp.from(Instant.now()));
         }
         chatRepository.save(chatDao);
-        return ResponseEntity.ok(
-                StandardResponse.builder()
-                        .success(true)
-                        .messages(List.of())
-                        .result(List.of())
-                        .build()
-        );
+        return ResponseEntity.ok(StandardResponse.builder()
+                                         .success(true)
+                                         .messages(List.of())
+                                         .result(List.of())
+                                         .build());
     }
 }

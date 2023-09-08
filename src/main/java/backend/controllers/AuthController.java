@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,16 +34,21 @@ import java.util.Map;
 @Controller
 @RequestMapping("/api/v1/auth")
 public class AuthController {
+    private final PasswordEncoder encoder;
 
-    private PasswordEncoder encoder;
+    private final UserDetailsService userDetailsService;
 
-    private UserDetailsService userDetailsService;
+    private final AuthenticationManager authManager;
 
-    private AuthenticationManager authManager;
-    private JwtService jwtService;
-    private UserRepository userRepository;
+    private final JwtService jwtService;
 
-    public AuthController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService, JwtService jwtService, UserRepository userRepository, PasswordEncoder encoder) throws Exception {
+    private final UserRepository userRepository;
+
+    public AuthController(AuthenticationManager authenticationManager,
+                          UserDetailsService userDetailsService,
+                          JwtService jwtService,
+                          UserRepository userRepository,
+                          PasswordEncoder encoder) throws Exception {
         this.authManager = authenticationManager;
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
@@ -53,54 +57,48 @@ public class AuthController {
     }
 
     @PostMapping("/sign_in")
-    public ResponseEntity<StandardResponse> login(@RequestBody UserAuthDto authDto) {
+    public ResponseEntity<StandardResponse> login(
+            @RequestBody UserAuthDto authDto) {
         try {
             UserAuthDtoValidator.builder()
                     .emailRequired(true)
                     .passwordRequired(true)
                     .emailValidationRequired(true)
-                    .build().validate(authDto);
-            Authentication auth = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authDto.getEmail(), authDto.getPassword())
-            );
+                    .build()
+                    .validate(authDto);
+            Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(authDto.getEmail(),
+                                                                                                   authDto.getPassword()));
             Map<String, Object> claimsMap = new HashMap<>();
             AppUserDetails principal = (AppUserDetails) auth.getPrincipal();
             claimsMap.put("subject", principal.getId());
             SimpleGrantedAuthority grantedAuthority = (SimpleGrantedAuthority) auth.getAuthorities().toArray()[0];
             claimsMap.put("role", grantedAuthority.getAuthority());
             String jwt = jwtService.generateToken(claimsMap);
-            return ResponseEntity.ok(
-                StandardResponse.builder()
-                    .success(true)
-                    .messages(List.of())
-                    .result(List.of(
-                        AuthTokenDto.builder()
-                            .sessionToken(jwt)
-                            .build()
-                    ))
-                    .build()
-            );
+            return ResponseEntity.ok(StandardResponse.builder()
+                                             .success(true)
+                                             .messages(List.of())
+                                             .result(List.of(AuthTokenDto.builder().sessionToken(jwt).build()))
+                                             .build());
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(
-                    HttpStatus.UNAUTHORIZED
-            ).body(StandardResponse.builder()
-                    .success(false)
-                    .messages(List.of("Bad email or password"))
-                    .result(List.of())
-                    .build());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(StandardResponse.builder()
+                                  .success(false)
+                                  .messages(List.of("Bad email or password"))
+                                  .result(List.of())
+                                  .build());
         } catch (ValidationFailedException e) {
-            return ResponseEntity.status(
-                    HttpStatus.BAD_REQUEST
-            ).body(StandardResponse.builder()
-                    .success(false)
-                    .messages(e.getFailedValidations())
-                    .result(List.of())
-                    .build());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(StandardResponse.builder()
+                                  .success(false)
+                                  .messages(e.getFailedValidations())
+                                  .result(List.of())
+                                  .build());
         }
     }
 
     @PostMapping("/sign_up")
-    public ResponseEntity<StandardResponse> register(@RequestBody UserRegisterDto registerDto) {
+    public ResponseEntity<StandardResponse> register(
+            @RequestBody UserRegisterDto registerDto) {
         try {
             UserRegisterDtoValidator.builder()
                     .emailRequired(true)
@@ -108,9 +106,10 @@ public class AuthController {
                     .firstNameRequired(true)
                     .lastNameRequired(true)
                     .emailValidationRequired(true)
-                    .build().validate(registerDto);
+                    .build()
+                    .validate(registerDto);
             UserDao userDao = userRepository.findUserDaoByEmail(registerDto.getEmail());
-            if(userDao != null) {
+            if (userDao != null) {
                 throw new ValidationFailedException(List.of("User with given email already exists"));
             }
             UserDao dao = new UserDao();
@@ -125,26 +124,14 @@ public class AuthController {
             dao.setCreatedAt(Timestamp.from(Instant.now()));
             userRepository.save(dao);
             return ResponseEntity.ok()
-                .body(
-                    StandardResponse.builder()
-                        .success(true)
-                        .messages(List.of())
-                        .result(List.of())
-                        .build()
-            );
+                    .body(StandardResponse.builder().success(true).messages(List.of()).result(List.of()).build());
         } catch (ValidationFailedException e) {
-            return ResponseEntity.status(
-                    HttpStatus.BAD_REQUEST
-            ).body(
-                StandardResponse.builder()
-                    .success(false)
-                    .messages(e.getFailedValidations())
-                    .result(List.of())
-                    .build()
-            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(StandardResponse.builder()
+                                  .success(false)
+                                  .messages(e.getFailedValidations())
+                                  .result(List.of())
+                                  .build());
         }
-
     }
-
-
 }

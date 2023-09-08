@@ -8,12 +8,11 @@ import java.util.List;
 
 public class ResponseUtil {
     public static ResponseEntity<StandardResponse> getNotImplementedResponse() {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
-                StandardResponse.builder()
-                        .success(false)
-                        .messages(List.of(HttpStatus.NOT_IMPLEMENTED.getReasonPhrase()))
-                        .result(List.of())
-                        .build()
-        );
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
+                .body(StandardResponse.builder()
+                              .success(false)
+                              .messages(List.of(HttpStatus.NOT_IMPLEMENTED.getReasonPhrase()))
+                              .result(List.of())
+                              .build());
     }
 }

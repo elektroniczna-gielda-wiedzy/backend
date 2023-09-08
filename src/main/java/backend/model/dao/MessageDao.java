@@ -15,14 +15,18 @@ public class MessageDao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "message_id")
     private Integer messageId;
+
     @ManyToOne
     @JoinColumn(name = "chat_id")
     private ChatDao chatDao;
+
     @ManyToOne
     @JoinColumn(name = "sender_id")
     private UserDao senderUserDao;
+
     @Column(name = "content")
     private String content;
+
     @Column(name = "date_sent")
     private Timestamp dateSent;
 }

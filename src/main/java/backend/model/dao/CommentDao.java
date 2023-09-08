@@ -29,7 +29,4 @@ public class CommentDao {
 
     @Column(name = "created_at")
     private Timestamp createdAt;
-
-
-
 }

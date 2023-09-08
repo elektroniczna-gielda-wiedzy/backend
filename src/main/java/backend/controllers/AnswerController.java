@@ -11,17 +11,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/entry")
 public class AnswerController {
+    private final AnswerService answerService;
 
     public AnswerController(AnswerService answerService) {
         this.answerService = answerService;
     }
 
-    private final AnswerService answerService;
-
     @GetMapping("{entry_id}/answer")
     public ResponseEntity<StandardResponse> getAnswerList(
-            @PathVariable("entry_id") Integer entryId
-            ) {
+            @PathVariable("entry_id") Integer entryId) {
         return answerService.getAnswerList(entryId);
     }
 
@@ -29,35 +27,22 @@ public class AnswerController {
     public ResponseEntity<StandardResponse> addNewAnswer(
             @PathVariable("entry_id") Integer entryId,
             @RequestBody AnswerDto answerDto,
-            @AuthenticationPrincipal AppUserDetails userDetails
-            ) {
-        return answerService.addNewAnswer(
-                entryId,
-                answerDto,
-                userDetails
-        );
+            @AuthenticationPrincipal AppUserDetails userDetails) {
+        return answerService.addNewAnswer(entryId, answerDto, userDetails);
     }
 
     @PutMapping("{entry_id}/answer/{answer_id}")
     public ResponseEntity<StandardResponse> editAnswer(
             @PathVariable("entry_id") Integer entryId,
             @PathVariable("answer_id") Integer answerId,
-            @RequestBody AnswerDto answerDto
-    ) {
-        return answerService.editAnswer(
-                entryId,
-                answerId,
-                answerDto);
+            @RequestBody AnswerDto answerDto) {
+        return answerService.editAnswer(entryId, answerId, answerDto);
     }
 
     @DeleteMapping("{entry_id}/answer/{answer_id}")
     public ResponseEntity<StandardResponse> deleteAnswer(
             @PathVariable("entry_id") Integer entryId,
-            @PathVariable("answer_id") Integer answerId
-    ) {
-        return answerService.deleteAnswer(
-                entryId,
-                answerId
-        );
+            @PathVariable("answer_id") Integer answerId) {
+        return answerService.deleteAnswer(entryId, answerId);
     }
 }

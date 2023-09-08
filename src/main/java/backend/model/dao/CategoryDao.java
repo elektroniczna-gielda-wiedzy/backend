@@ -30,5 +30,4 @@ public class CategoryDao {
 
     @OneToMany(mappedBy = "category")
     private Set<CategoryTranslation> categoryTranslations;
-
 }

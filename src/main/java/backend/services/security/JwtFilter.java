@@ -14,26 +14,24 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class JwtFilter extends OncePerRequestFilter {
-
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public JwtFilter(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         String token = request.getHeader("Authorization");
         JwtService jwtService = new JwtService();
-        if(token != null & jwtService.isValid(token)) {
+        if (token != null & jwtService.isValid(token)) {
             Claims userClaims = jwtService.getClaims(token);
             Integer userId = ((Double) userClaims.get("subject")).intValue();
             String role = (String) userClaims.get("role");

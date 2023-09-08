@@ -17,30 +17,37 @@ import java.util.List;
 @Jacksonized
 @AllArgsConstructor
 public class EntryDto {
+    @JsonProperty("author")
+    UserDto author;
 
     @JsonProperty("entry_id")
     private Integer entryId;
+
     @JsonProperty("entry_type_id")
     private Integer entryTypeId;
+
     @JsonProperty("title")
     private String title;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("content")
     private String content;
+
     @JsonProperty("created_at")
     private Date createdAt;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("image")
     private String image;
-    @JsonProperty("author")
-    UserDto author;
+
     @JsonProperty("categories")
     private List<CategoryDto> categories;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("favorite")
     private boolean favorite;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("answers")
     private List<AnswerDto> answersList;
-
 }

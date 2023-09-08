@@ -7,18 +7,17 @@ import java.util.regex.Pattern;
 import static backend.util.ExchangeAppUtils.BAD_EMAIL_ERROR;
 
 public class EmailPatternMatcher {
-
-    private List<String> acceptedEmailSuffixes;
+    private final List<String> acceptedEmailSuffixes;
 
     public EmailPatternMatcher(List<String> acceptedEmailSuffixes) {
         this.acceptedEmailSuffixes = acceptedEmailSuffixes;
     }
 
     public List<String> validate(String email) {
-        for(String suffix : acceptedEmailSuffixes) {
+        for (String suffix : acceptedEmailSuffixes) {
             Pattern pattern = Pattern.compile(suffix + "$", Pattern.CASE_INSENSITIVE);
             Matcher matcher = pattern.matcher(email);
-            if(matcher.find()) {
+            if (matcher.find()) {
                 return List.of();
             }
         }

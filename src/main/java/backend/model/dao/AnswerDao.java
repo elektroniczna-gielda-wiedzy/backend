@@ -14,7 +14,10 @@ import java.util.Set;
 public class AnswerDao {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "answer_id_sequence")
-    @SequenceGenerator(name = "answer_id_sequence", sequenceName = "entry_answer_id_sequence", allocationSize = 1, initialValue = 1000)
+    @SequenceGenerator(name = "answer_id_sequence",
+                       sequenceName = "entry_answer_id_sequence",
+                       allocationSize = 1,
+                       initialValue = 1000)
     @Column(name = "answer_id")
     private Integer answerId;
 
@@ -39,20 +42,14 @@ public class AnswerDao {
     private Boolean isTopAnswer;
 
     @ManyToMany
-    @JoinTable(
-            name = "VotedItem",
-            joinColumns = {@JoinColumn(name = "voted_item_id")},
-            inverseJoinColumns = { @JoinColumn(name = "vote_id")}
-    )
+    @JoinTable(name = "VotedItem",
+               joinColumns = {@JoinColumn(name = "voted_item_id")},
+               inverseJoinColumns = {@JoinColumn(name = "vote_id")})
     private Set<VoteDao> votes;
 
     @ManyToMany
-    @JoinTable(
-            name = "ImageAnswer",
-            joinColumns = {@JoinColumn(name = "image_item_id")},
-            inverseJoinColumns = { @JoinColumn(name = "image_id")}
-    )
+    @JoinTable(name = "ImageAnswer",
+               joinColumns = {@JoinColumn(name = "image_item_id")},
+               inverseJoinColumns = {@JoinColumn(name = "image_id")})
     private Set<ImageDao> images;
-
-
 }

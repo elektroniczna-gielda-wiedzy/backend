@@ -9,8 +9,10 @@ import lombok.Setter;
 public class UserAuthDto {
     @JsonProperty("email")
     private String email;
+
     @JsonProperty("password")
     private String password;
+
     @JsonProperty("remember_me")
     private boolean rememberMeFlag;
 }

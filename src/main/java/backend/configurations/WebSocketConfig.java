@@ -11,8 +11,8 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-
     private final JwtService jwtService;
+
     private final UserRepository userRepository;
 
     public WebSocketConfig(JwtService jwtService, UserRepository userRepository) {
@@ -29,8 +29,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry
-                .addEndpoint("/api/v1/ws")
-                .setAllowedOrigins("http://localhost:4200");
+        registry.addEndpoint("/api/v1/ws").setAllowedOrigins("http://localhost:4200");
     }
 }

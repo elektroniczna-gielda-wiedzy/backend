@@ -1,28 +1,23 @@
 package backend.repositories;
 
 import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.base64.Base64;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
-import org.yaml.snakeyaml.util.ArrayUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-
 
 @Repository
 public class ImageFileRepository implements ImageRepository {
+    public static final String IMAGES_PATH = System.getProperty("user.dir") + File.separator + "images" + File.separator;
 
     public ImageFileRepository() {
         createImagesDirIfNotExists();
     }
 
-    public static final String IMAGES_PATH = System.getProperty("user.dir") + File.separator + "images" + File.separator;
     private String createImagesDirIfNotExists() {
         try {
             Files.createDirectory(Path.of(IMAGES_PATH));
@@ -32,8 +27,6 @@ public class ImageFileRepository implements ImageRepository {
         }
         return IMAGES_PATH;
     }
-
-
 
     @Override
     public String savePicture(String base64Data, String filename) throws IOException {
@@ -53,7 +46,7 @@ public class ImageFileRepository implements ImageRepository {
 
     public boolean deletePicture(String filename) {
         File file = new File(IMAGES_PATH + filename);
-        if(file.exists()) {
+        if (file.exists()) {
             return file.delete();
         }
         return false;

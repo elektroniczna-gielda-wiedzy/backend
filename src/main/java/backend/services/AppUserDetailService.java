@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AppUserDetailService implements UserDetailsService {
-
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public AppUserDetailService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -20,7 +19,7 @@ public class AppUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDao user = userRepository.findUserDaoByEmail(username);
-        if(user == null) {
+        if (user == null) {
             throw new UsernameNotFoundException("Email not found");
         }
         return new AppUserDetails(user);

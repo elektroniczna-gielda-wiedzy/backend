@@ -9,23 +9,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class VoteService {
-
-    public ResponseEntity<StandardResponse> voteForEntry(
-            Integer entryId,
-            VoteDto voteDto) {
+    public ResponseEntity<StandardResponse> voteForEntry(Integer entryId, VoteDto voteDto) {
         return ResponseUtil.getNotImplementedResponse();
     }
 
-    public ResponseEntity<StandardResponse> setFavoriteStatus(
-            Integer entryId,
-            FavoriteSetterDto favoriteSetterDto) {
+    public ResponseEntity<StandardResponse> setFavoriteStatus(Integer entryId, FavoriteSetterDto favoriteSetterDto) {
         return ResponseUtil.getNotImplementedResponse();
     }
 
-    public ResponseEntity<StandardResponse> voteForAnswer(
-            Integer entryId,
-            Integer answerId,
-            VoteDto voteDto) {
+    public ResponseEntity<StandardResponse> voteForAnswer(Integer entryId, Integer answerId, VoteDto voteDto) {
         return ResponseUtil.getNotImplementedResponse();
     }
 }

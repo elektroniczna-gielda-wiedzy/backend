@@ -24,5 +24,4 @@ public class CategoryTranslation {
 
     @Column(name = "translation")
     private String translation;
-
 }

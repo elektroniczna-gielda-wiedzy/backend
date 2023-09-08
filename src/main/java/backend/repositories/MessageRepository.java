@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public interface MessageRepository extends JpaRepository<MessageDao, Integer> {
-
     List<MessageDao> findMessageDaosByChatDao(ChatDao chatDao);
+
     List<MessageDao> findMessageDaosBySenderUserDaoAndDateSentGreaterThan(UserDao senderUserDao, Timestamp dateSent);
 }

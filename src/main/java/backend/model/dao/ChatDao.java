@@ -1,8 +1,6 @@
 package backend.model.dao;
 
-
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,9 +15,11 @@ public class ChatDao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_id")
     private Integer chatId;
+
     @ManyToOne
     @JoinColumn(name = "user_one_id")
     private UserDao userOneDao;
+
     @ManyToOne
     @JoinColumn(name = "user_two_id")
     private UserDao userTwoDao;
@@ -29,5 +29,4 @@ public class ChatDao {
 
     @Column(name = "user_two_last_read")
     private Timestamp userTwoLastRead;
-
 }

@@ -1,7 +1,6 @@
 package backend.model;
 
 import backend.model.dao.UserDao;
-import backend.model.dto.UserDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,8 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class AppUserDetails implements UserDetails {
-
-    private UserDao userDao;
+    private final UserDao userDao;
 
     public AppUserDetails(UserDao userDao) {
         this.userDao = userDao;

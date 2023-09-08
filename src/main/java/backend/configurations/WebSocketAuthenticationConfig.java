@@ -22,6 +22,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+
 import java.util.List;
 
 @Configuration
@@ -29,6 +30,7 @@ import java.util.List;
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class WebSocketAuthenticationConfig implements WebSocketMessageBrokerConfigurer {
     private final UserRepository userRepository;
+
     private final JwtService jwtService;
 
     public WebSocketAuthenticationConfig(JwtService jwtService, UserRepository userRepository) {
@@ -41,8 +43,7 @@ public class WebSocketAuthenticationConfig implements WebSocketMessageBrokerConf
         registration.interceptors(new ChannelInterceptor() {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                StompHeaderAccessor accessor =
-                        MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     String jwtToken = accessor.getFirstNativeHeader("Authorization");
@@ -57,7 +58,9 @@ public class WebSocketAuthenticationConfig implements WebSocketMessageBrokerConf
                     List<GrantedAuthority> grantedAuthorityList = List.of(new SimpleGrantedAuthority(role));
                     UserDao userDao = userRepository.findUserDaoByUserId(userId);
                     AppUserDetails userDetails = new AppUserDetails(userDao);
-                    Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, null, grantedAuthorityList);
+                    Authentication auth = new UsernamePasswordAuthenticationToken(userDetails,
+                                                                                  null,
+                                                                                  grantedAuthorityList);
                     accessor.setUser(auth);
                 }
 
