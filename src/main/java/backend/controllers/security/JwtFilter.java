@@ -1,4 +1,4 @@
-package backend.services.security;
+package backend.controllers.security;
 
 import backend.model.AppUserDetails;
 import backend.model.dao.UserDao;
@@ -31,13 +31,13 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String token = request.getHeader("Authorization");
         JwtService jwtService = new JwtService();
-        if (token != null & jwtService.isValid(token)) {
+        if (token != null && jwtService.isValid(token)) {
             Claims userClaims = jwtService.getClaims(token);
-            Integer userId = ((Double) userClaims.get("subject")).intValue();
+            Integer userId = ((Double) userClaims.get("user")).intValue();
             String role = (String) userClaims.get("role");
             List<GrantedAuthority> grantedAuthorityList = List.of(new SimpleGrantedAuthority(role));
-            UserDao userDao = userRepository.findUserDaoByUserId(userId);
-            AppUserDetails userDetails = new AppUserDetails(userDao);
+            UserDao user = userRepository.findUserDaoByUserId(userId);
+            AppUserDetails userDetails = new AppUserDetails(user);
             Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, null, grantedAuthorityList);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }

@@ -2,7 +2,6 @@ package backend.services;
 
 import backend.model.AppUserDetails;
 import backend.model.CategoryType;
-import backend.model.StandardResponse;
 import backend.model.dao.*;
 import backend.model.dto.CategoryDto;
 import backend.model.dto.EntryDto;
@@ -12,6 +11,7 @@ import backend.repositories.CategoryRepository;
 import backend.repositories.EntryRepository;
 import backend.repositories.ImageRepository;
 import backend.repositories.UserRepository;
+import backend.rest.common.StandardBody;
 import backend.util.EntryDaoDtoConverter;
 import backend.util.ExchangeAppUtils;
 import jakarta.persistence.criteria.*;
@@ -51,7 +51,7 @@ public class EntryService {
         this.entryRepository = entryRepository;
     }
 
-    public ResponseEntity<StandardResponse> getEntryList(Map<String, String> params, AppUserDetails userDetails) {
+    public ResponseEntity<StandardBody> getEntryList(Map<String, String> params, AppUserDetails userDetails) {
         Integer userId = userDetails.getId();
 
         Session session = sessionFactory.openSession();
@@ -133,7 +133,7 @@ public class EntryService {
                 }).toList();
             }
 
-            StandardResponse response = StandardResponse.builder()
+            StandardBody response = StandardBody.builder()
                     .success(true)
                     .messages(List.of())
                     .result(entries.stream().map(entryDao -> {
@@ -146,7 +146,7 @@ public class EntryService {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(StandardResponse.builder()
+                    .body(StandardBody.builder()
                                   .success(false)
                                   .messages(List.of(e.getMessage()))
                                   .result(List.of())
@@ -173,7 +173,7 @@ public class EntryService {
         }
     }
 
-    public ResponseEntity<StandardResponse> getEntry(Integer entryId) {
+    public ResponseEntity<StandardBody> getEntry(Integer entryId) {
         try {
             EntryDao dao = entryRepository.getEntryDaoByEntryId(entryId);
             if (dao == null) {
@@ -184,14 +184,14 @@ public class EntryService {
                 throw new RuntimeException("Requested entry is deleted");
             }
 
-            return ResponseEntity.ok(StandardResponse.builder()
+            return ResponseEntity.ok(StandardBody.builder()
                                              .success(true)
                                              .messages(List.of())
                                              .result(List.of(EntryDaoDtoConverter.convertToDto(dao, true, true, true)))
                                              .build());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(StandardResponse.builder()
+                    .body(StandardBody.builder()
                                   .success(false)
                                   .messages(List.of(e.getMessage()))
                                   .result(List.of())
@@ -199,7 +199,7 @@ public class EntryService {
         }
     }
 
-    public ResponseEntity<StandardResponse> createEntry(EntryDto entryDto, AppUserDetails userDetails) {
+    public ResponseEntity<StandardBody> createEntry(EntryDto entryDto, AppUserDetails userDetails) {
         try {
             EntryDtoValidator.builder()
                     .entryTypeRequired(true)
@@ -210,7 +210,7 @@ public class EntryService {
                     .validate(entryDto);
         } catch (ValidationFailedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(StandardResponse.builder()
+                    .body(StandardBody.builder()
                                   .success(false)
                                   .messages(e.getFailedValidations())
                                   .result(List.of())
@@ -250,7 +250,7 @@ public class EntryService {
                 entryDao.setImages(Set.of(imageDao));
             }
             transaction.commit();
-            StandardResponse response = StandardResponse.builder()
+            StandardBody response = StandardBody.builder()
                     .success(true)
                     .messages(List.of())
                     .result(List.of(EntryDaoDtoConverter.convertToDto(entryDao, false, true, true)))
@@ -259,7 +259,7 @@ public class EntryService {
         } catch (Exception e) {
             transaction.rollback();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(StandardResponse.builder()
+                    .body(StandardBody.builder()
                                   .success(false)
                                   .messages(List.of(e.getMessage()))
                                   .result(List.of())
@@ -269,9 +269,7 @@ public class EntryService {
         }
     }
 
-    public ResponseEntity<StandardResponse> updateEntry(Integer entryId,
-                                                        EntryDto entryDto,
-                                                        AppUserDetails userDetails) {
+    public ResponseEntity<StandardBody> updateEntry(Integer entryId, EntryDto entryDto, AppUserDetails userDetails) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
@@ -318,7 +316,7 @@ public class EntryService {
             session.merge(entryDao);
             session.flush();
             transaction.commit();
-            StandardResponse response = StandardResponse.builder()
+            StandardBody response = StandardBody.builder()
                     .success(true)
                     .messages(List.of("Entry updated successfully"))
                     .result(List.of(EntryDaoDtoConverter.convertToDto(entryDao, false, true, true)))
@@ -327,7 +325,7 @@ public class EntryService {
         } catch (Exception e) {
             transaction.rollback();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(StandardResponse.builder()
+                    .body(StandardBody.builder()
                                   .success(false)
                                   .messages(List.of(e.getMessage()))
                                   .result(List.of())
@@ -337,7 +335,7 @@ public class EntryService {
         }
     }
 
-    public ResponseEntity<StandardResponse> deleteEntry(Integer entryId, AppUserDetails userDetails) {
+    public ResponseEntity<StandardBody> deleteEntry(Integer entryId, AppUserDetails userDetails) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
@@ -357,7 +355,7 @@ public class EntryService {
             entryDao.setIsDeleted(true);
             session.merge(entryDao);
             transaction.commit();
-            return ResponseEntity.ok(StandardResponse.builder()
+            return ResponseEntity.ok(StandardBody.builder()
                                              .success(true)
                                              .messages(List.of("Entry deleted successfully"))
                                              .result(List.of())
@@ -365,7 +363,7 @@ public class EntryService {
         } catch (Exception e) {
             transaction.rollback();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(StandardResponse.builder()
+                    .body(StandardBody.builder()
                                   .success(false)
                                   .messages(List.of(e.getMessage()))
                                   .result(List.of())

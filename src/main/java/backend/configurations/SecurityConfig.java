@@ -1,7 +1,7 @@
 package backend.configurations;
 
+import backend.controllers.security.JwtFilter;
 import backend.repositories.UserRepository;
-import backend.services.security.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,10 +43,5 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public JwtFilter jwtFilter(UserRepository userRepository) {
-        return new JwtFilter(userRepository);
     }
 }

@@ -1,4 +1,4 @@
-package backend.model;
+package backend.rest.common;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-public class StandardResponse {
+public class StandardBody {
     private boolean success;
 
     private List<String> messages;

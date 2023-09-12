@@ -1,7 +1,7 @@
 package backend.controllers;
 
-import backend.model.StandardResponse;
 import backend.model.dto.CategoryDto;
+import backend.rest.common.StandardBody;
 import backend.services.CategoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,25 +16,25 @@ public class CategoryController {
     }
 
     @GetMapping()
-    public ResponseEntity<StandardResponse> getCategoryList() {
+    public ResponseEntity<StandardBody> getCategoryList() {
         return categoryService.getCategoryList();
     }
 
     @PostMapping()
-    public ResponseEntity<StandardResponse> addCategory(
+    public ResponseEntity<StandardBody> addCategory(
             @RequestBody CategoryDto categoryDto) {
         return categoryService.addCategory(categoryDto);
     }
 
     @PutMapping("/{category_id}")
-    public ResponseEntity<StandardResponse> editCategory(
+    public ResponseEntity<StandardBody> editCategory(
             @PathVariable("category_id") Integer categoryId,
             @RequestBody CategoryDto categoryDto) {
         return categoryService.editCategory(categoryId, categoryDto);
     }
 
     @DeleteMapping("{category_id}")
-    public ResponseEntity<StandardResponse> deleteCategory(
+    public ResponseEntity<StandardBody> deleteCategory(
             @PathVariable("category_id") Integer categoryId) {
         return categoryService.deleteCategory(categoryId);
     }

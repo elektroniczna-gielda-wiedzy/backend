@@ -1,7 +1,6 @@
 package backend.services;
 
 import backend.model.AppUserDetails;
-import backend.model.StandardResponse;
 import backend.model.dao.ChatDao;
 import backend.model.dao.MessageDao;
 import backend.model.dao.UserDao;
@@ -10,6 +9,7 @@ import backend.model.dto.MessageDto;
 import backend.repositories.ChatRepository;
 import backend.repositories.MessageRepository;
 import backend.repositories.UserRepository;
+import backend.rest.common.StandardBody;
 import backend.util.ExchangeAppUtils;
 import backend.util.UserDaoDtoConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -99,7 +99,7 @@ public class ChatService {
     }
 
     //tested
-    public ResponseEntity<StandardResponse> getChatList(AppUserDetails userDetails) {
+    public ResponseEntity<StandardBody> getChatList(AppUserDetails userDetails) {
         UserDao userDao = userRepository.findUserDaoByUserId(userDetails.getId());
         List<ChatDao> chatDaos = chatRepository.findChatDaosByUserOneDaoOrUserTwoDao(userDao, userDao);
         Session session = sessionFactory.openSession();
@@ -159,7 +159,7 @@ public class ChatService {
             }).toList();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(StandardResponse.builder()
+                    .body(StandardBody.builder()
                                   .success(false)
                                   .messages(List.of(e.getMessage()))
                                   .result(List.of())
@@ -167,11 +167,11 @@ public class ChatService {
         } finally {
             session.close();
         }
-        return ResponseEntity.ok(StandardResponse.builder().success(true).messages(List.of()).result(chatDtos).build());
+        return ResponseEntity.ok(StandardBody.builder().success(true).messages(List.of()).result(chatDtos).build());
     }
 
     //tested
-    public ResponseEntity<StandardResponse> getChat(AppUserDetails userDetails, Integer chatId) {
+    public ResponseEntity<StandardBody> getChat(AppUserDetails userDetails, Integer chatId) {
         try {
             ChatDao chatDao = chatRepository.findChatDaoByChatId(chatId);
             if (!userDetails.getId().equals(chatDao.getUserTwoDao().getUserId()) && !userDetails.getId()
@@ -180,15 +180,14 @@ public class ChatService {
             }
             List<MessageDao> messages = messageRepository.findMessageDaosByChatDao(chatDao);
             List<MessageDto> messagesReturned = messages.stream()
-                    .map((message) -> MessageDto.builder()
-                            .messageId(message.getMessageId())
+                    .map((message) -> MessageDto.builder().messageId(message.getMessageId())
                             .sender(UserDaoDtoConverter.convertToDto(message.getSenderUserDao()))
                             .chatId(chatDao.getChatId())
                             .content(message.getContent())
                             .dateSent(message.getDateSent())
                             .build())
                     .toList();
-            return ResponseEntity.ok(StandardResponse.builder()
+            return ResponseEntity.ok(StandardBody.builder()
                                              .success(true)
                                              .messages(List.of())
                                              .result(List.of(ChatDto.builder()
@@ -201,7 +200,7 @@ public class ChatService {
                                              .build());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(StandardResponse.builder()
+                    .body(StandardBody.builder()
                                   .success(false)
                                   .messages(List.of(e.getMessage()))
                                   .result(List.of())
@@ -209,7 +208,7 @@ public class ChatService {
         }
     }
 
-    public ResponseEntity<StandardResponse> createChat(AppUserDetails userDetails, Integer userId) {
+    public ResponseEntity<StandardBody> createChat(AppUserDetails userDetails, Integer userId) {
         UserDao userOneDao = userRepository.findUserDaoByUserId(userDetails.getId());
         UserDao userTwoDao = userRepository.findUserDaoByUserId(userId);
         List<ChatDao> usersChats = chatRepository.findChatDaosByUserOneDaoInAndUserTwoDaoIn(List.of(userOneDao,
@@ -229,7 +228,7 @@ public class ChatService {
         return getChat(userDetails, chatDao.getChatId());
     }
 
-    public ResponseEntity<StandardResponse> getUnreadChatList(AppUserDetails userDetails) {
+    public ResponseEntity<StandardBody> getUnreadChatList(AppUserDetails userDetails) {
         UserDao userDao = userRepository.findUserDaoByUserId(userDetails.getId());
         List<ChatDao> userChats = chatRepository.findChatDaosByUserOneDaoOrUserTwoDao(userDao, userDao);
         int noUnreadChats = userChats.stream().filter((userChat) -> {
@@ -247,7 +246,7 @@ public class ChatService {
                     currentUserLastReadDate);
             return unreadMessages.size() > 0;
         }).toList().size();
-        StandardResponse response = StandardResponse.builder()
+        StandardBody response = StandardBody.builder()
                 .success(true)
                 .messages(List.of())
                 .result(List.of(noUnreadChats) // number of unread chats
@@ -257,7 +256,7 @@ public class ChatService {
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<StandardResponse> readChat(AppUserDetails userDetails, Integer chatId) {
+    public ResponseEntity<StandardBody> readChat(AppUserDetails userDetails, Integer chatId) {
         ChatDao chatDao = chatRepository.findChatDaoByChatId(chatId);
         if (userDetails.getId().equals(chatDao.getUserOneDao().getUserId())) {
             chatDao.setUserOneLastRead(Timestamp.from(Instant.now()));
@@ -265,10 +264,6 @@ public class ChatService {
             chatDao.setUserTwoLastRead(Timestamp.from(Instant.now()));
         }
         chatRepository.save(chatDao);
-        return ResponseEntity.ok(StandardResponse.builder()
-                                         .success(true)
-                                         .messages(List.of())
-                                         .result(List.of())
-                                         .build());
+        return ResponseEntity.ok(StandardBody.builder().success(true).messages(List.of()).result(List.of()).build());
     }
 }

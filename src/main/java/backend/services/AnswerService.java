@@ -1,7 +1,6 @@
 package backend.services;
 
 import backend.model.AppUserDetails;
-import backend.model.StandardResponse;
 import backend.model.dao.AnswerDao;
 import backend.model.dao.EntryDao;
 import backend.model.dao.ImageDao;
@@ -11,6 +10,7 @@ import backend.repositories.AnswerRepository;
 import backend.repositories.EntryRepository;
 import backend.repositories.ImageRepository;
 import backend.repositories.UserRepository;
+import backend.rest.common.StandardBody;
 import backend.util.AnswerDaoDtoConverter;
 import backend.util.ResponseUtil;
 import org.hibernate.Session;
@@ -52,13 +52,11 @@ public class AnswerService {
         this.imageRepository = imageRepository;
     }
 
-    public ResponseEntity<StandardResponse> getAnswerList(Integer entryId) {
+    public ResponseEntity<StandardBody> getAnswerList(Integer entryId) {
         return ResponseUtil.getNotImplementedResponse();
     }
 
-    public ResponseEntity<StandardResponse> addNewAnswer(Integer entryId,
-                                                         AnswerDto answerDto,
-                                                         AppUserDetails userDetails) {
+    public ResponseEntity<StandardBody> addNewAnswer(Integer entryId, AnswerDto answerDto, AppUserDetails userDetails) {
         //List<String> errors = RequestValidator.validateAnswerAdding(answerDto);
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
@@ -98,14 +96,14 @@ public class AnswerService {
             newAnswer.setEntry(entryDao);
             transaction.commit();
 
-            return ResponseEntity.ok(StandardResponse.builder()
+            return ResponseEntity.ok(StandardBody.builder()
                                              .success(true)
                                              .messages(List.of())
                                              .result(List.of(AnswerDaoDtoConverter.convertToDto(newAnswer)))
                                              .build());
         } catch (Exception e) {
             transaction.rollback();
-            return ResponseEntity.status(BAD_REQUEST).body(StandardResponse.builder().success(false)
+            return ResponseEntity.status(BAD_REQUEST).body(StandardBody.builder().success(false)
                                                                    //.messages(errors)
                                                                    .result(List.of()).build());
         } finally {
@@ -113,11 +111,11 @@ public class AnswerService {
         }
     }
 
-    public ResponseEntity<StandardResponse> editAnswer(Integer entryId, Integer answerId, AnswerDto answerDto) {
+    public ResponseEntity<StandardBody> editAnswer(Integer entryId, Integer answerId, AnswerDto answerDto) {
         return ResponseUtil.getNotImplementedResponse();
     }
 
-    public ResponseEntity<StandardResponse> deleteAnswer(Integer entryId, Integer answerId) {
+    public ResponseEntity<StandardBody> deleteAnswer(Integer entryId, Integer answerId) {
         return ResponseUtil.getNotImplementedResponse();
     }
 }

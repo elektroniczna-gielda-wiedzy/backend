@@ -1,8 +1,8 @@
 package backend.controllers;
 
 import backend.model.AppUserDetails;
-import backend.model.StandardResponse;
 import backend.model.dto.AnswerDto;
+import backend.rest.common.StandardBody;
 import backend.services.AnswerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,13 +18,13 @@ public class AnswerController {
     }
 
     @GetMapping("{entry_id}/answer")
-    public ResponseEntity<StandardResponse> getAnswerList(
+    public ResponseEntity<StandardBody> getAnswerList(
             @PathVariable("entry_id") Integer entryId) {
         return answerService.getAnswerList(entryId);
     }
 
     @PostMapping("{entry_id}/answer")
-    public ResponseEntity<StandardResponse> addNewAnswer(
+    public ResponseEntity<StandardBody> addNewAnswer(
             @PathVariable("entry_id") Integer entryId,
             @RequestBody AnswerDto answerDto,
             @AuthenticationPrincipal AppUserDetails userDetails) {
@@ -32,7 +32,7 @@ public class AnswerController {
     }
 
     @PutMapping("{entry_id}/answer/{answer_id}")
-    public ResponseEntity<StandardResponse> editAnswer(
+    public ResponseEntity<StandardBody> editAnswer(
             @PathVariable("entry_id") Integer entryId,
             @PathVariable("answer_id") Integer answerId,
             @RequestBody AnswerDto answerDto) {
@@ -40,7 +40,7 @@ public class AnswerController {
     }
 
     @DeleteMapping("{entry_id}/answer/{answer_id}")
-    public ResponseEntity<StandardResponse> deleteAnswer(
+    public ResponseEntity<StandardBody> deleteAnswer(
             @PathVariable("entry_id") Integer entryId,
             @PathVariable("answer_id") Integer answerId) {
         return answerService.deleteAnswer(entryId, answerId);

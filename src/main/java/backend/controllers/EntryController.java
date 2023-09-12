@@ -1,8 +1,8 @@
 package backend.controllers;
 
 import backend.model.AppUserDetails;
-import backend.model.StandardResponse;
 import backend.model.dto.EntryDto;
+import backend.rest.common.StandardBody;
 import backend.services.EntryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,27 +20,27 @@ public class EntryController {
     }
 
     @GetMapping()
-    public ResponseEntity<StandardResponse> getEntryList(
+    public ResponseEntity<StandardBody> getEntryList(
             @AuthenticationPrincipal AppUserDetails userDetails,
             @RequestParam Map<String, String> params) {
         return entryService.getEntryList(params, userDetails);
     }
 
     @GetMapping("/{entry_id}")
-    public ResponseEntity<StandardResponse> getEntry(
+    public ResponseEntity<StandardBody> getEntry(
             @PathVariable("entry_id") Integer entryId) {
         return entryService.getEntry(entryId);
     }
 
     @PostMapping()
-    public ResponseEntity<StandardResponse> createEntry(
+    public ResponseEntity<StandardBody> createEntry(
             @AuthenticationPrincipal AppUserDetails userDetails,
             @RequestBody EntryDto entryDto) {
         return entryService.createEntry(entryDto, userDetails);
     }
 
     @PutMapping("/{entry_id}")
-    public ResponseEntity<StandardResponse> updateEntry(
+    public ResponseEntity<StandardBody> updateEntry(
             @AuthenticationPrincipal AppUserDetails userDetails,
             @PathVariable("entry_id") Integer entryId,
             @RequestBody EntryDto entryDto) {
@@ -48,7 +48,7 @@ public class EntryController {
     }
 
     @DeleteMapping("/{entry_id}")
-    public ResponseEntity<StandardResponse> deleteEntry(
+    public ResponseEntity<StandardBody> deleteEntry(
             @AuthenticationPrincipal AppUserDetails userDetails,
             @PathVariable("entry_id") Integer entryId) {
         return entryService.deleteEntry(entryId, userDetails);

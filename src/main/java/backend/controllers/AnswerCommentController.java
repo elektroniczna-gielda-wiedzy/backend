@@ -1,7 +1,7 @@
 package backend.controllers;
 
-import backend.model.StandardResponse;
 import backend.model.dto.CommentDto;
+import backend.rest.common.StandardBody;
 import backend.services.AnswerCommentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,7 @@ public class AnswerCommentController {
     }
 
     @PostMapping("/{entry_id}/answer/{answer_id}/comment")
-    public ResponseEntity<StandardResponse> addCommentToAnswer(
+    public ResponseEntity<StandardBody> addCommentToAnswer(
             @PathVariable("entry_id") Integer entryId,
             @PathVariable("answer_id") Integer answerId,
             @RequestBody CommentDto commentDto) {
@@ -24,7 +24,7 @@ public class AnswerCommentController {
     }
 
     @PutMapping("/{entry_id}/answer/{answer_id}/comment/{comment_id}")
-    public ResponseEntity<StandardResponse> editComment(
+    public ResponseEntity<StandardBody> editComment(
             @PathVariable("entry_id") Integer entryId,
             @PathVariable("answer_id") Integer answerId,
             @PathVariable("comment_id") Integer commentId,
@@ -33,7 +33,7 @@ public class AnswerCommentController {
     }
 
     @DeleteMapping("/{entry_id}/answer/{answer_id}/comment/{comment_id}")
-    public ResponseEntity<StandardResponse> deleteComment(
+    public ResponseEntity<StandardBody> deleteComment(
             @PathVariable("entry_id") Integer entryId,
             @PathVariable("answer_id") Integer answerId,
             @PathVariable("comment_id") Integer commentId) {
