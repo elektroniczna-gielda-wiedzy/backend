@@ -7,7 +7,7 @@ import backend.repositories.ImageRepository;
 public class AnswerDaoDtoConverter {
     public static AnswerDto convertToDto(AnswerDao answerDao) {
         return AnswerDto.builder()
-                .answerId(answerDao.getAnswerId())
+                .answerId(answerDao.getId())
                 .author(UserDaoDtoConverter.convertToDto(answerDao.getUser()))
                 .content(answerDao.getContent())
                 .createdAt(answerDao.getCreatedAt())

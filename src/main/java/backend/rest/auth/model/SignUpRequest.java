@@ -1,4 +1,4 @@
-package backend.rest.auth.signup;
+package backend.rest.auth.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;

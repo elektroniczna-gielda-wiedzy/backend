@@ -56,7 +56,7 @@ public class WebSocketAuthenticationConfig implements WebSocketMessageBrokerConf
                     Integer userId = ((Double) userClaims.get("subject")).intValue();
                     String role = (String) userClaims.get("role");
                     List<GrantedAuthority> grantedAuthorityList = List.of(new SimpleGrantedAuthority(role));
-                    UserDao userDao = userRepository.findUserDaoByUserId(userId);
+                    UserDao userDao = userRepository.findById(userId).get();
                     AppUserDetails userDetails = new AppUserDetails(userDao);
                     Authentication auth = new UsernamePasswordAuthenticationToken(userDetails,
                                                                                   null,

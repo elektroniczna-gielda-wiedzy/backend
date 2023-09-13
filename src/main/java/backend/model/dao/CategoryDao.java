@@ -13,7 +13,7 @@ public class CategoryDao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
-    private Integer categoryId;
+    private Integer id;
 
     @Column(name = "type")
     private CategoryType categoryType;

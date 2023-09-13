@@ -13,8 +13,6 @@ import backend.repositories.ImageRepository;
 import backend.repositories.UserRepository;
 import backend.rest.common.StandardBody;
 import backend.util.EntryDaoDtoConverter;
-import backend.util.ExchangeAppUtils;
-import jakarta.persistence.criteria.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -25,7 +23,13 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
+
+import static backend.model.dao.EntryDao.*;
+import static org.springframework.data.jpa.domain.Specification.where;
 
 @Service
 public class EntryService {
@@ -51,152 +55,52 @@ public class EntryService {
         this.entryRepository = entryRepository;
     }
 
-    public ResponseEntity<StandardBody> getEntryList(Map<String, String> params, AppUserDetails userDetails) {
-        Integer userId = userDetails.getId();
-
-        Session session = sessionFactory.openSession();
-        try {
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<EntryDao> criteriaQuery = criteriaBuilder.createQuery(EntryDao.class);
-            Root<EntryDao> root = criteriaQuery.from(EntryDao.class);
-            List<Predicate> predicateList = new ArrayList<>();
-
-            Predicate isNotDeleted = criteriaBuilder.equal(root.get("isDeleted"), false);
-            predicateList.add(isNotDeleted);
-
-            if (params.containsKey("query")) {
-                //TODO
-                String query = "%" + params.get("query") + "%";
-                Predicate contentContainsQuery = criteriaBuilder.like(root.get("content"), query);
-                Predicate titleContainsQuery = criteriaBuilder.like(root.get("title"), query);
-                Predicate criteriaFulfilled = criteriaBuilder.or(contentContainsQuery, titleContainsQuery);
-                predicateList.add(criteriaFulfilled);
-            }
-            if (params.containsKey("type")) {
-                Predicate typeMatchesEntry = criteriaBuilder.equal(root.get("entryType"),
-                                                                   Integer.parseInt(params.get("type")));
-                predicateList.add(typeMatchesEntry);
-            }
-
-            if (params.containsKey("author")) {
-                Predicate isAuthoredBy = criteriaBuilder.equal(root.get("author"),
-                                                               Integer.parseInt(params.get("author")));
-                predicateList.add(isAuthoredBy);
-            }
-
-            if (params.containsKey("order")) {
-                if (params.get("order").equalsIgnoreCase("ASC")) {
-                    criteriaQuery.orderBy(criteriaBuilder.asc(root.get("createdAt")));
-                }
-                if (params.get("order").equalsIgnoreCase("DESC")) {
-                    criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createdAt")));
-                }
-            }
-
-            if (params.containsKey("favorites") && Boolean.parseBoolean(params.get("favorites"))) {
-                //TODO
-                Join<EntryDao, UserDao> entryDaoUserDaoJoin = root.join("likedBy");
-
-                Predicate favoPredicate = criteriaBuilder.equal(entryDaoUserDaoJoin.get("userId"), userId);
-                predicateList.add(favoPredicate);
-            }
-
-            Predicate concatPredicate = predicateList.get(0);
-            for (int i = 1; i < predicateList.size(); i++) {
-                concatPredicate = criteriaBuilder.and(concatPredicate, predicateList.get(i));
-            }
-            criteriaQuery.where(concatPredicate);
-            List<EntryDao> entries = session.createQuery(criteriaQuery).getResultList();
-
-            if (params.containsKey("category_ids")) {
-                List<Integer> categoriesIds = ExchangeAppUtils.convertCategoriesStrToList(params.get("category_ids"));
-                Set<CategoryDao> categories = categoryRepository.getCategoryDaosByCategoryIdIsIn(categoriesIds);
-                List<Integer> fieldsIds = categories.stream()
-                        .filter(category -> category.getCategoryType() == CategoryType.FIELD)
-                        .map(CategoryDao::getCategoryId)
-                        .toList();
-                List<Integer> departamentsIds = categories.stream()
-                        .filter(category -> category.getCategoryType() == CategoryType.DEPARTAMENT)
-                        .map(CategoryDao::getCategoryId)
-                        .toList();
-
-                entries = entries.stream().filter(entry -> {
-                    boolean matchFields = fieldsIds.isEmpty() || entry.getCategories()
-                            .stream()
-                            .filter(category -> category.getCategoryType() == CategoryType.FIELD)
-                            .anyMatch(category -> fieldsIds.contains(category.getCategoryId()));
-                    boolean matchDepartaments = departamentsIds.isEmpty() || entry.getCategories()
-                            .stream()
-                            .filter(category -> category.getCategoryType() == CategoryType.DEPARTAMENT)
-                            .anyMatch(category -> departamentsIds.contains(category.getCategoryId()));
-                    return matchFields && matchDepartaments;
-                }).toList();
-            }
-
-            StandardBody response = StandardBody.builder()
-                    .success(true)
-                    .messages(List.of())
-                    .result(entries.stream().map(entryDao -> {
-                        EntryDto result = EntryDaoDtoConverter.convertToDto(entryDao, false, false, false);
-                        result.setFavorite(isEntryFavorite(userId, entryDao));
-                        return result;
-                    }).toList())
-                    .build();
-
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(StandardBody.builder()
-                                  .success(false)
-                                  .messages(List.of(e.getMessage()))
-                                  .result(List.of())
-                                  .build());
-        } finally {
-            session.close();
+    public EntryDao getEntry(Integer entryId) {
+        Optional<EntryDao> entryDao = this.entryRepository.findById(entryId);
+        if (entryDao.isEmpty()) {
+            throw new GenericServiceException(String.format("Entry with id = %d does not exist", entryId));
         }
+
+        EntryDao entry = entryDao.get();
+        if (entry.getIsDeleted()) {
+            throw new GenericServiceException(String.format("Entry with id = %d is deleted", entryId));
+        }
+
+        return entry;
     }
 
-    private boolean isEntryFavorite(Integer userId, EntryDao entry) {
-        Session session = sessionFactory.openSession();
-        try {
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<UserDao> criteriaQuery = criteriaBuilder.createQuery(UserDao.class);
-            Root<UserDao> userDaoRoot = criteriaQuery.from(UserDao.class);
-            Predicate userIdPredicate = criteriaBuilder.equal(userDaoRoot.get("userId"), userId);
-            criteriaQuery.where(userIdPredicate);
-            UserDao user = session.createQuery(criteriaQuery).getSingleResult();
-            return user.getFavorites()
+    public List<EntryDao> getEntries(String query, Integer type, Integer author, Integer user,
+                                     List<Integer> categories) {
+        // TODO: Implement ordering.
+        List<EntryDao> entries = this.entryRepository.findAll(where(
+                (titleContains(query).or(contentContains(query)))
+                .and(hasType(type))
+                .and(hasAuthor(author))
+                .and(favoriteBy(user)))
+        );
+
+        // TODO: To rewrite.
+        Set<CategoryDao> cats = categoryRepository.getCategoryDaosByIdIsIn(categories);
+        List<Integer> fieldsIds = cats.stream()
+                .filter(category -> category.getCategoryType() == CategoryType.FIELD)
+                .map(CategoryDao::getId)
+                .toList();
+        List<Integer> departmentsIds = cats.stream()
+                .filter(category -> category.getCategoryType() == CategoryType.DEPARTMENT)
+                .map(CategoryDao::getId)
+                .toList();
+
+        return entries.stream().filter(entry -> {
+            boolean matchFields = fieldsIds.isEmpty() || entry.getCategories()
                     .stream()
-                    .anyMatch(favoEntry -> favoEntry.getEntryId().equals(entry.getEntryId()));
-        } finally {
-            session.close();
-        }
-    }
-
-    public ResponseEntity<StandardBody> getEntry(Integer entryId) {
-        try {
-            EntryDao dao = entryRepository.getEntryDaoByEntryId(entryId);
-            if (dao == null) {
-                throw new RuntimeException("Requested entry does not exist");
-            }
-
-            if (dao.getIsDeleted()) {
-                throw new RuntimeException("Requested entry is deleted");
-            }
-
-            return ResponseEntity.ok(StandardBody.builder()
-                                             .success(true)
-                                             .messages(List.of())
-                                             .result(List.of(EntryDaoDtoConverter.convertToDto(dao, true, true, true)))
-                                             .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(StandardBody.builder()
-                                  .success(false)
-                                  .messages(List.of(e.getMessage()))
-                                  .result(List.of())
-                                  .build());
-        }
+                    .filter(category -> category.getCategoryType() == CategoryType.FIELD)
+                    .anyMatch(category -> fieldsIds.contains(category.getId()));
+            boolean matchDepartments = departmentsIds.isEmpty() || entry.getCategories()
+                    .stream()
+                    .filter(category -> category.getCategoryType() == CategoryType.DEPARTMENT)
+                    .anyMatch(category -> departmentsIds.contains(category.getId()));
+            return matchFields && matchDepartments;
+        }).toList();
     }
 
     public ResponseEntity<StandardBody> createEntry(EntryDto entryDto, AppUserDetails userDetails) {
@@ -221,20 +125,20 @@ public class EntryService {
         Transaction transaction = session.beginTransaction();
         try {
 
-            UserDao user = userRepository.findUserDaoByUserId(userDetails.getId());
+            UserDao user = userRepository.findById(userDetails.getId()).get();
 
             EntryDao entryDao = new EntryDao();
             EntryTypeDao entryType = new EntryTypeDao();
-            entryType.setEntryTypeId(entryDto.getEntryTypeId());
-            entryDao.setEntryType(entryType);
+            entryType.setId(entryDto.getEntryTypeId());
+            entryDao.setType(entryType);
             entryDao.setTitle(entryDto.getTitle());
             entryDao.setContent(entryDto.getContent());
             entryDao.setCreatedAt(Timestamp.from(Instant.now()));
             entryDao.setAuthor(user);
-            Set<CategoryDao> categories = categoryRepository.getCategoryDaosByCategoryIdIsIn(entryDto.getCategories()
-                                                                                                     .stream()
-                                                                                                     .map(CategoryDto::getCategoryId)
-                                                                                                     .toList());
+            Set<CategoryDao> categories = categoryRepository.getCategoryDaosByIdIsIn(entryDto.getCategories()
+                                                                                             .stream()
+                                                                                             .map(CategoryDto::getCategoryId)
+                                                                                             .toList());
             entryDao.setCategories(categories);
 
             session.persist(entryDao);
@@ -244,7 +148,7 @@ public class EntryService {
                 imageDao.setImage(imageRepository.savePicture(entryDto.getImage(),
                                                               String.format("image-%d-%d-%d.jpg",
                                                                             userDetails.getId(),
-                                                                            entryDao.getEntryId(),
+                                                                            entryDao.getId(),
                                                                             new Random().nextInt(10000))));
                 session.persist(imageDao);
                 entryDao.setImages(Set.of(imageDao));
@@ -273,16 +177,17 @@ public class EntryService {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
-            EntryDao entryDao = entryRepository.getEntryDaoByEntryId(entryId);
-            if (entryDao == null) {
+            Optional<EntryDao> entry = entryRepository.findById(entryId);
+            if (entry.isEmpty()) {
                 throw new RuntimeException("Requested entry does not exist");
             }
+            EntryDao entryDao = entry.get();
 
             if (entryDao.getIsDeleted()) {
                 throw new RuntimeException("Requested entry is deleted");
             }
 
-            if (!entryDao.getAuthor().getUserId().equals(userDetails.getId()) && !userDetails.getAuthorities()
+            if (!entryDao.getAuthor().getId().equals(userDetails.getId()) && !userDetails.getAuthorities()
                     .contains(new SimpleGrantedAuthority("ADMIN"))) {
                 throw new RuntimeException("You are not allowed to update this entry");
             }
@@ -291,10 +196,10 @@ public class EntryService {
             entryDao.setContent(Optional.ofNullable(entryDto.getContent()).orElse(entryDao.getContent()));
             entryDao.setUpdatedAt(Timestamp.from(Instant.now()));
             if (entryDto.getCategories() != null) {
-                Set<CategoryDao> categories = categoryRepository.getCategoryDaosByCategoryIdIsIn(entryDto.getCategories()
-                                                                                                         .stream()
-                                                                                                         .map(CategoryDto::getCategoryId)
-                                                                                                         .toList());
+                Set<CategoryDao> categories = categoryRepository.getCategoryDaosByIdIsIn(entryDto.getCategories()
+                                                                                                 .stream()
+                                                                                                 .map(CategoryDto::getCategoryId)
+                                                                                                 .toList());
                 entryDao.setCategories(categories);
             }
 
@@ -308,7 +213,7 @@ public class EntryService {
                 imageDao.setImage(imageRepository.savePicture(entryDto.getImage(),
                                                               String.format("image-%d-%d-%d.jpg",
                                                                             userDetails.getId(),
-                                                                            entryDao.getEntryId(),
+                                                                            entryDao.getId(),
                                                                             new Random().nextInt(10000))));
                 session.persist(imageDao);
                 entryDao.setImages(Set.of(imageDao));
@@ -339,16 +244,17 @@ public class EntryService {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         try {
-            EntryDao entryDao = entryRepository.getEntryDaoByEntryId(entryId);
-            if (entryDao == null) {
+            Optional<EntryDao> entry = entryRepository.findById(entryId);
+            if (entry.isEmpty()) {
                 throw new RuntimeException("Requested entry does not exist");
             }
+            EntryDao entryDao = entry.get();
 
             if (entryDao.getIsDeleted()) {
                 throw new RuntimeException("Requested entry is already deleted");
             }
 
-            if (!entryDao.getAuthor().getUserId().equals(userDetails.getId()) && !userDetails.getAuthorities()
+            if (!entryDao.getAuthor().getId().equals(userDetails.getId()) && !userDetails.getAuthorities()
                     .contains(new SimpleGrantedAuthority("ADMIN"))) {
                 throw new RuntimeException("You are not allowed to delete this entry");
             }

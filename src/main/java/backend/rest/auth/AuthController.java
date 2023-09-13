@@ -1,9 +1,14 @@
-package backend.rest.auth.signin;
+package backend.rest.auth;
 
 import backend.model.AppUserDetails;
+import backend.rest.auth.model.SignInRequest;
+import backend.rest.auth.model.SignInResult;
+import backend.rest.auth.model.SignUpRequest;
 import backend.rest.common.Response;
 import backend.rest.common.StandardBody;
+import backend.services.GenericServiceException;
 import backend.services.JwtService;
+import backend.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,30 +18,36 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
-@RequestMapping("/api/v1/auth/sign_in")
-public class SignInController {
+@RestController
+@RequestMapping("/api/v1/auth")
+public class AuthController {
+    private final UserService userService;
+
     private final AuthenticationManager authManager;
 
     private final JwtService jwtService;
 
-    public SignInController(AuthenticationManager authenticationManager, JwtService jwtService) {
+    public AuthController(UserService userService, AuthenticationManager authenticationManager, JwtService jwtService) {
+        this.userService = userService;
         this.authManager = authenticationManager;
         this.jwtService = jwtService;
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> sign_in(@Valid @RequestBody SignInRequest request) {
+    @PostMapping(path = "/sign_in", consumes = MediaType.APPLICATION_JSON_VALUE,
+                 produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StandardBody> sign_in(@Valid @RequestBody
+                                                SignInRequest request) {
         Authentication auth;
+
         try {
             auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),
                                                                                     request.getPassword()));
@@ -58,6 +69,29 @@ public class SignInController {
         return Response.builder()
                 .httpStatusCode(HttpStatus.CREATED)
                 .result(List.of(new SignInResult(jwt)))
+                .build();
+    }
+
+    @PostMapping(path = "/sign_up", consumes = MediaType.APPLICATION_JSON_VALUE,
+                 produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StandardBody> sign_up(@Valid
+                                                @RequestBody
+                                                SignUpRequest request) {
+
+        try {
+            this.userService.register(request.getEmail(),
+                                      request.getPassword(),
+                                      request.getFirstName(),
+                                      request.getLastName());
+        } catch (GenericServiceException exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+
+        return Response.builder()
+                .httpStatusCode(HttpStatus.CREATED)
                 .build();
     }
 }

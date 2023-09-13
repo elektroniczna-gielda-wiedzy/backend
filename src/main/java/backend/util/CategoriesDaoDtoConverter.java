@@ -6,10 +6,10 @@ import backend.model.dto.CategoryDto;
 public class CategoriesDaoDtoConverter {
     public static CategoryDto convertToDto(CategoryDao categoryDao) {
         return CategoryDto.builder()
-                .categoryId(categoryDao.getCategoryId())
+                .categoryId(categoryDao.getId())
                 .categoryType(categoryDao.getCategoryType().ordinal())
                 .parentId(categoryDao.getParentCategory() != null ? categoryDao.getParentCategory()
-                        .getCategoryId() : null)
+                        .getId() : null)
                 .names(categoryDao.getCategoryTranslations()
                                .stream()
                                .map(CategoryTranslationDaoDtoConverter::convertToDto)

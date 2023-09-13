@@ -12,7 +12,7 @@ public class LanguageDao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "language_id")
-    private Integer languageId;
+    private Integer id;
 
     @Column(name = "name")
     private String name;

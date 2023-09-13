@@ -6,7 +6,7 @@ import backend.model.dto.UserDto;
 public class UserDaoDtoConverter {
     public static UserDto convertToDto(UserDao userDao) {
         return UserDto.builder()
-                .userId(userDao.getUserId())
+                .userId(userDao.getId())
                 .firstName(userDao.getFirstName())
                 .lastName(userDao.getLastName())
                 .build();

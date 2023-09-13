@@ -28,7 +28,7 @@ public class AppUserDetails implements UserDetails {
     }
 
     public Integer getId() {
-        return userDao.getUserId();
+        return userDao.getId();
     }
 
     @Override

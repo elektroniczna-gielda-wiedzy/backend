@@ -1,4 +1,4 @@
-package backend.rest.auth.signin;
+package backend.rest.auth.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

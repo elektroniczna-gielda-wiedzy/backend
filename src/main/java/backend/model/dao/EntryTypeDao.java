@@ -12,7 +12,7 @@ public class EntryTypeDao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "entry_type_id")
-    private Integer entryTypeId;
+    private Integer id;
 
     @Column(name = "name")
     private String name;

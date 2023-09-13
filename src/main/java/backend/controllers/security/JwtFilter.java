@@ -36,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
             Integer userId = ((Double) userClaims.get("user")).intValue();
             String role = (String) userClaims.get("role");
             List<GrantedAuthority> grantedAuthorityList = List.of(new SimpleGrantedAuthority(role));
-            UserDao user = userRepository.findUserDaoByUserId(userId);
+            UserDao user = userRepository.findById(userId).get();
             AppUserDetails userDetails = new AppUserDetails(user);
             Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, null, grantedAuthorityList);
             SecurityContextHolder.getContext().setAuthentication(auth);

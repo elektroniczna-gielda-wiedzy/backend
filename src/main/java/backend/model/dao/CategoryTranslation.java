@@ -12,7 +12,7 @@ public class CategoryTranslation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_translation_id")
-    private Integer categoryTranslationId;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "category_id")

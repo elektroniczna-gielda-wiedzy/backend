@@ -9,5 +9,5 @@ import java.util.Set;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<CategoryDao, Integer> {
-    Set<CategoryDao> getCategoryDaosByCategoryIdIsIn(Collection<Integer> categoryId);
+    Set<CategoryDao> getCategoryDaosByIdIsIn(Collection<Integer> categoryId);
 }

@@ -66,7 +66,7 @@ public class AnswerService {
             //      throw new RequestValidationException("Request validation error");
             //}
 
-            EntryDao entryDao = entryRepository.getEntryDaoByEntryId(entryId);
+            EntryDao entryDao = entryRepository.findById(entryId).get();
             AnswerDao newAnswer = new AnswerDao();
             newAnswer.setIsTopAnswer(false);
 
@@ -82,7 +82,7 @@ public class AnswerService {
                     imageDao.setImage(imageRepository.savePicture(answerDto.getImage(),
                                                                   String.format("image-%d-%d-%d.jpg",
                                                                                 userDetails.getId(),
-                                                                                entryDao.getEntryId(),
+                                                                                entryDao.getId(),
                                                                                 new Random().nextInt(10000))));
                 } catch (IOException e) {
                     //errors.add("Image could not be saved");
@@ -91,7 +91,7 @@ public class AnswerService {
                 newAnswer.setImages(Set.of(imageDao));
                 session.persist(imageDao);
             }
-            UserDao userDao = userRepository.findUserDaoByUserId(userDetails.getId());
+            UserDao userDao = userRepository.findById(userDetails.getId()).get();
             newAnswer.setUser(userDao);
             newAnswer.setEntry(entryDao);
             transaction.commit();

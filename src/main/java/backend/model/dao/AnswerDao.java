@@ -19,7 +19,7 @@ public class AnswerDao {
                        allocationSize = 1,
                        initialValue = 1000)
     @Column(name = "answer_id")
-    private Integer answerId;
+    private Integer id;
 
     @JoinColumn(name = "entry_id")
     @ManyToOne

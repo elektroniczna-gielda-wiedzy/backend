@@ -1,10 +1,14 @@
 package backend.model.dao;
 
+import backend.model.CategoryType;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.Join;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -19,7 +23,7 @@ public class EntryDao {
                        allocationSize = 1,
                        initialValue = 1000)
     @Column(name = "entry_id")
-    private Integer entryId;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -27,7 +31,7 @@ public class EntryDao {
 
     @ManyToOne
     @JoinColumn(name = "entry_type_id")
-    private EntryTypeDao entryType;
+    private EntryTypeDao type;
 
     @Column(name = "title")
     private String title;
@@ -70,4 +74,42 @@ public class EntryDao {
 
     @OneToMany(mappedBy = "entry")
     private Set<AnswerDao> answers;
+
+    public static Specification<EntryDao> titleContains(String query) {
+        if (query == null) {
+            return (entry, cq, cb) -> cb.conjunction();
+        }
+        return (entry, cq, cb) -> cb.like(entry.get("title"), "%" + query + "%");
+    }
+
+    public static Specification<EntryDao> contentContains(String query) {
+        if (query == null) {
+            return (entry, cq, cb) -> cb.conjunction();
+        }
+        return (entry, cq, cb) -> cb.like(entry.get("content"), "%" + query + "%");
+    }
+
+    public static Specification<EntryDao> hasType(Integer type) {
+        if (type == null) {
+            return (entry, cq, cb) -> cb.conjunction();
+        }
+        return (entry, cq, cb) -> cb.equal(entry.get("type"), type);
+    }
+
+    public static Specification<EntryDao> hasAuthor(Integer author) {
+        if (author == null) {
+            return (entry, cq, cb) -> cb.conjunction();
+        }
+        return (entry, cq, cb) -> cb.equal(entry.get("author"), author);
+    }
+
+    public static Specification<EntryDao> favoriteBy(Integer user) {
+        if (user == null) {
+            return (entry, cq, cb) -> cb.conjunction();
+        }
+        return (entry, cq, cb) -> {
+            Join<EntryDao, UserDao> entryUser = entry.join("likedBy");
+            return cb.equal(entryUser.get("id"), user);
+        };
+    }
 }

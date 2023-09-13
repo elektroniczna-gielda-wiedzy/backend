@@ -15,8 +15,8 @@ public class EntryDaoDtoConverter {
                                         boolean includeImage) {
 
         EntryDto.EntryDtoBuilder builder = EntryDto.builder()
-                .entryId(entryDao.getEntryId())
-                .entryTypeId(entryDao.getEntryType().getEntryTypeId())
+                .entryId(entryDao.getId())
+                .entryTypeId(entryDao.getType().getId())
                 .title(entryDao.getTitle());
         if (includeContent) {
             builder.content(entryDao.getContent());

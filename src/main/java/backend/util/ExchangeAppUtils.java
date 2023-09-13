@@ -19,7 +19,7 @@ public class ExchangeAppUtils {
     }
 
     public static UserDao getOppositeUser(Integer currentUserId, ChatDao chatDao) {
-        if (currentUserId.equals(chatDao.getUserOneDao().getUserId())) {
+        if (currentUserId.equals(chatDao.getUserOneDao().getId())) {
             return chatDao.getUserTwoDao();
         } else {
             return chatDao.getUserOneDao();
@@ -27,7 +27,7 @@ public class ExchangeAppUtils {
     }
 
     public static UserDao getCurrentUserDao(Integer currentUserId, ChatDao chatDao) {
-        if (currentUserId.equals(chatDao.getUserOneDao().getUserId())) {
+        if (currentUserId.equals(chatDao.getUserOneDao().getId())) {
             return chatDao.getUserOneDao();
         } else {
             return chatDao.getUserTwoDao();
@@ -35,7 +35,7 @@ public class ExchangeAppUtils {
     }
 
     public static Timestamp getCurrentUserLastRead(Integer currentUserId, ChatDao chatDao) {
-        if (currentUserId.equals(chatDao.getUserOneDao().getUserId())) {
+        if (currentUserId.equals(chatDao.getUserOneDao().getId())) {
             return chatDao.getUserOneLastRead();
         } else {
             return chatDao.getUserTwoLastRead();
