@@ -54,16 +54,23 @@ public class EntryDto {
     @JsonProperty("answers")
     private List<AnswerDto> answers;
 
-    public static EntryDto buildFromModel(EntryDao entry) {
-        return EntryDto.builder()
+    public static EntryDto buildFromModel(EntryDao entry, boolean content, boolean answers) {
+        EntryDtoBuilder builder = EntryDto.builder()
                 .entryId(entry.getId())
                 .entryTypeId(entry.getType().getId())
                 .title(entry.getTitle())
                 .author(UserDto.buildFromModel(entry.getAuthor()))
-                .content(entry.getContent())
                 .createdAt(entry.getCreatedAt())
-                .categories(entry.getCategories().stream().map(CategoryDto::buildFromModel).toList())
-                .answers(entry.getAnswers().stream().map(AnswerDto::buildFromModel).toList())
-                .build();
+                .categories(entry.getCategories().stream().map(CategoryDto::buildFromModel).toList());
+
+        if (content) {
+            builder.content(entry.getContent());
+        }
+
+        if (answers) {
+            builder.answers(entry.getAnswers().stream().map(AnswerDto::buildFromModel).toList());
+        }
+
+        return builder.build();
     }
 }

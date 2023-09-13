@@ -76,31 +76,35 @@ public class EntryService {
                 (titleContains(query).or(contentContains(query)))
                 .and(hasType(type))
                 .and(hasAuthor(author))
-                .and(favoriteBy(user)))
-        );
+                .and(favoriteBy(user))
+        ));
 
         // TODO: To rewrite.
-        Set<CategoryDao> cats = categoryRepository.getCategoryDaosByIdIsIn(categories);
-        List<Integer> fieldsIds = cats.stream()
-                .filter(category -> category.getCategoryType() == CategoryType.FIELD)
-                .map(CategoryDao::getId)
-                .toList();
-        List<Integer> departmentsIds = cats.stream()
-                .filter(category -> category.getCategoryType() == CategoryType.DEPARTMENT)
-                .map(CategoryDao::getId)
-                .toList();
-
-        return entries.stream().filter(entry -> {
-            boolean matchFields = fieldsIds.isEmpty() || entry.getCategories()
-                    .stream()
+        if (categories.size() > 0) {
+            Set<CategoryDao> cats = categoryRepository.getCategoryDaosByIdIsIn(categories);
+            List<Integer> fieldsIds = cats.stream()
                     .filter(category -> category.getCategoryType() == CategoryType.FIELD)
-                    .anyMatch(category -> fieldsIds.contains(category.getId()));
-            boolean matchDepartments = departmentsIds.isEmpty() || entry.getCategories()
-                    .stream()
+                    .map(CategoryDao::getId)
+                    .toList();
+            List<Integer> departmentsIds = cats.stream()
                     .filter(category -> category.getCategoryType() == CategoryType.DEPARTMENT)
-                    .anyMatch(category -> departmentsIds.contains(category.getId()));
-            return matchFields && matchDepartments;
-        }).toList();
+                    .map(CategoryDao::getId)
+                    .toList();
+
+            entries = entries.stream().filter(entry -> {
+                boolean matchFields = fieldsIds.isEmpty() || entry.getCategories()
+                        .stream()
+                        .filter(category -> category.getCategoryType() == CategoryType.FIELD)
+                        .anyMatch(category -> fieldsIds.contains(category.getId()));
+                boolean matchDepartments = departmentsIds.isEmpty() || entry.getCategories()
+                        .stream()
+                        .filter(category -> category.getCategoryType() == CategoryType.DEPARTMENT)
+                        .anyMatch(category -> departmentsIds.contains(category.getId()));
+                return matchFields && matchDepartments;
+            }).toList();
+        }
+
+        return entries;
     }
 
     public ResponseEntity<StandardBody> createEntry(EntryDto entryDto, AppUserDetails userDetails) {

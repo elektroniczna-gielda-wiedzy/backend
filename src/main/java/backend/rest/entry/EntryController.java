@@ -42,7 +42,7 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(List.of(EntryDto.buildFromModel(entry)))
+                .result(List.of(EntryDto.buildFromModel(entry, true, true)))
                 .build();
     }
 
@@ -72,7 +72,7 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(entries.stream().map(EntryDto::buildFromModel).toList())
+                .result(entries.stream().map(e -> EntryDto.buildFromModel(e, false, false)).toList())
                 .build();
     }
 
