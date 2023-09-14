@@ -1,25 +1,21 @@
 package backend.services;
 
-import backend.model.dto.CommentDto;
-import backend.rest.common.StandardBody;
-import backend.util.ResponseUtil;
-import org.springframework.http.ResponseEntity;
+import backend.model.dao.Comment;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AnswerCommentService {
-    public ResponseEntity<StandardBody> addCommentToAnswer(Integer entryId, Integer answerId, CommentDto commentDto) {
-        return ResponseUtil.getNotImplementedResponse();
+    public Comment createComment(Integer entryId, Integer answerId, String content) {
+        // TODO
+        return null;
     }
 
-    public ResponseEntity<StandardBody> editComment(Integer entryId,
-                                                    Integer answerId,
-                                                    Integer commentId,
-                                                    CommentDto commentDto) {
-        return ResponseUtil.getNotImplementedResponse();
+    public Comment editComment(Integer commentId, String content) {
+        // TODO
+        return null;
     }
 
-    public ResponseEntity<StandardBody> deleteComment(Integer entryId, Integer answerId, Integer commentId) {
-        return ResponseUtil.getNotImplementedResponse();
+    public void deleteComment(Integer commentId) {
+        // TODO
     }
 }

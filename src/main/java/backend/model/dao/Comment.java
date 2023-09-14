@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 @Table(name = "Comment")
 @Getter
 @Setter
-public class CommentDao {
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
