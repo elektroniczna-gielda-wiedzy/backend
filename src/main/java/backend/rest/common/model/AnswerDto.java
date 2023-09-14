@@ -1,8 +1,9 @@
 package backend.rest.common.model;
 
-import backend.model.dao.AnswerDao;
+import backend.model.dao.Answer;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public class AnswerDto {
     private UserDto author;
 
     @JsonProperty("content")
+    @NotNull(message = "content cannot be null")
     private String content;
 
     @JsonProperty("created_at")
@@ -37,7 +39,7 @@ public class AnswerDto {
     @JsonProperty("image")
     private String image;
 
-    public static AnswerDto buildFromModel(AnswerDao answer) {
+    public static AnswerDto buildFromModel(Answer answer) {
         return AnswerDto.builder()
                 .answerId(answer.getId())
                 .author(UserDto.buildFromModel(answer.getUser()))

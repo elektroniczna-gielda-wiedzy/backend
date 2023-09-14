@@ -97,7 +97,7 @@ public class EntryController {
         }
 
         return Response.builder()
-                .httpStatusCode(HttpStatus.OK)
+                .httpStatusCode(HttpStatus.CREATED)
                 .result(List.of(EntryDto.buildFromModel(entry, true, true)))
                 .build();
     }

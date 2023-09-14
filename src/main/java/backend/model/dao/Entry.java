@@ -71,7 +71,7 @@ public class Entry {
     private Set<User> likedBy;
 
     @OneToMany(mappedBy = "entry")
-    private Set<AnswerDao> answers;
+    private Set<Answer> answers;
 
     public static Specification<Entry> titleContains(String query) {
         if (query == null) {

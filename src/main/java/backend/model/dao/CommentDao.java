@@ -18,7 +18,7 @@ public class CommentDao {
 
     @ManyToOne
     @JoinColumn(name = "answer_id")
-    private AnswerDao answer;
+    private Answer answer;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

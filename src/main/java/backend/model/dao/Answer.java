@@ -11,7 +11,7 @@ import java.util.Set;
 @Table(name = "Answer")
 @Getter
 @Setter
-public class AnswerDao {
+public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "answer_id_sequence")
     @SequenceGenerator(name = "answer_id_sequence",
