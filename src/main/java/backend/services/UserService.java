@@ -1,6 +1,6 @@
 package backend.services;
 
-import backend.model.dao.UserDao;
+import backend.model.dao.User;
 import backend.repositories.UserRepository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +22,7 @@ public class UserService {
 
     public void register(String email, String password, String firstname, String lastname) {
 
-        UserDao user = new UserDao();
+        User user = new User();
         user.setEmail(email);
         user.setPassword(encoder.encode(password));
         user.setFirstName(firstname);

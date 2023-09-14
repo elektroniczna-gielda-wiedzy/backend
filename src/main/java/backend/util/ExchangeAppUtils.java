@@ -1,7 +1,7 @@
 package backend.util;
 
 import backend.model.dao.ChatDao;
-import backend.model.dao.UserDao;
+import backend.model.dao.User;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ public class ExchangeAppUtils {
         return Arrays.stream(categoriesArr).map(Integer::parseInt).toList();
     }
 
-    public static UserDao getOppositeUser(Integer currentUserId, ChatDao chatDao) {
+    public static User getOppositeUser(Integer currentUserId, ChatDao chatDao) {
         if (currentUserId.equals(chatDao.getUserOneDao().getId())) {
             return chatDao.getUserTwoDao();
         } else {
@@ -26,7 +26,7 @@ public class ExchangeAppUtils {
         }
     }
 
-    public static UserDao getCurrentUserDao(Integer currentUserId, ChatDao chatDao) {
+    public static User getCurrentUserDao(Integer currentUserId, ChatDao chatDao) {
         if (currentUserId.equals(chatDao.getUserOneDao().getId())) {
             return chatDao.getUserOneDao();
         } else {

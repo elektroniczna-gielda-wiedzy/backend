@@ -23,11 +23,11 @@ public class AnswerDao {
 
     @JoinColumn(name = "entry_id")
     @ManyToOne
-    private EntryDao entry;
+    private Entry entry;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserDao user;
+    private User user;
 
     @Column(name = "content")
     private String content;

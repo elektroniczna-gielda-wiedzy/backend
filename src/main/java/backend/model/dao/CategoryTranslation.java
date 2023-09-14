@@ -16,7 +16,7 @@ public class CategoryTranslation {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
-    private CategoryDao category;
+    private Category category;
 
     @ManyToOne
     @JoinColumn(name = "language_id")

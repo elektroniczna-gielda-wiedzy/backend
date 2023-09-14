@@ -1,17 +1,18 @@
 package backend.rest.common.model;
 
-import backend.model.dao.EntryDao;
+import backend.model.dao.Entry;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -23,9 +24,11 @@ public class EntryDto {
     private Integer entryId;
 
     @JsonProperty("entry_type_id")
+    @NotNull(message = "entry_type_id cannot be null")
     private Integer entryTypeId;
 
     @JsonProperty("title")
+    @NotNull(message = "title cannot be null")
     private String title;
 
     @JsonProperty("author")
@@ -33,6 +36,7 @@ public class EntryDto {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("content")
+    @NotNull(message = "content cannot be null")
     private String content;
 
     @JsonProperty("created_at")
@@ -44,6 +48,7 @@ public class EntryDto {
     private String image;
 
     @JsonProperty("categories")
+    @NotNull(message = "categories cannot be null")
     private List<CategoryDto> categories;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -54,7 +59,7 @@ public class EntryDto {
     @JsonProperty("answers")
     private List<AnswerDto> answers;
 
-    public static EntryDto buildFromModel(EntryDao entry, boolean content, boolean answers) {
+    public static EntryDto buildFromModel(Entry entry, boolean content, boolean answers) {
         EntryDtoBuilder builder = EntryDto.builder()
                 .entryId(entry.getId())
                 .entryTypeId(entry.getType().getId())
@@ -68,7 +73,11 @@ public class EntryDto {
         }
 
         if (answers) {
-            builder.answers(entry.getAnswers().stream().map(AnswerDto::buildFromModel).toList());
+            builder.answers(Optional.ofNullable(entry.getAnswers())
+                                    .orElseGet(Collections::emptySet)
+                                    .stream()
+                                    .map(AnswerDto::buildFromModel)
+                                    .toList());
         }
 
         return builder.build();

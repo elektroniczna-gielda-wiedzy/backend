@@ -9,7 +9,7 @@ import java.util.Set;
 @Entity
 @Table(name = "Category")
 @Getter
-public class CategoryDao {
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
@@ -20,13 +20,13 @@ public class CategoryDao {
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    private CategoryDao parentCategory;
+    private Category parentCategory;
 
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
     @ManyToMany(mappedBy = "categories")
-    private Set<EntryDao> entries;
+    private Set<Entry> entries;
 
     @OneToMany(mappedBy = "category")
     private Set<CategoryTranslation> categoryTranslations;

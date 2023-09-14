@@ -22,7 +22,7 @@ public class CommentDao {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserDao user;
+    private User user;
 
     @Column(name = "content")
     private String content;

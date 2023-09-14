@@ -22,7 +22,7 @@ public class MessageDao {
 
     @ManyToOne
     @JoinColumn(name = "sender_id")
-    private UserDao senderUserDao;
+    private User senderUser;
 
     @Column(name = "content")
     private String content;

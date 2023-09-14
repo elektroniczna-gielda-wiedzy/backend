@@ -1,7 +1,7 @@
 package backend.services;
 
 import backend.model.AppUserDetails;
-import backend.model.dao.UserDao;
+import backend.model.dao.User;
 import backend.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,7 +18,7 @@ public class AppUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDao user = userRepository.findUserDaoByEmail(username);
+        User user = userRepository.findUserDaoByEmail(username);
         if (user == null) {
             throw new UsernameNotFoundException("Email not found");
         }

@@ -3,7 +3,7 @@ package backend.services;
 import backend.model.AppUserDetails;
 import backend.model.dao.ChatDao;
 import backend.model.dao.MessageDao;
-import backend.model.dao.UserDao;
+import backend.model.dao.User;
 import backend.model.dto.ChatDto;
 import backend.model.dto.MessageDto;
 import backend.repositories.ChatRepository;
@@ -62,7 +62,7 @@ public class ChatService {
         System.out.println("New chat message from user with id: " + userId + "\nContent: " + chatMessage);
 
         ChatDao chat = chatRepository.findChatDaoByChatId(Integer.parseInt(chatId));
-        UserDao oppositeUser = ExchangeAppUtils.getOppositeUser(userDetails.getId(), chat);
+        User oppositeUser = ExchangeAppUtils.getOppositeUser(userDetails.getId(), chat);
         MessageDao messageDao = new MessageDao();
         messageDao.setChatDao(chat);
 
@@ -75,11 +75,11 @@ public class ChatService {
         }
 
         messageDao.setDateSent(Timestamp.from(Instant.now()));
-        messageDao.setSenderUserDao(ExchangeAppUtils.getCurrentUserDao(userId, chat));
+        messageDao.setSenderUser(ExchangeAppUtils.getCurrentUserDao(userId, chat));
         messageRepository.save(messageDao);
         MessageDto messageDto = MessageDto.builder()
                 .messageId(messageDao.getMessageId())
-                .sender(UserDaoDtoConverter.convertToDto(messageDao.getSenderUserDao()))
+                .sender(UserDaoDtoConverter.convertToDto(messageDao.getSenderUser()))
                 .content(messageDao.getContent())
                 .dateSent(new Date(messageDao.getDateSent().getTime()))
                 .chatId(messageDao.getChatDao().getChatId())
@@ -100,8 +100,8 @@ public class ChatService {
 
     //tested
     public ResponseEntity<StandardBody> getChatList(AppUserDetails userDetails) {
-        UserDao userDao = userRepository.findById(userDetails.getId()).get();
-        List<ChatDao> chatDaos = chatRepository.findChatDaosByUserOneDaoOrUserTwoDao(userDao, userDao);
+        User user = userRepository.findById(userDetails.getId()).get();
+        List<ChatDao> chatDaos = chatRepository.findChatDaosByUserOneDaoOrUserTwoDao(user, user);
         Session session = sessionFactory.openSession();
         List<ChatDto> chatDtos;
         try {
@@ -117,7 +117,7 @@ public class ChatService {
                 if (messageDaos.size() > 0) {
                     Boolean isRead = true;
                     lastMessage = messageDaos.get(0);
-                    if (!lastMessage.getSenderUserDao().getId().equals(userDetails.getId())) {
+                    if (!lastMessage.getSenderUser().getId().equals(userDetails.getId())) {
                         Timestamp currentUserLastRead = ExchangeAppUtils.getCurrentUserLastRead(userDetails.getId(),
                                                                                                 chatDao);
                         if (lastMessage.getDateSent().after(currentUserLastRead)) {
@@ -126,12 +126,12 @@ public class ChatService {
                     }
                     return ChatDto.builder()
                             .chatId(chatDao.getChatId())
-                            .otherUser(UserDaoDtoConverter.convertToDto(ExchangeAppUtils.getOppositeUser(userDao.getId(),
+                            .otherUser(UserDaoDtoConverter.convertToDto(ExchangeAppUtils.getOppositeUser(user.getId(),
                                                                                                          chatDao)))
                             .isRead(isRead)
                             .lastMessage(MessageDto.builder()
                                                  .messageId(lastMessage.getMessageId())
-                                                 .sender(UserDaoDtoConverter.convertToDto(lastMessage.getSenderUserDao()))
+                                                 .sender(UserDaoDtoConverter.convertToDto(lastMessage.getSenderUser()))
                                                  .content(lastMessage.getContent())
                                                  .dateSent(new Date(lastMessage.getDateSent().getTime()))
                                                  .chatId(chatDao.getChatId())
@@ -181,7 +181,7 @@ public class ChatService {
             List<MessageDao> messages = messageRepository.findMessageDaosByChatDao(chatDao);
             List<MessageDto> messagesReturned = messages.stream()
                     .map((message) -> MessageDto.builder().messageId(message.getMessageId())
-                            .sender(UserDaoDtoConverter.convertToDto(message.getSenderUserDao()))
+                            .sender(UserDaoDtoConverter.convertToDto(message.getSenderUser()))
                             .chatId(chatDao.getChatId())
                             .content(message.getContent())
                             .dateSent(message.getDateSent())
@@ -209,8 +209,8 @@ public class ChatService {
     }
 
     public ResponseEntity<StandardBody> createChat(AppUserDetails userDetails, Integer userId) {
-        UserDao userOneDao = userRepository.findById(userDetails.getId()).get();
-        UserDao userTwoDao = userRepository.findById(userId).get();
+        User userOneDao = userRepository.findById(userDetails.getId()).get();
+        User userTwoDao = userRepository.findById(userId).get();
         List<ChatDao> usersChats = chatRepository.findChatDaosByUserOneDaoInAndUserTwoDaoIn(List.of(userOneDao,
                                                                                                     userTwoDao),
                                                                                             List.of(userOneDao,
@@ -229,10 +229,10 @@ public class ChatService {
     }
 
     public ResponseEntity<StandardBody> getUnreadChatList(AppUserDetails userDetails) {
-        UserDao userDao = userRepository.findById(userDetails.getId()).get();
-        List<ChatDao> userChats = chatRepository.findChatDaosByUserOneDaoOrUserTwoDao(userDao, userDao);
+        User user = userRepository.findById(userDetails.getId()).get();
+        List<ChatDao> userChats = chatRepository.findChatDaosByUserOneDaoOrUserTwoDao(user, user);
         int noUnreadChats = userChats.stream().filter((userChat) -> {
-            UserDao oppositeUser;
+            User oppositeUser;
             Timestamp currentUserLastReadDate;
             if (userDetails.getId().equals(userChat.getUserOneDao().getId())) {
                 oppositeUser = userChat.getUserTwoDao();
@@ -241,7 +241,7 @@ public class ChatService {
                 oppositeUser = userChat.getUserOneDao();
                 currentUserLastReadDate = userChat.getUserTwoLastRead();
             }
-            List<MessageDao> unreadMessages = messageRepository.findMessageDaosBySenderUserDaoAndDateSentGreaterThan(
+            List<MessageDao> unreadMessages = messageRepository.findMessageDaosBySenderUserAndDateSentGreaterThan(
                     oppositeUser,
                     currentUserLastReadDate);
             return unreadMessages.size() > 0;

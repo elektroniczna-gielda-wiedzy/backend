@@ -1,6 +1,6 @@
 package backend.rest.common.model;
 
-import backend.model.dao.CategoryDao;
+import backend.model.dao.Category;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +24,18 @@ public class CategoryDto {
     @JsonProperty("parent_id")
     private Integer parentId;
 
-    public static CategoryDto buildFromModel(CategoryDao category) {
+    public CategoryDto(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public CategoryDto(Integer categoryId, Integer categoryType, List<CategoryTranslationDto> names, Integer parentId) {
+        this.categoryId = categoryId;
+        this.categoryType = categoryType;
+        this.names = names;
+        this.parentId = parentId;
+    }
+
+    public static CategoryDto buildFromModel(Category category) {
         return CategoryDto.builder()
                 .categoryId(category.getId())
                 .categoryType(category.getCategoryType().ordinal())

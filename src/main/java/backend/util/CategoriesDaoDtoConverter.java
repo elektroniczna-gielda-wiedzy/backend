@@ -1,16 +1,16 @@
 package backend.util;
 
-import backend.model.dao.CategoryDao;
+import backend.model.dao.Category;
 import backend.model.dto.CategoryDto;
 
 public class CategoriesDaoDtoConverter {
-    public static CategoryDto convertToDto(CategoryDao categoryDao) {
+    public static CategoryDto convertToDto(Category category) {
         return CategoryDto.builder()
-                .categoryId(categoryDao.getId())
-                .categoryType(categoryDao.getCategoryType().ordinal())
-                .parentId(categoryDao.getParentCategory() != null ? categoryDao.getParentCategory()
+                .categoryId(category.getId())
+                .categoryType(category.getCategoryType().ordinal())
+                .parentId(category.getParentCategory() != null ? category.getParentCategory()
                         .getId() : null)
-                .names(categoryDao.getCategoryTranslations()
+                .names(category.getCategoryTranslations()
                                .stream()
                                .map(CategoryTranslationDaoDtoConverter::convertToDto)
                                .toList())

@@ -2,9 +2,9 @@ package backend.services;
 
 import backend.model.AppUserDetails;
 import backend.model.dao.AnswerDao;
-import backend.model.dao.EntryDao;
+import backend.model.dao.Entry;
 import backend.model.dao.ImageDao;
-import backend.model.dao.UserDao;
+import backend.model.dao.User;
 import backend.model.dto.AnswerDto;
 import backend.repositories.AnswerRepository;
 import backend.repositories.EntryRepository;
@@ -66,7 +66,7 @@ public class AnswerService {
             //      throw new RequestValidationException("Request validation error");
             //}
 
-            EntryDao entryDao = entryRepository.findById(entryId).get();
+            Entry entry = entryRepository.findById(entryId).get();
             AnswerDao newAnswer = new AnswerDao();
             newAnswer.setIsTopAnswer(false);
 
@@ -82,7 +82,7 @@ public class AnswerService {
                     imageDao.setImage(imageRepository.savePicture(answerDto.getImage(),
                                                                   String.format("image-%d-%d-%d.jpg",
                                                                                 userDetails.getId(),
-                                                                                entryDao.getId(),
+                                                                                entry.getId(),
                                                                                 new Random().nextInt(10000))));
                 } catch (IOException e) {
                     //errors.add("Image could not be saved");
@@ -91,9 +91,9 @@ public class AnswerService {
                 newAnswer.setImages(Set.of(imageDao));
                 session.persist(imageDao);
             }
-            UserDao userDao = userRepository.findById(userDetails.getId()).get();
-            newAnswer.setUser(userDao);
-            newAnswer.setEntry(entryDao);
+            User user = userRepository.findById(userDetails.getId()).get();
+            newAnswer.setUser(user);
+            newAnswer.setEntry(entry);
             transaction.commit();
 
             return ResponseEntity.ok(StandardBody.builder()

@@ -1,6 +1,6 @@
 package backend.model;
 
-import backend.model.dao.UserDao;
+import backend.model.dao.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,16 +10,16 @@ import java.util.Collection;
 import java.util.List;
 
 public class AppUserDetails implements UserDetails {
-    private final UserDao userDao;
+    private final User user;
 
-    public AppUserDetails(UserDao userDao) {
-        this.userDao = userDao;
+    public AppUserDetails(User user) {
+        this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorityList = new ArrayList<>();
-        if (userDao.getIsAdmin()) {
+        if (user.getIsAdmin()) {
             authorityList.add(new SimpleGrantedAuthority("ADMIN"));
         } else {
             authorityList.add(new SimpleGrantedAuthority("USER"));
@@ -28,36 +28,36 @@ public class AppUserDetails implements UserDetails {
     }
 
     public Integer getId() {
-        return userDao.getId();
+        return user.getId();
     }
 
     @Override
     public String getPassword() {
-        return userDao.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return userDao.getEmail();
+        return user.getEmail();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return userDao.getIsActive();
+        return user.getIsActive();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return userDao.getIsActive();
+        return user.getIsActive();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return userDao.getIsActive();
+        return user.getIsActive();
     }
 
     @Override
     public boolean isEnabled() {
-        return userDao.getIsActive() && userDao.getIsEmailAuth();
+        return user.getIsActive() && user.getIsEmailAuth();
     }
 }

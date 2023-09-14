@@ -1,6 +1,6 @@
 package backend.rest.common.model;
 
-import backend.model.dao.UserDao;
+import backend.model.dao.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +21,7 @@ public class UserDto {
     @JsonProperty("last_name")
     private String lastName;
 
-    public static UserDto buildFromModel(UserDao user) {
+    public static UserDto buildFromModel(User user) {
         return UserDto.builder()
                 .userId(user.getId())
                 .firstName(user.getFirstName())

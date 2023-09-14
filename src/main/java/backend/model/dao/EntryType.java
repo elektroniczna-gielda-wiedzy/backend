@@ -8,7 +8,7 @@ import lombok.Setter;
 @Table(name = "EntryType")
 @Getter
 @Setter
-public class EntryTypeDao {
+public class EntryType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "entry_type_id")

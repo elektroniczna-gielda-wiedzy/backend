@@ -1,7 +1,7 @@
 package backend.configurations;
 
 import backend.model.AppUserDetails;
-import backend.model.dao.UserDao;
+import backend.model.dao.User;
 import backend.repositories.UserRepository;
 import backend.services.JwtService;
 import io.jsonwebtoken.Claims;
@@ -56,8 +56,8 @@ public class WebSocketAuthenticationConfig implements WebSocketMessageBrokerConf
                     Integer userId = ((Double) userClaims.get("subject")).intValue();
                     String role = (String) userClaims.get("role");
                     List<GrantedAuthority> grantedAuthorityList = List.of(new SimpleGrantedAuthority(role));
-                    UserDao userDao = userRepository.findById(userId).get();
-                    AppUserDetails userDetails = new AppUserDetails(userDao);
+                    User user = userRepository.findById(userId).get();
+                    AppUserDetails userDetails = new AppUserDetails(user);
                     Authentication auth = new UsernamePasswordAuthenticationToken(userDetails,
                                                                                   null,
                                                                                   grantedAuthorityList);

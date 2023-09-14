@@ -18,11 +18,11 @@ public class ChatDao {
 
     @ManyToOne
     @JoinColumn(name = "user_one_id")
-    private UserDao userOneDao;
+    private User userOneDao;
 
     @ManyToOne
     @JoinColumn(name = "user_two_id")
-    private UserDao userTwoDao;
+    private User userTwoDao;
 
     @Column(name = "user_one_last_read")
     private Timestamp userOneLastRead;

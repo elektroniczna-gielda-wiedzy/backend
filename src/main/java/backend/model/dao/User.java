@@ -11,7 +11,7 @@ import java.util.Set;
 @Table(name = "Users")
 @Getter
 @Setter
-public class UserDao {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -45,5 +45,5 @@ public class UserDao {
     private Boolean isActive;
 
     @ManyToMany(mappedBy = "likedBy")
-    private Set<EntryDao> favorites;
+    private Set<Entry> favorites;
 }

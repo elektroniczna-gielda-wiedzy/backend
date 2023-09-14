@@ -1,6 +1,6 @@
 package backend.services;
 
-import backend.model.dao.CategoryDao;
+import backend.model.dao.Category;
 import backend.model.dto.CategoryDto;
 import backend.repositories.CategoryRepository;
 import backend.rest.common.StandardBody;
@@ -23,7 +23,7 @@ public class CategoryService {
 
     public ResponseEntity<StandardBody> getCategoryList() {
         try {
-            List<CategoryDao> categories = categoryRepository.findAll();
+            List<Category> categories = categoryRepository.findAll();
             List<CategoryDto> categoryDtoList = categories.stream()
                     .map(CategoriesDaoDtoConverter::convertToDto)
                     .collect(Collectors.toList());

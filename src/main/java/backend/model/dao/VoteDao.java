@@ -16,7 +16,7 @@ public class VoteDao {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserDao user;
+    private User user;
 
     @Column(name = "value")
     private Integer value;
