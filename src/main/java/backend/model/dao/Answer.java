@@ -45,7 +45,7 @@ public class Answer {
     @JoinTable(name = "VotedItem",
                joinColumns = {@JoinColumn(name = "voted_item_id")},
                inverseJoinColumns = {@JoinColumn(name = "vote_id")})
-    private Set<VoteDao> votes;
+    private Set<Vote> votes;
 
     @ManyToMany
     @JoinTable(name = "ImageAnswer",

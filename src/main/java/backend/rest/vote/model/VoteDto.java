@@ -1,6 +1,7 @@
-package backend.model.dto;
+package backend.rest.vote.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,5 +9,6 @@ import lombok.Setter;
 @Setter
 public class VoteDto {
     @JsonProperty("value")
+    @NotNull(message = "value cannot be null")
     Integer value;
 }
