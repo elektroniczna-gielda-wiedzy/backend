@@ -1,0 +1,26 @@
+package backend.rest.controller;
+
+import backend.repository.ImageRepository;
+import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
+
+@RestController
+@RequestMapping("/api/v1/images")
+public class ImageController {
+    private final ImageRepository imageRepository;
+
+    public ImageController(ImageRepository imageRepository) {
+        this.imageRepository = imageRepository;
+    }
+
+    @GetMapping(value = "/{image_name}", produces = IMAGE_JPEG_VALUE)
+    public @ResponseBody byte[] getImage(@PathVariable("image_name") String imageName) {
+        try {
+            return imageRepository.getImage(imageName);
+        } catch (Exception e) {
+            System.out.println("IMAGE GET ERROR");
+            return null;
+        }
+    }
+}

@@ -1,4 +1,4 @@
-package backend.services;
+package backend.service;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
