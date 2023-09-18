@@ -53,7 +53,7 @@ public class WebSocketAuthenticationConfig implements WebSocketMessageBrokerConf
                     }
 
                     Claims userClaims = jwtService.getClaims(jwtToken);
-                    Integer userId = ((Double) userClaims.get("subject")).intValue();
+                    Integer userId = ((Double) userClaims.get("user")).intValue();
                     String role = (String) userClaims.get("role");
                     List<GrantedAuthority> grantedAuthorityList = List.of(new SimpleGrantedAuthority(role));
                     User user = userRepository.findById(userId).get();
