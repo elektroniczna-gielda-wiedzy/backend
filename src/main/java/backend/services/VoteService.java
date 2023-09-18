@@ -1,6 +1,5 @@
 package backend.services;
 
-import backend.model.dto.FavoriteSetterDto;
 import org.springframework.stereotype.Service;
 
 @Service

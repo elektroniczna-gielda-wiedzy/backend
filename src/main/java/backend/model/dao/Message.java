@@ -10,15 +10,15 @@ import java.sql.Timestamp;
 @Table(name = "messages")
 @Getter
 @Setter
-public class MessageDao {
+public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "message_id")
-    private Integer messageId;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "chat_id")
-    private ChatDao chatDao;
+    private Chat chat;
 
     @ManyToOne
     @JoinColumn(name = "sender_id")

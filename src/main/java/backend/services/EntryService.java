@@ -10,6 +10,7 @@ import backend.repositories.EntryRepository;
 import backend.repositories.ImageRepository;
 import backend.repositories.UserRepository;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -56,14 +57,13 @@ public class EntryService {
     }
 
     public List<Entry> getEntries(String query, Integer type, Integer userId, Integer user, List<Integer> categoryIds) {
-        // TODO: Implement ordering.
         List<Entry> entries = this.entryRepository.findAll(where(
                 (titleContains(query).or(contentContains(query)))
                 .and(hasType(type))
                 .and(hasAuthor(userId))
                 .and(favoriteBy(user))
                 .and(isNotDeleted())
-        ));
+        ), Sort.by("createdAt").descending());
 
         // TODO: To rewrite.
         if (categoryIds.size() > 0) {

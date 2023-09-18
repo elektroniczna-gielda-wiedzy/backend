@@ -1,5 +1,6 @@
-package backend.model.dto;
+package backend.rest.chat.model;
 
+import backend.model.dao.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,4 +20,12 @@ public class UserDto {
 
     @JsonProperty("last_name")
     private String lastName;
+
+    public static UserDto buildFromObject(User user) {
+        return UserDto.builder()
+                .userId(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .build();
+    }
 }
