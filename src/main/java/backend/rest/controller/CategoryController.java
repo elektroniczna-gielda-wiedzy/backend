@@ -21,7 +21,7 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping()
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> getCategoryList() {
         List<Category> categories = this.categoryService.getCategories();
 

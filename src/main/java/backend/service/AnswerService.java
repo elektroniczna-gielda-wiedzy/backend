@@ -18,8 +18,6 @@ import java.util.Set;
 
 @Service
 public class AnswerService {
-    ImageRepository imageRepository;
-
     private final AnswerRepository answerRepository;
 
     private final EntryRepository entryRepository;
@@ -28,12 +26,10 @@ public class AnswerService {
 
     public AnswerService(AnswerRepository answerRepository,
                          EntryRepository entryRepository,
-                         UserRepository userRepository,
-                         ImageRepository imageRepository) {
+                         UserRepository userRepository) {
         this.answerRepository = answerRepository;
         this.entryRepository = entryRepository;
         this.userRepository = userRepository;
-        this.imageRepository = imageRepository;
     }
 
     public List<Answer> getAnswers(Integer entryId) {

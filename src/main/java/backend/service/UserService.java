@@ -21,7 +21,6 @@ public class UserService {
     }
 
     public void createUser(String email, String password, String firstname, String lastname, boolean isAdmin) {
-
         User user = new User();
         user.setEmail(email);
         user.setPassword(encoder.encode(password));

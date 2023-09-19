@@ -47,7 +47,7 @@ public class ChatDto {
     private Boolean isRead;
 
     public static ChatDto buildFromModel(Chat chat, Integer userId) {
-        User otherUser = chat.getUserOne().getId().equals(userId) ? chat.getUserTwo() : chat.getUserOne();
+        User otherUser = chat.getOppositeUser(userId);
         Optional<Message> lastMessageOptional = Optional.ofNullable(chat.getMessages())
                 .orElseGet(Collections::emptyList)
                 .stream()
