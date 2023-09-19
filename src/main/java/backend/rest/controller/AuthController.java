@@ -79,10 +79,11 @@ public class AuthController {
                                                 SignUpRequest request) {
 
         try {
-            this.userService.register(request.getEmail(),
-                                      request.getPassword(),
-                                      request.getFirstName(),
-                                      request.getLastName());
+            this.userService.createUser(request.getEmail(),
+                                        request.getPassword(),
+                                        request.getFirstName(),
+                                        request.getLastName(),
+                                        false);
         } catch (GenericServiceException exception) {
             return Response.builder()
                     .httpStatusCode(HttpStatus.BAD_REQUEST)

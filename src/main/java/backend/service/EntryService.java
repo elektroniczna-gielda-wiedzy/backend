@@ -28,27 +28,20 @@ public class EntryService {
 
     private final UserRepository userRepository;
 
-    private final ImageRepository imageRepository;
-
     private final EntryRepository entryRepository;
 
     public EntryService(CategoryRepository categoryRepository,
                         UserRepository userRepository,
-                        ImageRepository imageRepository,
                         EntryRepository entryRepository) {
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
-        this.imageRepository = imageRepository;
         this.entryRepository = entryRepository;
     }
 
     public Entry getEntry(Integer entryId) {
-        Optional<Entry> entryDao = this.entryRepository.findById(entryId);
-        if (entryDao.isEmpty()) {
-            throw new GenericServiceException(String.format("Entry with id = %d does not exist", entryId));
-        }
+        Entry entry = this.entryRepository.findById(entryId).orElseThrow(
+                () -> new GenericServiceException(String.format("Entry with id = %d does not exist", entryId)));
 
-        Entry entry = entryDao.get();
         if (entry.getIsDeleted()) {
             throw new GenericServiceException(String.format("Entry with id = %d is deleted", entryId));
         }
@@ -95,11 +88,8 @@ public class EntryService {
 
     public Entry createEntry(Integer typeId, String title, String content, List<Integer> categoryIds, Integer userId,
                              String image) {
-        Optional<User> userOptional = this.userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new GenericServiceException(String.format("User with id = %d does not exist", userId));
-        }
-        User user = userOptional.get();
+        User user = this.userRepository.findById(userId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
 
         Entry entry = new Entry();
         EntryType type = new EntryType();
@@ -125,11 +115,8 @@ public class EntryService {
 
     public Entry updateEntry(Integer entryId, Integer typeId, String title, String content, List<Integer> categoryIds,
                              Integer userId, String image) {
-        Optional<Entry> entryOptional = this.entryRepository.findById(entryId);
-        if (entryOptional.isEmpty()) {
-            throw new GenericServiceException(String.format("Entry with id = %d does not exist", entryId));
-        }
-        Entry entry = entryOptional.get();
+        Entry entry = this.entryRepository.findById(entryId).orElseThrow(
+                () -> new GenericServiceException(String.format("Entry with id = %d does not exist", entryId)));
 
         if (typeId != null) {
             EntryType type = new EntryType();
@@ -150,11 +137,9 @@ public class EntryService {
         }
 
         if (userId != null) {
-            Optional<User> userOptional = this.userRepository.findById(userId);
-            if (userOptional.isEmpty()) {
-                throw new GenericServiceException(String.format("User with id = %d does not exist", userId));
-            }
-            entry.setAuthor(userOptional.get());
+            User user = this.userRepository.findById(userId).orElseThrow(
+                    () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
+            entry.setAuthor(user);
         }
 
         // TODO: Implement image.
@@ -169,17 +154,11 @@ public class EntryService {
     }
 
     public void deleteEntry(Integer entryId, Integer userId) {
-        Optional<Entry> entryOptional = this.entryRepository.findById(entryId);
-        if (entryOptional.isEmpty()) {
-            throw new GenericServiceException(String.format("Entry with id = %d does not exist", entryId));
-        }
-        Entry entry = entryOptional.get();
+        Entry entry = this.entryRepository.findById(entryId).orElseThrow(
+                () -> new GenericServiceException(String.format("Entry with id = %d does not exist", entryId)));
 
-        Optional<User> userOptional = this.userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new GenericServiceException(String.format("User with id = %d does not exist", userId));
-        }
-        User user = userOptional.get();
+        User user = this.userRepository.findById(userId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
 
         if (entry.getIsDeleted()) {
             throw new GenericServiceException(String.format("Entry with id = %d is already deleted", entryId));

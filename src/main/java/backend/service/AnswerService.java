@@ -42,17 +42,11 @@ public class AnswerService {
     }
 
     public Answer createAnswer(Integer entryId, Integer userId, String content) {
-        Optional<Entry> entryOptional = this.entryRepository.findById(entryId);
-        if (entryOptional.isEmpty()) {
-            throw new GenericServiceException(String.format("Entry with id = %d does not exist", entryId));
-        }
-        Entry entry = entryOptional.get();
+        Entry entry = this.entryRepository.findById(entryId).orElseThrow(
+                () -> new GenericServiceException(String.format("Entry with id = %d does not exist", entryId)));
 
-        Optional<User> userOptional = this.userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new GenericServiceException(String.format("User with id = %d does not exist", userId));
-        }
-        User user = userOptional.get();
+        User user = this.userRepository.findById(userId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
 
         Answer answer = new Answer();
         answer.setEntry(entry);

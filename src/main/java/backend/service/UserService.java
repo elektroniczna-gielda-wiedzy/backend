@@ -20,7 +20,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public void register(String email, String password, String firstname, String lastname) {
+    public void createUser(String email, String password, String firstname, String lastname, boolean isAdmin) {
 
         User user = new User();
         user.setEmail(email);
@@ -28,10 +28,9 @@ public class UserService {
         user.setFirstName(firstname);
         user.setLastName(lastname);
 
-        // FIXME
-        user.setIsEmailAuth(true);
         user.setIsActive(true);
-        user.setIsAdmin(false);
+        user.setIsEmailAuth(true);  // FIXME
+        user.setIsAdmin(isAdmin);
         user.setCreatedAt(Timestamp.from(Instant.now()));
 
         try {

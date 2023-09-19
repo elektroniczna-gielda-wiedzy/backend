@@ -45,16 +45,11 @@ public class ChatService {
     }
 
     public Chat getChat(Integer chatId, Integer userId) {
-        Optional<Chat> chatOptional = this.chatRepository.findById(chatId);
-        if (chatOptional.isEmpty()) {
-            throw new GenericServiceException(String.format("Chat with id = %d does not exist", chatId));
-        }
-        Chat chat = chatOptional.get();
+        Chat chat = this.chatRepository.findById(chatId).orElseThrow(
+                () -> new GenericServiceException(String.format("Chat with id = %d does not exist", chatId)));
 
-        Optional<User> userOptional = this.userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new GenericServiceException(String.format("User with id = %d does not exist", userId));
-        }
+        User user = this.userRepository.findById(userId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
 
         if (!chat.getUserOne().getId().equals(userId) && !chat.getUserTwo().getId().equals(userId)) {
             throw new GenericServiceException("You do not have access to this chat");
@@ -64,10 +59,8 @@ public class ChatService {
     }
 
     public List<Chat> getChats(Integer userId) {
-        Optional<User> userOptional = this.userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new GenericServiceException(String.format("User with id = %d does not exist", userId));
-        }
+        User user = this.userRepository.findById(userId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
 
         return this.chatRepository.findAll(where(
                 (userOneIs(userId).or(userTwoIs(userId)))
@@ -94,17 +87,11 @@ public class ChatService {
     }
 
     public Chat createChat(Integer userOneId, Integer userTwoId) {
-        Optional<User> userOneOptional = this.userRepository.findById(userOneId);
-        if (userOneOptional.isEmpty()) {
-            throw new GenericServiceException(String.format("User with id = %d does not exist", userOneId));
-        }
-        User userOne = userOneOptional.get();
+        User userOne = this.userRepository.findById(userOneId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", userOneId)));
 
-        Optional<User> userTwoOptional = this.userRepository.findById(userTwoId);
-        if (userTwoOptional.isEmpty()) {
-            throw new GenericServiceException(String.format("User with id = %d does not exist", userTwoId));
-        }
-        User userTwo = userTwoOptional.get();
+        User userTwo = this.userRepository.findById(userTwoId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", userTwoId)));
 
         List <Chat> chats = this.chatRepository.findAll(where(
             (userOneIs(userOneId).and(userTwoIs(userTwoId)))
