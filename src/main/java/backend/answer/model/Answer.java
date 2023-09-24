@@ -7,6 +7,7 @@ import backend.common.model.Vote;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.sql.Timestamp;
 import java.util.Set;
@@ -56,4 +57,14 @@ public class Answer {
                joinColumns = {@JoinColumn(name = "image_item_id")},
                inverseJoinColumns = {@JoinColumn(name = "image_id")})
     private Set<Image> images;
+
+    public static Specification<Answer> hasEntryId(Integer entryId) {
+        if (entryId == null) {
+            return (answer, cq, cb) -> cb.conjunction();
+        }
+        return (answer, cq, cb) -> cb.equal(answer.get("entry"), entryId);
+    }
+    public static Specification<Answer> isNotDeleted() {
+        return (answer, cq, cb) -> cb.isFalse(answer.get("isDeleted"));
+    }
 }

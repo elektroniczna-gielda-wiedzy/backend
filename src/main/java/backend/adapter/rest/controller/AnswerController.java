@@ -26,8 +26,20 @@ public class AnswerController {
 
     @GetMapping(path = "{entry_id}/answer", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> getAnswers(@PathVariable("entry_id") Integer entryId) {
+        List<Answer> answers;
+
+        try {
+            answers = this.answerService.getAnswers(entryId);
+        } catch (Exception exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+
         return Response.builder()
-                .httpStatusCode(HttpStatus.NOT_IMPLEMENTED)
+                .httpStatusCode(HttpStatus.OK)
+                .result(answers.stream().map(AnswerDto::buildFromModel).toList())
                 .build();
     }
 
@@ -63,16 +75,41 @@ public class AnswerController {
     public ResponseEntity<StandardBody> editAnswer(@PathVariable("entry_id") Integer entryId,
                                                    @PathVariable("answer_id") Integer answerId,
                                                    @RequestBody AnswerDto answerDto) {
+        Answer answer;
+
+        try {
+            answer = this.answerService.editAnswer(
+                    answerId,
+                    answerDto.getContent()
+            );
+        } catch (Exception exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+
         return Response.builder()
-                .httpStatusCode(HttpStatus.NOT_IMPLEMENTED)
+                .httpStatusCode(HttpStatus.OK)
+                .result(List.of(AnswerDto.buildFromModel(answer)))
                 .build();
     }
 
     @DeleteMapping(path = "{entry_id}/answer/{answer_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> deleteAnswer(@PathVariable("entry_id") Integer entryId,
-                                                     @PathVariable("answer_id") Integer answerId) {
+                                                     @PathVariable("answer_id") Integer answerId,
+                                                     @AuthenticationPrincipal AppUserDetails userDetails) {
+        try {
+            this.answerService.deleteAnswer(answerId, userDetails.getId());
+        } catch (Exception exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+
         return Response.builder()
-                .httpStatusCode(HttpStatus.NOT_IMPLEMENTED)
+                .httpStatusCode(HttpStatus.OK)
                 .build();
     }
 }
