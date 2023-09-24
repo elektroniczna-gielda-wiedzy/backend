@@ -46,6 +46,9 @@ public class Answer {
     @Column(name = "top_answer")
     private Boolean isTopAnswer;
 
+    @OneToMany(mappedBy = "answer")
+    private Set<Comment> comments;
+
     @ManyToMany
     @JoinTable(name = "VotedItem",
                joinColumns = {@JoinColumn(name = "voted_item_id")},

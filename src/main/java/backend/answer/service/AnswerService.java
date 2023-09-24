@@ -71,9 +71,16 @@ public class AnswerService {
         return answer;
     }
 
-    public Answer editAnswer(Integer answerId, String content) {
+    public Answer editAnswer(Integer answerId, Integer userId, String content) {
         Answer answer = this.answerRepository.findById(answerId).orElseThrow(
                 () -> new GenericServiceException(String.format("Answer with id = %d does not exist", answerId)));
+
+        User user = this.userRepository.findById(userId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
+
+        if (!answer.getUser().getId().equals(userId) && !user.getIsAdmin()) {
+            throw new GenericServiceException("You are not allowed to edit this answer");
+        }
 
         if (content != null) {
             answer.setContent(content);

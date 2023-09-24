@@ -45,7 +45,7 @@ public class AnswerController {
 
     @PostMapping(path ="{entry_id}/answer", consumes = MediaType.APPLICATION_JSON_VALUE,
                  produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> addNewAnswer(@PathVariable("entry_id") Integer entryId,
+    public ResponseEntity<StandardBody> createAnswer(@PathVariable("entry_id") Integer entryId,
                                                      @Valid @RequestBody
                                                      AnswerDto answerDto,
                                                      @AuthenticationPrincipal AppUserDetails userDetails) {
@@ -74,12 +74,14 @@ public class AnswerController {
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> editAnswer(@PathVariable("entry_id") Integer entryId,
                                                    @PathVariable("answer_id") Integer answerId,
-                                                   @RequestBody AnswerDto answerDto) {
+                                                   @RequestBody AnswerDto answerDto,
+                                                   @AuthenticationPrincipal AppUserDetails userDetails) {
         Answer answer;
 
         try {
             answer = this.answerService.editAnswer(
                     answerId,
+                    userDetails.getId(),
                     answerDto.getContent()
             );
         } catch (Exception exception) {
