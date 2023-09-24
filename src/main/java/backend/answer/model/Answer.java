@@ -67,6 +67,7 @@ public class Answer {
         }
         return (answer, cq, cb) -> cb.equal(answer.get("entry"), entryId);
     }
+
     public static Specification<Answer> isNotDeleted() {
         return (answer, cq, cb) -> cb.isFalse(answer.get("isDeleted"));
     }

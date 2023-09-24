@@ -117,6 +117,13 @@ public class EntryService {
         Entry entry = this.entryRepository.findById(entryId).orElseThrow(
                 () -> new GenericServiceException(String.format("Entry with id = %d does not exist", entryId)));
 
+        User user = this.userRepository.findById(userId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
+
+        if (!entry.getAuthor().getId().equals(user.getId()) && !user.getIsAdmin()) {
+            throw new GenericServiceException("You are not allowed to edit this entry");
+        }
+
         if (typeId != null) {
             EntryType type = new EntryType();
             type.setId(typeId);
@@ -133,12 +140,6 @@ public class EntryService {
 
         if (categoryIds.size() > 0) {
             entry.setCategories(this.categoryRepository.getCategoriesByIdIsIn(categoryIds));
-        }
-
-        if (userId != null) {
-            User user = this.userRepository.findById(userId).orElseThrow(
-                    () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
-            entry.setAuthor(user);
         }
 
         // TODO: Implement image.
