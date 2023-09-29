@@ -1,5 +1,7 @@
 package backend.common.service;
 
+import backend.answer.model.Answer;
+import backend.answer.repository.AnswerRepository;
 import backend.common.model.Vote;
 import backend.common.repository.VoteRepository;
 import backend.entry.model.Entry;
@@ -19,10 +21,14 @@ public class VoteService {
 
     private final VoteRepository voteRepository;
 
-    public VoteService(EntryRepository entryRepository, UserRepository userRepository, VoteRepository voteRepository) {
+    private final AnswerRepository answerRepository;
+
+    public VoteService(EntryRepository entryRepository, UserRepository userRepository, VoteRepository voteRepository,
+                       AnswerRepository answerRepository) {
         this.entryRepository = entryRepository;
         this.userRepository = userRepository;
         this.voteRepository = voteRepository;
+        this.answerRepository = answerRepository;
     }
 
     public void voteForEntry(Integer entryId, Integer userId, Integer value) {
@@ -60,7 +66,34 @@ public class VoteService {
         // TODO
     }
 
-    public void voteForAnswer(Integer entryId, Integer answerId, Integer value) {
-        // TODO
+    public void voteForAnswer(Integer answerId, Integer userId, Integer value) {
+        Answer answer = this.answerRepository.findById(answerId).orElseThrow(
+                () -> new GenericServiceException(String.format("Answer with id = %d does not exist", answerId)));
+
+        User user = this.userRepository.findById(userId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
+
+        Optional<Vote> voteOptional = answer.getVotes().stream()
+                .filter(v -> v.getUser().getId().equals(userId))
+                .findFirst();
+
+        Vote vote;
+
+        if (voteOptional.isPresent()) {
+            vote = voteOptional.get();
+            vote.setValue(value);
+        } else {
+            vote = new Vote();
+            vote.setUser(user);
+            vote.setValue(value);
+            answer.getVotes().add(vote);
+        }
+
+        try {
+            this.voteRepository.save(vote);
+            this.answerRepository.save(answer);
+        } catch (DataAccessException exception) {
+            throw new GenericServiceException(exception.getMessage());
+        }
     }
 }

@@ -56,9 +56,19 @@ public class VoteController {
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> voteForAnswer(@PathVariable("entry_id") Integer entryId,
                                                       @PathVariable("answer_id") Integer answerId,
-                                                      @Valid @RequestBody VoteDto voteDto) {
+                                                      @Valid @RequestBody VoteDto voteDto,
+                                                      @AuthenticationPrincipal AppUserDetails userDetails) {
+        try {
+            this.voteService.voteForAnswer(answerId, userDetails.getId(), voteDto.getValue());
+        } catch (GenericServiceException exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+
         return Response.builder()
-                .httpStatusCode(HttpStatus.NOT_IMPLEMENTED)
+                .httpStatusCode(HttpStatus.OK)
                 .build();
     }
 }
