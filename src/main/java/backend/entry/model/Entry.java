@@ -11,6 +11,7 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.sql.Timestamp;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -76,6 +77,25 @@ public class Entry {
 
     @OneToMany(mappedBy = "entry")
     private Set<Answer> answers;
+
+    public void addVote(User user, Integer value) {
+        Optional<Vote> voteOptional = this.votes.stream()
+                .filter(v -> v.getUser().getId().equals(user.getId()))
+                .findFirst();
+        Vote vote;
+
+        if (voteOptional.isPresent()) {
+            vote = voteOptional.get();
+            this.votes.remove(vote);
+            vote.setValue(value);
+        } else {
+            vote = new Vote();
+            vote.setUser(user);
+            vote.setValue(value);
+        }
+
+        this.votes.add(vote);
+    }
 
     public static Specification<Entry> titleContains(String query) {
         if (query == null) {

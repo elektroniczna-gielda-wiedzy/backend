@@ -27,7 +27,7 @@ public class AnswerCommentController {
 
     @GetMapping(path = "/{entry_id}/answer/{answer_id}/comment", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> getComments(@PathVariable("entry_id") Integer entryId,
-                                                      @PathVariable("answer_id") Integer answerId) {
+                                                    @PathVariable("answer_id") Integer answerId) {
         List<Comment> comments;
 
         try {

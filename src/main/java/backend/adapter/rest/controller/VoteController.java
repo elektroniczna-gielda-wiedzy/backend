@@ -4,11 +4,14 @@ import backend.adapter.rest.model.vote.FavoriteSetterDto;
 import backend.adapter.rest.model.vote.VoteDto;
 import backend.adapter.rest.Response;
 import backend.adapter.rest.StandardBody;
+import backend.common.service.GenericServiceException;
 import backend.common.service.VoteService;
+import backend.user.model.AppUserDetails;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,10 +26,19 @@ public class VoteController {
     @PutMapping(path = "{entry_id}/vote", consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> voteForEntry(@PathVariable("entry_id") Integer entryId,
-                                                     @Valid @RequestBody
-                                                     VoteDto voteDto) {
+                                                     @Valid @RequestBody VoteDto voteDto,
+                                                     @AuthenticationPrincipal AppUserDetails userDetails) {
+        try {
+            this.voteService.voteForEntry(entryId, userDetails.getId(), voteDto.getValue());
+        } catch (GenericServiceException exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+
         return Response.builder()
-                .httpStatusCode(HttpStatus.NOT_IMPLEMENTED)
+                .httpStatusCode(HttpStatus.OK)
                 .build();
     }
 
