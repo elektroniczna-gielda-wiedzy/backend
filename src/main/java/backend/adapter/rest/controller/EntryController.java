@@ -29,7 +29,8 @@ public class EntryController {
     }
 
     @GetMapping(path = "/{entry_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> getEntry(@PathVariable("entry_id") Integer entryId) {
+    public ResponseEntity<StandardBody> getEntry(@AuthenticationPrincipal AppUserDetails userDetails,
+                                                 @PathVariable("entry_id") Integer entryId) {
         Entry entry;
 
         try {
@@ -43,7 +44,7 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(List.of(EntryDto.buildFromModel(entry, true, true)))
+                .result(List.of(EntryDto.buildFromModel(entry, userDetails.getUser(), true, true)))
                 .build();
     }
 
@@ -71,7 +72,9 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(entries.stream().map(e -> EntryDto.buildFromModel(e, false, false)).toList())
+                .result(entries.stream()
+                                .map(e -> EntryDto.buildFromModel(e, userDetails.getUser(), false, false))
+                                .toList())
                 .build();
     }
 
@@ -98,7 +101,7 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.CREATED)
-                .result(List.of(EntryDto.buildFromModel(entry, true, true)))
+                .result(List.of(EntryDto.buildFromModel(entry, userDetails.getUser(), true, true)))
                 .build();
     }
 
@@ -127,7 +130,7 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(List.of(EntryDto.buildFromModel(entry, true, true)))
+                .result(List.of(EntryDto.buildFromModel(entry, userDetails.getUser(), true, true)))
                 .build();
     }
 

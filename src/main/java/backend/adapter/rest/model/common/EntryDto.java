@@ -2,6 +2,7 @@ package backend.adapter.rest.model.common;
 
 import backend.common.model.Vote;
 import backend.entry.model.Entry;
+import backend.user.model.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -63,7 +64,7 @@ public class EntryDto {
     @JsonProperty("votes")
     private Integer votes;
 
-    public static EntryDto buildFromModel(Entry entry, boolean content, boolean answers) {
+    public static EntryDto buildFromModel(Entry entry, User user, boolean content, boolean answers) {
         EntryDtoBuilder builder = EntryDto.builder()
                 .entryId(entry.getId())
                 .entryTypeId(entry.getType().getId())
@@ -71,7 +72,8 @@ public class EntryDto {
                 .author(UserDto.buildFromModel(entry.getAuthor()))
                 .createdAt(entry.getCreatedAt())
                 .categories(entry.getCategories().stream().map(CategoryDto::buildFromModel).toList())
-                .votes(entry.getVotes().stream().mapToInt(Vote::getValue).sum());
+                .votes(entry.getVotes().stream().mapToInt(Vote::getValue).sum())
+                .favorite(entry.getLikedBy().stream().anyMatch(u -> u.getId().equals(user.getId())));
 
         if (content) {
             builder.content(entry.getContent());

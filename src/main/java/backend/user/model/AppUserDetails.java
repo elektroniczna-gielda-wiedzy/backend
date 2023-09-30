@@ -26,6 +26,10 @@ public class AppUserDetails implements UserDetails {
         return authorityList;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public Integer getId() {
         return user.getId();
     }

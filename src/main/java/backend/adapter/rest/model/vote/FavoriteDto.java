@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FavoriteSetterDto {
+public class FavoriteDto {
     @JsonProperty("value")
     @NotNull(message = "value cannot be null")
     public Integer value;

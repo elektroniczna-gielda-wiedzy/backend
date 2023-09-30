@@ -1,6 +1,6 @@
 package backend.adapter.rest.controller;
 
-import backend.adapter.rest.model.vote.FavoriteSetterDto;
+import backend.adapter.rest.model.vote.FavoriteDto;
 import backend.adapter.rest.model.vote.VoteDto;
 import backend.adapter.rest.Response;
 import backend.adapter.rest.StandardBody;
@@ -45,10 +45,19 @@ public class VoteController {
     @PutMapping(path = "{entry_id}/favorite", consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> setFavoriteStatus(@PathVariable("entry_id") Integer entryId,
-                                                          @Valid @RequestBody
-                                                          FavoriteSetterDto favoriteSetterDto) {
+                                                          @Valid @RequestBody FavoriteDto favoriteDto,
+                                                          @AuthenticationPrincipal AppUserDetails userDetails) {
+        try {
+            this.voteService.setFavoriteStatus(entryId, userDetails.getId(), favoriteDto.getValue());
+        } catch (GenericServiceException exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+
         return Response.builder()
-                .httpStatusCode(HttpStatus.NOT_IMPLEMENTED)
+                .httpStatusCode(HttpStatus.OK)
                 .build();
     }
 

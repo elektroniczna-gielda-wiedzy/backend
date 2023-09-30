@@ -12,6 +12,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class VoteService {
@@ -62,8 +63,46 @@ public class VoteService {
         }
     }
 
-    public void setFavoriteStatus(Integer entryId, Integer value) {
-        // TODO
+    public void setFavoriteStatus(Integer entryId, Integer userId, Integer opcode) {
+        Entry entry = this.entryRepository.findById(entryId).orElseThrow(
+                () -> new GenericServiceException(String.format("Entry with id = %d does not exist", entryId)));
+
+        User user = this.userRepository.findById(userId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
+
+        Set<Entry> favorites = user.getFavorites();
+        Set<User> linkedBy = entry.getLikedBy();
+        boolean isInFavorites = favorites.contains(entry);
+
+        switch (opcode) {
+            case 1 -> {
+                /* Add to favorites */
+                if (isInFavorites) {
+                    return;  /* XXX: Error? */
+                }
+                favorites.add(entry);
+                linkedBy.add(user);
+            }
+            case -1 -> {
+                /* Remove from favorites */
+                if (!isInFavorites) {
+                    return; /* XXX: Error? */
+                }
+                favorites.remove(entry);
+                linkedBy.remove(user);
+            }
+            default -> throw new GenericServiceException("Invalid opcode");
+        }
+
+        user.setFavorites(favorites);
+        entry.setLikedBy(linkedBy);
+
+        try {
+            this.userRepository.save(user);
+            this.entryRepository.save(entry);
+        } catch (DataAccessException exception) {
+            throw new GenericServiceException(exception.getMessage());
+        }
     }
 
     public void voteForAnswer(Integer answerId, Integer userId, Integer value) {
