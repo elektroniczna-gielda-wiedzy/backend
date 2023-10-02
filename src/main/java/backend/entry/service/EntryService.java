@@ -99,6 +99,8 @@ public class EntryService {
         entry.setContent(content);
         entry.setCategories(this.categoryRepository.getCategoriesByIdIsIn(categoryIds));
         entry.setAuthor(user);
+        entry.setVotes(Set.of());
+        entry.setLikedBy(Set.of());
         entry.setCreatedAt(Timestamp.from(Instant.now()));
 
         // TODO: Implement image.
