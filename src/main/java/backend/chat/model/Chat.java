@@ -37,7 +37,7 @@ public class Chat {
     private Timestamp userTwoLastRead;
 
     public User getOppositeUser(Integer userId) {
-        return userId.equals(this.getUserOne().getId()) ? this.getUserOne() : this.getUserTwo();
+        return userId.equals(this.getUserOne().getId()) ? this.getUserTwo() : this.getUserOne();
     }
 
     public Timestamp getLastReadForUser(Integer userId) {
