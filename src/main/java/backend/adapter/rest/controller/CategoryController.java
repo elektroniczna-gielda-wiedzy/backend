@@ -111,9 +111,26 @@ public class CategoryController {
     }
 
     @DeleteMapping(path = "{category_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> deleteCategory(@PathVariable("category_id") Integer categoryId) {
+    public ResponseEntity<StandardBody> deleteCategory(@PathVariable("category_id") Integer categoryId,
+                                                       @AuthenticationPrincipal AppUserDetails userDetails) {
+        if (!userDetails.getUser().getIsAdmin()) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage("You do not have permission to delete the category")
+                    .build();
+        }
+
+        try {
+            this.categoryService.deleteCategory(categoryId);
+        } catch (GenericServiceException exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+
         return Response.builder()
-                .httpStatusCode(HttpStatus.NOT_IMPLEMENTED)
+                .httpStatusCode(HttpStatus.OK)
                 .build();
     }
 }

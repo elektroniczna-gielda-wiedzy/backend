@@ -3,6 +3,7 @@ package backend.entry.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Set;
 
@@ -31,4 +32,8 @@ public class Category {
 
     @OneToMany(mappedBy = "category")
     private Set<CategoryTranslation> categoryTranslations;
+
+    public static Specification<Category> isNotDeleted() {
+        return (entry, cq, cb) -> cb.isFalse(entry.get("isDeleted"));
+    }
 }

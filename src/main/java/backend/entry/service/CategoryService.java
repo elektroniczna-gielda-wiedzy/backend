@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+
+import static backend.entry.model.Category.*;
+import static org.springframework.data.jpa.domain.Specification.where;
 
 @Service
 public class CategoryService {
@@ -33,7 +35,7 @@ public class CategoryService {
     }
 
     public List<Category> getCategories() {
-        return this.categoryRepository.findAll();
+        return this.categoryRepository.findAll(where(isNotDeleted()));
     }
 
     public Category createCategory(Integer typeId, List<CategoryTranslationDto> translations, Integer parentId) {
@@ -110,7 +112,16 @@ public class CategoryService {
     }
 
     public void deleteCategory(Integer categoryId) {
-        // TODO
+        Category category = this.categoryRepository.findById(categoryId).orElseThrow(
+                () -> new GenericServiceException(String.format("Category with id = %d does not exist", categoryId)));
+
+        category.setIsDeleted(true);
+
+        try {
+            this.categoryRepository.save(category);
+        } catch (DataAccessException exception) {
+            throw new GenericServiceException(exception.getMessage());
+        }
     }
 
     private CategoryTranslation createCategoryTranslation(Category category, Integer languageId, String translation) {
