@@ -1,6 +1,5 @@
 package backend.entry.service;
 
-import backend.common.model.Language;
 import backend.common.repository.LanguageRepository;
 import backend.common.service.GenericServiceException;
 import backend.entry.model.Category;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -36,7 +36,7 @@ public class CategoryService {
         return this.categoryRepository.findAll();
     }
 
-    public Category addCategory(Integer typeId, List<CategoryTranslationDto> translations, Integer parentId) {
+    public Category createCategory(Integer typeId, List<CategoryTranslationDto> translations, Integer parentId) {
         CategoryType type = CategoryType.valueOf(typeId).orElseThrow(
                 () -> new GenericServiceException("Invalid category type"));
 
@@ -55,24 +55,11 @@ public class CategoryService {
         }
 
         Set<CategoryTranslation> categoryTranslations = new HashSet<>();
-
         for (CategoryTranslationDto translation: translations) {
-            CategoryTranslation categoryTranslation = new CategoryTranslation();
-            categoryTranslation.setCategory(category);
-            categoryTranslation.setTranslation(translation.getTranslation());
-            categoryTranslation.setLanguage(this.languageRepository.findById(translation.getLanguageId()).orElseThrow(
-                    () -> new GenericServiceException(String.format("Language with id = %d does not exist",
-                                                                    translation.getLanguageId()))));
-
-            try {
-                this.categoryTranslationRepository.save(categoryTranslation);
-            } catch (DataAccessException exception) {
-                throw new GenericServiceException(exception.getMessage());
-            }
-
-            categoryTranslations.add(categoryTranslation);
+            categoryTranslations.add(this.createCategoryTranslation(category,
+                                                                    translation.getLanguageId(),
+                                                                    translation.getTranslation()));
         }
-
         category.setCategoryTranslations(categoryTranslations);
 
         try {
@@ -84,10 +71,62 @@ public class CategoryService {
         return category;
     }
 
-    public Category editCategory() {
-        return null;
+    public Category updateCategory(Integer categoryId, Integer typeId, List<CategoryTranslationDto> translations,
+                                   Integer parentId) {
+        Category category = this.categoryRepository.findById(categoryId).orElseThrow(
+                () -> new GenericServiceException(String.format("Category with id = %d does not exist", categoryId)));
+
+        if (typeId != null) {
+            CategoryType type = CategoryType.valueOf(typeId).orElseThrow(
+                    () -> new GenericServiceException("Invalid category type"));
+            category.setCategoryType(type);
+        }
+
+        if (translations.size() > 0) {
+            this.categoryTranslationRepository.deleteAll(category.getCategoryTranslations());
+
+            Set<CategoryTranslation> categoryTranslations = new HashSet<>();
+            for (CategoryTranslationDto translation: translations) {
+                categoryTranslations.add(this.createCategoryTranslation(category,
+                                                                        translation.getLanguageId(),
+                                                                        translation.getTranslation()));
+            }
+            category.setCategoryTranslations(categoryTranslations);
+        }
+
+        if (parentId != null) {
+            Category parent = this.categoryRepository.findById(parentId).orElseThrow(
+                    () -> new GenericServiceException(String.format("Category with id = %d does not exist", parentId)));
+            category.setParentCategory(parent);
+        }
+
+        try {
+            this.categoryRepository.save(category);
+        } catch (DataAccessException exception) {
+            throw new GenericServiceException(exception.getMessage());
+        }
+
+        return category;
     }
 
     public void deleteCategory(Integer categoryId) {
+        // TODO
+    }
+
+    private CategoryTranslation createCategoryTranslation(Category category, Integer languageId, String translation) {
+        CategoryTranslation categoryTranslation = new CategoryTranslation();
+
+        categoryTranslation.setCategory(category);
+        categoryTranslation.setTranslation(translation);
+        categoryTranslation.setLanguage(this.languageRepository.findById(languageId).orElseThrow(
+                () -> new GenericServiceException(String.format("Language with id = %d does not exist", languageId))));
+
+        try {
+            this.categoryTranslationRepository.save(categoryTranslation);
+        } catch (DataAccessException exception) {
+            throw new GenericServiceException(exception.getMessage());
+        }
+
+        return categoryTranslation;
     }
 }

@@ -16,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/category")
@@ -28,7 +30,7 @@ public class CategoryController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> getCategoryList() {
+    public ResponseEntity<StandardBody> getCategories() {
         List<Category> categories = this.categoryService.getCategories();
 
         return Response.builder()
@@ -38,8 +40,8 @@ public class CategoryController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> addCategory(@Valid @RequestBody CategoryDto categoryDto,
-                                                    @AuthenticationPrincipal AppUserDetails userDetails) {
+    public ResponseEntity<StandardBody> createCategory(@Valid @RequestBody CategoryDto categoryDto,
+                                                       @AuthenticationPrincipal AppUserDetails userDetails) {
         Category category;
 
         if (!userDetails.getUser().getIsAdmin()) {
@@ -50,7 +52,7 @@ public class CategoryController {
         }
 
         try {
-            category = this.categoryService.addCategory(
+            category = this.categoryService.createCategory(
                     categoryDto.getCategoryType(),
                     categoryDto.getNames().stream()
                                     .map(t -> new CategoryTranslationDto(t.getLanguageId(), t.getTranslatedName()))
@@ -72,10 +74,39 @@ public class CategoryController {
 
     @PutMapping(path = "/{category_id}", consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> editCategory(@PathVariable("category_id") Integer categoryId,
-                                                     @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<StandardBody> updateCategory(@PathVariable("category_id") Integer categoryId,
+                                                       @RequestBody CategoryDto categoryDto,
+                                                       @AuthenticationPrincipal AppUserDetails userDetails) {
+        Category category;
+
+        if (!userDetails.getUser().getIsAdmin()) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage("You do not have permission to update the category")
+                    .build();
+        }
+
+        try {
+            category = this.categoryService.updateCategory(
+                    categoryId,
+                    categoryDto.getCategoryType(),
+                    Optional.ofNullable(categoryDto.getNames())
+                            .orElseGet(Collections::emptyList)
+                            .stream()
+                            .map(t -> new CategoryTranslationDto(t.getLanguageId(), t.getTranslatedName()))
+                            .toList(),
+                    categoryDto.getParentId()
+            );
+        } catch (GenericServiceException exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+
         return Response.builder()
-                .httpStatusCode(HttpStatus.NOT_IMPLEMENTED)
+                .httpStatusCode(HttpStatus.OK)
+                .result(List.of(CategoryDto.buildFromModel(category)))
                 .build();
     }
 
