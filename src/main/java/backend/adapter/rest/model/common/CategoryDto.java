@@ -2,6 +2,7 @@ package backend.adapter.rest.model.common;
 
 import backend.entry.model.Category;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,12 +17,15 @@ public class CategoryDto {
     private Integer categoryId;
 
     @JsonProperty("type")
+    @NotNull(message = "type cannot be null")
     private Integer categoryType;
 
     @JsonProperty("names")
+    @NotNull(message = "names cannot be null")
     private List<CategoryTranslationDto> names;
 
     @JsonProperty("parent_id")
+    @NotNull(message = "parent_id cannot be null")
     private Integer parentId;
 
     public CategoryDto(Integer categoryId) {
