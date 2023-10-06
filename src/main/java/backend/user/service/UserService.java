@@ -1,5 +1,6 @@
 package backend.user.service;
 
+import backend.common.service.EmailService;
 import backend.common.service.GenericServiceException;
 import backend.user.model.User;
 import backend.user.repository.UserRepository;
@@ -16,9 +17,12 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserService(PasswordEncoder encoder, UserRepository userRepository) {
+    private final EmailService emailService;
+
+    public UserService(PasswordEncoder encoder, UserRepository userRepository, EmailService emailService) {
         this.encoder = encoder;
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
     public void createUser(String email, String password, String firstname, String lastname, boolean isAdmin) {
@@ -38,5 +42,7 @@ public class UserService {
         } catch (DataAccessException exception) {
             throw new GenericServiceException(exception.getMessage());
         }
+
+//        this.emailService.sendEmail("mfurga@student.agh.edu.pl", "test", "test:)");
     }
 }

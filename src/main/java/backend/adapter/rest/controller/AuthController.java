@@ -44,8 +44,7 @@ public class AuthController {
 
     @PostMapping(path = "/sign_in", consumes = MediaType.APPLICATION_JSON_VALUE,
                  produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> sign_in(@Valid @RequestBody
-                                                SignInRequest request) {
+    public ResponseEntity<StandardBody> sign_in(@Valid @RequestBody SignInRequest request) {
         Authentication auth;
 
         try {
@@ -74,10 +73,7 @@ public class AuthController {
 
     @PostMapping(path = "/sign_up", consumes = MediaType.APPLICATION_JSON_VALUE,
                  produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> sign_up(@Valid
-                                                @RequestBody
-                                                SignUpRequest request) {
-
+    public ResponseEntity<StandardBody> sign_up(@Valid @RequestBody SignUpRequest request) {
         try {
             this.userService.createUser(request.getEmail(),
                                         request.getPassword(),
@@ -90,6 +86,7 @@ public class AuthController {
                     .addMessage(exception.getMessage())
                     .build();
         }
+
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.CREATED)
