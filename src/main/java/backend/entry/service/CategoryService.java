@@ -42,8 +42,11 @@ public class CategoryService {
         CategoryType type = CategoryType.valueOf(typeId).orElseThrow(
                 () -> new GenericServiceException("Invalid category type"));
 
-        Category parent = this.categoryRepository.findById(parentId).orElseThrow(
-                () -> new GenericServiceException(String.format("Category with id = %d does not exist", parentId)));
+        Category parent = null;
+        if (parentId != null) {
+            parent = this.categoryRepository.findById(parentId).orElseThrow(
+                    () -> new GenericServiceException(String.format("Category with id = %d does not exist", parentId)));
+        }
 
         Category category = new Category();
         category.setCategoryType(type);
