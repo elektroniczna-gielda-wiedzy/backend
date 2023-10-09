@@ -25,7 +25,6 @@ public class CategoryDto {
     private List<CategoryTranslationDto> names;
 
     @JsonProperty("parent_id")
-    @NotNull(message = "parent_id cannot be null")
     private Integer parentId;
 
     public CategoryDto(Integer categoryId) {

@@ -2,6 +2,7 @@ package backend.answer.service;
 
 import backend.answer.model.Answer;
 import backend.entry.model.Entry;
+import backend.entry.model.EntryType;
 import backend.user.model.User;
 import backend.answer.repository.AnswerRepository;
 import backend.entry.repository.EntryRepository;
@@ -50,6 +51,10 @@ public class AnswerService {
 
         User user = this.userRepository.findById(userId).orElseThrow(
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
+
+        if(!entry.getType().getName().equals("Post")) {
+            throw new GenericServiceException("Answers can only be created for entries of \"Post\" type");
+        }
 
         Answer answer = new Answer();
         answer.setEntry(entry);

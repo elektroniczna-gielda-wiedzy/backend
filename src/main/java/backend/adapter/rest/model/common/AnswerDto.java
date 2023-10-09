@@ -2,6 +2,7 @@ package backend.adapter.rest.model.common;
 
 import backend.answer.model.Answer;
 import backend.answer.model.Comment;
+import backend.common.model.Vote;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
@@ -58,7 +59,7 @@ public class AnswerDto {
                                   .toList())
                 .createdAt(answer.getCreatedAt())
                 .isTopAnswer(answer.getIsTopAnswer())
-                .votes(answer.getVotes().size())
+                .votes(answer.getVotes().stream().map(Vote::getValue).reduce(0, Integer::sum))
                 .build();
     }
 }

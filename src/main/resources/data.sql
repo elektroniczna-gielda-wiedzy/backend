@@ -237,6 +237,8 @@ INSERT INTO entry_category(entry_id, category_id) VALUES
 
 ALTER TABLE answer ALTER COLUMN content TYPE VARCHAR(1000);
 INSERT INTO answer(answer_id, entry_id, user_id, content, created_at, is_deleted, top_answer) VALUES
+                                                                                                  (62, 15, 1,
+'Hej, chodzi o dowolny algorytm czy jakiś konkretny?', current_timestamp - INTERVAL '5 minutes', false, false),
                                                                                                   (51, 3, 2,
 'Hej, może powinieneś spróbować użyć algorytmu sortowania przez wstawianie. Jest zazwyczaj szybszy niż sortowanie bąbelkowe.', current_timestamp - INTERVAL '3 minutes', false, false),
                                                                                                   (50, 3, 1,
