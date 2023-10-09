@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Builder
 @Getter
@@ -48,30 +49,31 @@ public class ChatDto {
 
     public static ChatDto buildFromModel(Chat chat, Integer userId) {
         User otherUser = chat.getOppositeUser(userId);
-        Optional<Message> lastMessageOptional = Optional.ofNullable(chat.getMessages())
-                .orElseGet(Collections::emptyList)
-                .stream()
-                .min(Comparator.comparing(Message::getDateSent));
+        Timestamp lastRead = chat.getLastReadForUser(userId);
 
-        boolean isRead = true;
-        if (lastMessageOptional.isPresent()) {
-            Message lastMessage = lastMessageOptional.get();
-            Timestamp lastRead = chat.getLastReadForUser(userId);
-            if (!lastMessage.getSenderUser().getId().equals(userId) && lastMessage.getDateSent().after(lastRead)) {
-                isRead = false;
-            }
-        }
+        List<Message> allMessages = Optional.ofNullable(chat.getMessages()).orElseGet(Collections::emptyList);
+        List<MessageDto> allMessageDtos = allMessages.stream()
+                .map(MessageDto::buildFromObject)
+                .toList();
+
+        // Find all unread messages sent by the other user
+        List<Message> unreadMessages = allMessages.stream()
+                .filter(msg -> !msg.getSenderUser().getId().equals(userId) && msg.getDateSent().after(lastRead))
+                .toList();
+
+        // If there are no unread messages, then the chat is considered read
+        boolean isRead = unreadMessages.isEmpty();
+
+        // Get the last message (if there is one)
+        Optional<MessageDto> lastMessageDto = allMessageDtos.stream()
+                .max(Comparator.comparing(MessageDto::getDateSent));
 
         return ChatDto.builder()
                 .chatId(chat.getId())
                 .otherUserId(otherUser.getId())
                 .otherUser(UserDto.buildFromModel(otherUser))
-                .messages(Optional.ofNullable(chat.getMessages())
-                                  .orElseGet(Collections::emptyList)
-                                  .stream()
-                                  .map(MessageDto::buildFromObject)
-                                  .toList())
-                .lastMessage(lastMessageOptional.map(MessageDto::buildFromObject).orElse(null))
+                .messages(allMessageDtos)
+                .lastMessage(lastMessageDto.orElse(null))
                 .isRead(isRead)
                 .build();
     }
