@@ -32,6 +32,9 @@ public class Comment {
     @Column(name = "created_at")
     private Timestamp createdAt;
 
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;
+
     public static Specification<Comment> hasAnswerId(Integer answerId) {
         if (answerId == null) {
             return (comment, cq, cb) -> cb.conjunction();

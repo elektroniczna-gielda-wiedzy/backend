@@ -30,12 +30,17 @@ public class CommentDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
     private Date createdAt;
 
+    @JsonProperty("updated_at")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ssZ")
+    private Date updatedAt;
+
     public static CommentDto buildFromModel(Comment comment) {
         return CommentDto.builder()
                 .commentId(comment.getId())
                 .author(UserDto.buildFromModel(comment.getAuthor()))
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())
+                .updatedAt(comment.getUpdatedAt())
                 .build();
     }
 }

@@ -60,7 +60,9 @@ public class AnswerService {
         answer.setEntry(entry);
         answer.setUser(user);
         answer.setContent(content);
-        answer.setCreatedAt(Timestamp.from(Instant.now()));
+        Timestamp createdAt = Timestamp.from(Instant.now());
+        answer.setCreatedAt(createdAt);
+        answer.setUpdatedAt(createdAt);
         answer.setVotes(Set.of());
         answer.setIsDeleted(false);
         answer.setIsTopAnswer(false);
@@ -90,6 +92,7 @@ public class AnswerService {
         if (content != null) {
             answer.setContent(content);
         }
+        answer.setUpdatedAt(Timestamp.from(Instant.now()));
 
         try {
             this.answerRepository.save(answer);

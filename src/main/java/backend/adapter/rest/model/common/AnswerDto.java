@@ -38,6 +38,10 @@ public class AnswerDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
     private Date createdAt;
 
+    @JsonProperty("updated_at")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ssZ")
+    private Date updatedAt;
+
     @JsonProperty("top_answer")
     private boolean isTopAnswer;
 
@@ -46,6 +50,7 @@ public class AnswerDto {
 
     @JsonProperty("image")
     private String image;
+
 
     public static AnswerDto buildFromModel(Answer answer) {
         return AnswerDto.builder()
@@ -58,6 +63,7 @@ public class AnswerDto {
                                   .map(CommentDto::buildFromModel)
                                   .toList())
                 .createdAt(answer.getCreatedAt())
+                .updatedAt(answer.getUpdatedAt())
                 .isTopAnswer(answer.getIsTopAnswer())
                 .votes(answer.getVotes().stream().map(Vote::getValue).reduce(0, Integer::sum))
                 .build();

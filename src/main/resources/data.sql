@@ -1,5 +1,3 @@
-
-
 INSERT INTO language(name) VALUES ('polish'), ('english');
 INSERT INTO category(type, is_deleted, parent_id) VALUES (0, false, NULL),
                                                          (0, false, NULL),
@@ -236,17 +234,17 @@ INSERT INTO entry_category(entry_id, category_id) VALUES
 
 
 ALTER TABLE answer ALTER COLUMN content TYPE VARCHAR(1000);
-INSERT INTO answer(answer_id, entry_id, user_id, content, created_at, is_deleted, top_answer) VALUES
+INSERT INTO answer(answer_id, entry_id, user_id, content, created_at, updated_at, is_deleted, top_answer) VALUES
                                                                                                   (62, 15, 1,
-'Hej, chodzi o dowolny algorytm czy jakiś konkretny?', current_timestamp - INTERVAL '5 minutes', false, false),
+'Hej, chodzi o dowolny algorytm czy jakiś konkretny?', current_timestamp - INTERVAL '5 minutes', current_timestamp - INTERVAL '5 minutes', false, false),
                                                                                                   (51, 3, 2,
-'Hej, może powinieneś spróbować użyć algorytmu sortowania przez wstawianie. Jest zazwyczaj szybszy niż sortowanie bąbelkowe.', current_timestamp - INTERVAL '3 minutes', false, false),
+'Hej, może powinieneś spróbować użyć algorytmu sortowania przez wstawianie. Jest zazwyczaj szybszy niż sortowanie bąbelkowe.', current_timestamp - INTERVAL '3 minutes', current_timestamp - INTERVAL '3 minutes', false, false),
                                                                                                   (50, 3, 1,
 'Problemem jest logika Twojego kodu. W rzeczywistości, kiedy sortowanie bąbelkowe zaczyna porównywanie elementów, powinno początkowo założyć, że lista jest posortowana. Jeśli znajdzie jakiekolwiek dwa elementy, które są w złej kolejności, powinno ustawić flagę informującą, że lista jest niesortowana. Ta flaga pozostanie prawdziwa tylko wtedy, gdy wszystkie elementy są w prawidłowej kolejności.
 
 Dodatkowo warte wspomnienia jest to, że python umożliwia prostrzą zamianę wartości zmiennych bez tworzenia zmiennej tymczasowej',
-                                                                                                   current_timestamp - INTERVAL '60 minutes', false, true),
-                                                                                                  (49, 13, 1, 'Czy mógłbyś podać kod, którego dotyczy problem?', current_timestamp - INTERVAL '5 minutes', false, false);
+                                                                                                   current_timestamp - INTERVAL '60 minutes', current_timestamp - INTERVAL '60 minutes', false, true),
+                                                                                                  (49, 13, 1, 'Czy mógłbyś podać kod, którego dotyczy problem?', current_timestamp - INTERVAL '5 minutes', current_timestamp - INTERVAL '5 minutes', false, false);
 
 
 INSERT INTO image(image) VALUES
@@ -284,5 +282,6 @@ INSERT INTO messages(content, date_sent, chat_id, sender_id) VALUES
 ('Cześć, z fizyki nigdy nie prowadziłem ale mogę spróbować.', current_timestamp - INTERVAL '150 minutes', 3, 1),
 ('Świetnie! Czy odpowiadałaby ci sobota o 12:00?', current_timestamp - INTERVAL '68 minutes', 3, 4);
 
-
-
+INSERT INTO comment(content, created_at, updated_at, answer_id, author_id) VALUES
+('W jaki sposób prościej te wartości zamienić?', current_timestamp - INTERVAL '10 minutes', current_timestamp - INTERVAL '10 minutes', 50, 2),
+('a, b = b, a', current_timestamp - INTERVAL '5 minutes', current_timestamp - INTERVAL '5 minutes', 50, 1);
