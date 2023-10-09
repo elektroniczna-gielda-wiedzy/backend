@@ -25,7 +25,8 @@ public class AnswerController {
     }
 
     @GetMapping(path = "{entry_id}/answer", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> getAnswers(@PathVariable("entry_id") Integer entryId) {
+    public ResponseEntity<StandardBody> getAnswers(@AuthenticationPrincipal AppUserDetails appUserDetails,
+                                                   @PathVariable("entry_id") Integer entryId) {
         List<Answer> answers;
 
         try {
@@ -39,7 +40,8 @@ public class AnswerController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(answers.stream().map(AnswerDto::buildFromModel).toList())
+                .result(answers.stream().
+                        map((answer) -> AnswerDto.buildFromModel(answer, appUserDetails.getId())).toList())
                 .build();
     }
 
@@ -66,7 +68,7 @@ public class AnswerController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.CREATED)
-                .result(List.of(AnswerDto.buildFromModel(answer)))
+                .result(List.of(AnswerDto.buildFromModel(answer, userDetails.getId())))
                 .build();
     }
 
@@ -93,7 +95,7 @@ public class AnswerController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(List.of(AnswerDto.buildFromModel(answer)))
+                .result(List.of(AnswerDto.buildFromModel(answer, userDetails.getId())))
                 .build();
     }
 

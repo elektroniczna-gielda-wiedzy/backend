@@ -35,6 +35,9 @@ public class EntryDto {
     @JsonProperty("author")
     private UserDto author;
 
+    @JsonProperty("user_vote")
+    private Integer voteValue;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("content")
     @NotNull(message = "content cannot be null")
@@ -73,7 +76,10 @@ public class EntryDto {
                 .createdAt(entry.getCreatedAt())
                 .categories(entry.getCategories().stream().map(CategoryDto::buildFromModel).toList())
                 .votes(entry.getVotes().stream().mapToInt(Vote::getValue).sum())
+                .voteValue(entry.getVotes().stream().
+                        filter(vote -> vote.getUser().getId().equals(user.getId())).mapToInt(Vote::getValue).sum())
                 .favorite(entry.getLikedBy().stream().anyMatch(u -> u.getId().equals(user.getId())));
+
 
         if (content) {
             builder.content(entry.getContent());
@@ -83,7 +89,7 @@ public class EntryDto {
             builder.answers(Optional.ofNullable(entry.getAnswers())
                                     .orElseGet(Collections::emptySet)
                                     .stream()
-                                    .map(AnswerDto::buildFromModel)
+                                    .map(answer -> AnswerDto.buildFromModel(answer, user.getId()))
                                     .toList());
         }
 
