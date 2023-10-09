@@ -46,6 +46,9 @@ public class Answer {
     @Column(name = "top_answer")
     private Boolean isTopAnswer;
 
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;
+
     @OneToMany(mappedBy = "answer")
     private Set<Comment> comments;
 

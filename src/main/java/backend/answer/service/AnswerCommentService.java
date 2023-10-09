@@ -50,7 +50,9 @@ public class AnswerCommentService {
         comment.setAuthor(user);
         comment.setAnswer(answer);
         comment.setContent(content);
-        comment.setCreatedAt(Timestamp.from(Instant.now()));
+        Timestamp createdAt = Timestamp.from(Instant.now());
+        comment.setCreatedAt(createdAt);
+        comment.setUpdatedAt(createdAt);
 
         try {
             this.answerCommentRepository.save(comment);
@@ -68,13 +70,14 @@ public class AnswerCommentService {
         User user = this.userRepository.findById(userId).orElseThrow(
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
 
-        if (!comment.getAnswer().getId().equals(userId) && !user.getIsAdmin()) {
+        if (!comment.getAuthor().getId().equals(userId) && !user.getIsAdmin()) {
             throw new GenericServiceException("You are not allowed to edit this comment");
         }
 
         if (content != null) {
             comment.setContent(content);
         }
+        comment.setUpdatedAt(Timestamp.from(Instant.now()));
 
         try {
             this.answerCommentRepository.save(comment);
@@ -92,7 +95,7 @@ public class AnswerCommentService {
         User user = this.userRepository.findById(userId).orElseThrow(
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
 
-        if (!comment.getAnswer().getId().equals(userId) && !user.getIsAdmin()) {
+        if (!comment.getAuthor().getId().equals(userId) && !user.getIsAdmin()) {
             throw new GenericServiceException("You are not allowed to delete this comment");
         }
 
