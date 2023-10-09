@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +118,9 @@ public class EntryController {
                     entryDto.getEntryTypeId(),
                     entryDto.getTitle(),
                     entryDto.getContent(),
-                    entryDto.getCategories().stream().map(CategoryDto::getCategoryId).toList(),
+                    entryDto.getCategories() != null?
+                            entryDto.getCategories().stream().map(CategoryDto::getCategoryId).toList():null
+                    ,
                     userDetails.getId(),
                     "TODO"
             );

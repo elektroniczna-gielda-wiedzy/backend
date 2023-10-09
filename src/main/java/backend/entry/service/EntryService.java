@@ -102,7 +102,6 @@ public class EntryService {
         entry.setVotes(Set.of());
         entry.setLikedBy(Set.of());
         entry.setCreatedAt(Timestamp.from(Instant.now()));
-
         // TODO: Implement image.
 
         try {
@@ -140,7 +139,7 @@ public class EntryService {
             entry.setContent(content);
         }
 
-        if (categoryIds.size() > 0) {
+        if (categoryIds != null && categoryIds.size() > 0) {
             entry.setCategories(this.categoryRepository.getCategoriesByIdIsIn(categoryIds));
         }
 

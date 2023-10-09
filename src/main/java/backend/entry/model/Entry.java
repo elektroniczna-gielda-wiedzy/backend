@@ -52,7 +52,7 @@ public class Entry {
     private Boolean isDeleted = false;
 
     @ManyToMany
-    @JoinTable(name = "VotedItem",
+    @JoinTable(name = "VoteEntry",
                joinColumns = {@JoinColumn(name = "voted_item_id")},
                inverseJoinColumns = {@JoinColumn(name = "vote_id")})
     private Set<Vote> votes;
