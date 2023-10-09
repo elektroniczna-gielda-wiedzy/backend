@@ -48,11 +48,14 @@ public class AnswerDto {
     @JsonProperty("votes")
     private Integer votes;
 
+    @JsonProperty("user_vote")
+    private Integer voteValue;
+
     @JsonProperty("image")
     private String image;
 
 
-    public static AnswerDto buildFromModel(Answer answer) {
+    public static AnswerDto buildFromModel(Answer answer, Integer userId) {
         return AnswerDto.builder()
                 .answerId(answer.getId())
                 .author(UserDto.buildFromModel(answer.getUser()))
@@ -66,6 +69,8 @@ public class AnswerDto {
                 .updatedAt(answer.getUpdatedAt())
                 .isTopAnswer(answer.getIsTopAnswer())
                 .votes(answer.getVotes().stream().map(Vote::getValue).reduce(0, Integer::sum))
+                .voteValue(answer.getVotes().stream().
+                        filter(vote -> vote.getUser().getId().equals(userId)).mapToInt(Vote::getValue).sum())
                 .build();
     }
 }
