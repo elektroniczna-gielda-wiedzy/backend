@@ -1,7 +1,10 @@
 package backend.user.service;
 
+import backend.adapter.rest.model.common.UserDto;
 import backend.common.service.EmailService;
 import backend.common.service.GenericServiceException;
+import backend.user.model.ActivityInfo;
+import backend.user.model.ExtendedUserDto;
 import backend.user.model.User;
 import backend.user.repository.UserRepository;
 import org.springframework.dao.DataAccessException;
@@ -45,4 +48,22 @@ public class UserService {
 
 //        this.emailService.sendEmail("mfurga@student.agh.edu.pl", "test", "test:)");
     }
+
+    public UserDto getUserInfo(Integer requestedUserId, Integer requestingUserId) {
+        User user = this.userRepository.findById(requestedUserId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", requestedUserId)));
+
+        if (requestingUserId.equals(requestedUserId)) {
+            return ExtendedUserDto.builder()
+                    .email(user.getEmail())
+                    .lastLogin(user.getLastLogin())
+                    .createdAt(user.getCreatedAt())
+
+
+        } else {
+
+        }
+    }
+
+
 }
