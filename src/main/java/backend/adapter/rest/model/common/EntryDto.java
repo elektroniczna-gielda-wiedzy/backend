@@ -47,9 +47,15 @@ public class EntryDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
     private Date createdAt;
 
+    // Used only for response
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("image_url")
+    private String imageUrl;
+
+    // Used only for request
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("image")
-    private String image;
+    private ImageDto image;
 
     @JsonProperty("categories")
     @NotNull(message = "categories cannot be null")
@@ -76,9 +82,11 @@ public class EntryDto {
                 .createdAt(entry.getCreatedAt())
                 .categories(entry.getCategories().stream().map(CategoryDto::buildFromModel).toList())
                 .votes(entry.getVotes().stream().mapToInt(Vote::getValue).sum())
-                .voteValue(entry.getVotes().stream().
-                        filter(vote -> vote.getUser().getId().equals(user.getId())).mapToInt(Vote::getValue).sum())
-                .favorite(entry.getLikedBy().stream().anyMatch(u -> u.getId().equals(user.getId())));
+                .voteValue(entry.getVotes().stream()
+                                   .filter(vote -> vote.getUser().getId().equals(user.getId()))
+                                   .mapToInt(Vote::getValue).sum())
+                .favorite(entry.getLikedBy().stream().anyMatch(u -> u.getId().equals(user.getId())))
+                .imageUrl(entry.getImage() != null ? "/image/" + entry.getImage() : null); // TODO: Generate valid URL.
 
 
         if (content) {
