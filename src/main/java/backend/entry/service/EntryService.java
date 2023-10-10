@@ -1,5 +1,6 @@
 package backend.entry.service;
 
+import backend.common.service.ImageService;
 import backend.entry.model.CategoryType;
 import backend.entry.model.Category;
 import backend.entry.model.Entry;
@@ -29,12 +30,16 @@ public class EntryService {
 
     private final EntryRepository entryRepository;
 
+    private final ImageService imageService;
+
     public EntryService(CategoryRepository categoryRepository,
                         UserRepository userRepository,
-                        EntryRepository entryRepository) {
+                        EntryRepository entryRepository,
+                        ImageService imageService) {
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
         this.entryRepository = entryRepository;
+        this.imageService = imageService;
     }
 
     public Entry getEntry(Integer entryId) {
@@ -86,7 +91,7 @@ public class EntryService {
     }
 
     public Entry createEntry(Integer typeId, String title, String content, List<Integer> categoryIds, Integer userId,
-                             String image) {
+                             String imageFilename, byte[] imageData) {
         User user = this.userRepository.findById(userId).orElseThrow(
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
 
@@ -102,7 +107,10 @@ public class EntryService {
         entry.setVotes(Set.of());
         entry.setLikedBy(Set.of());
         entry.setCreatedAt(Timestamp.from(Instant.now()));
-        // TODO: Implement image.
+
+        if (imageFilename != null) {
+            entry.setImage(this.imageService.createImage(imageFilename, imageData));
+        }
 
         try {
             this.entryRepository.save(entry);
@@ -114,7 +122,7 @@ public class EntryService {
     }
 
     public Entry updateEntry(Integer entryId, Integer typeId, String title, String content, List<Integer> categoryIds,
-                             Integer userId, String image) {
+                             Integer userId, String imageFilename, byte[] imageData) {
         Entry entry = this.entryRepository.findById(entryId).orElseThrow(
                 () -> new GenericServiceException(String.format("Entry with id = %d does not exist", entryId)));
 
@@ -143,7 +151,13 @@ public class EntryService {
             entry.setCategories(this.categoryRepository.getCategoriesByIdIsIn(categoryIds));
         }
 
-        // TODO: Implement image.
+        if (imageFilename != null) {
+            String currentImage = entry.getImage();
+            if (currentImage != null) {
+                this.imageService.deleteImage(currentImage);
+            }
+            entry.setImage(this.imageService.createImage(imageFilename, imageData));
+        }
 
         try {
             this.entryRepository.save(entry);

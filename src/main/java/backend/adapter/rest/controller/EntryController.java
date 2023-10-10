@@ -2,6 +2,7 @@ package backend.adapter.rest.controller;
 
 import backend.adapter.rest.model.common.CategoryDto;
 import backend.adapter.rest.model.common.EntryDto;
+import backend.common.service.ImageService;
 import backend.user.model.AppUserDetails;
 import backend.entry.model.Entry;
 import backend.adapter.rest.Response;
@@ -9,16 +10,14 @@ import backend.adapter.rest.StandardBody;
 import backend.entry.service.EntryService;
 import backend.common.service.GenericServiceException;
 import jakarta.validation.Valid;
+import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.base64.Base64;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/entry")
@@ -91,7 +90,8 @@ public class EntryController {
                     entryDto.getContent(),
                     entryDto.getCategories().stream().map(CategoryDto::getCategoryId).toList(),
                     userDetails.getId(),
-                    "TODO"
+                    entryDto.getImage() != null ? entryDto.getImage().getFilename() : null,
+                    entryDto.getImage() != null ? Base64.decode(entryDto.getImage().getData()) : null
             );
         } catch (Exception exception) {
             return Response.builder()
@@ -118,11 +118,14 @@ public class EntryController {
                     entryDto.getEntryTypeId(),
                     entryDto.getTitle(),
                     entryDto.getContent(),
-                    entryDto.getCategories() != null?
-                            entryDto.getCategories().stream().map(CategoryDto::getCategoryId).toList():null
-                    ,
+                    Optional.ofNullable(entryDto.getCategories())
+                            .orElseGet(Collections::emptyList)
+                            .stream()
+                            .map(CategoryDto::getCategoryId)
+                            .toList(),
                     userDetails.getId(),
-                    "TODO"
+                    entryDto.getImage() != null ? entryDto.getImage().getFilename() : null,
+                    entryDto.getImage() != null ? Base64.decode(entryDto.getImage().getData()) : null
             );
         } catch (Exception exception) {
             return Response.builder()
