@@ -22,10 +22,14 @@ public class UserService {
 
     private final EmailService emailService;
 
-    public UserService(PasswordEncoder encoder, UserRepository userRepository, EmailService emailService) {
+    private final ActivityStatisticsService activityStatisticsService;
+
+    public UserService(PasswordEncoder encoder, UserRepository userRepository, EmailService emailService,
+                       ActivityStatisticsService activityStatisticsService) {
         this.encoder = encoder;
         this.userRepository = userRepository;
         this.emailService = emailService;
+        this.activityStatisticsService = activityStatisticsService;
     }
 
     public void createUser(String email, String password, String firstname, String lastname, boolean isAdmin) {
@@ -49,21 +53,22 @@ public class UserService {
 //        this.emailService.sendEmail("mfurga@student.agh.edu.pl", "test", "test:)");
     }
 
-    public UserDto getUserInfo(Integer requestedUserId, Integer requestingUserId) {
+    public ExtendedUserDto getUserInfo(Integer requestedUserId, Integer requestingUserId) {
         User user = this.userRepository.findById(requestedUserId).orElseThrow(
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", requestedUserId)));
 
         if (requestingUserId.equals(requestedUserId)) {
             return ExtendedUserDto.builder()
+                    .userInfo(UserDto.buildFromModel(user))
                     .email(user.getEmail())
                     .lastLogin(user.getLastLogin())
                     .createdAt(user.getCreatedAt())
-
-
+                    .activityInfo(activityStatisticsService.getUserActivityInfo(requestedUserId)).build();
         } else {
+            return  ExtendedUserDto.builder()
+                    .userInfo(UserDto.buildFromModel(user)).build();
 
         }
     }
-
 
 }
