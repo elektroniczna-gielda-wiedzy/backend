@@ -247,25 +247,28 @@ Dodatkowo warte wspomnienia jest to, że python umożliwia prostrzą zamianę wa
                                                                                                   (49, 13, 1, 'Czy mógłbyś podać kod, którego dotyczy problem?', current_timestamp - INTERVAL '5 minutes', current_timestamp - INTERVAL '5 minutes', false, false);
 
 
-INSERT INTO image(image) VALUES
-                             ('image1.jpg'),
-                             ('image2.jpg'),
-                             ('image3.jpg'),
-                             ('image4.jpg'),
-                             ('image5.jpg'),
-                             ('image6.png');
+-- INSERT INTO image(filename) VALUES
+--                              ('image1.jpg'),
+--                              ('image2.jpg'),
+--                              ('image3.jpg'),
+--                              ('image4.jpg'),
+--                              ('image5.jpg'),
+--                              ('image6.png');
 
 
 INSERT INTO favorites(user_id, entry_id) VALUES (1, 1), (1, 2);
 
-INSERT INTO image_entry(image_item_id, image_id) VALUES
-                                                    (5, 1),
-                                                    (6, 2),
-                                                    (3, 3),
-                                                    (1, 4),
-                                                    (14, 6);
-INSERT INTO image_answer(image_item_id, image_id) VALUES
-                                                    (50, 5);
+-- INSERT INTO image_entry(image_item_id, image_id) VALUES
+--                                                     (5, 1),
+--                                                     (6, 2),
+--                                                     (3, 3),
+--                                                     (1, 4),
+--                                                     (14, 6);
+
+-- INSERT INTO image_answer(image_item_id, image_id) VALUES
+--                                                     (50, 5);
+--
+
 INSERT INTO chat(user_one_last_read, user_two_last_read, user_one_id, user_two_id) VALUES
 (current_timestamp - INTERVAL '92 minutes', current_timestamp - INTERVAL '89 minutes', 1, 2),
 (current_timestamp - INTERVAL '55 minutes', current_timestamp - INTERVAL '55 minutes', 3, 1),

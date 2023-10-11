@@ -1,25 +1,40 @@
 package backend.adapter.rest.controller;
 
-import backend.common.repository.ImageRepository;
+import backend.common.service.ImageService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
-
 @RestController
-@RequestMapping("/api/v1/images")
+@RequestMapping("/image")
 public class ImageController {
-    private final ImageRepository imageRepository;
+    private final ImageService imageService;
 
-    public ImageController(ImageRepository imageRepository) {
-        this.imageRepository = imageRepository;
+    public ImageController(ImageService imageService) {
+        this.imageService = imageService;
     }
 
-    @GetMapping(value = "/{image_name}", produces = IMAGE_JPEG_VALUE)
-    public @ResponseBody byte[] getImage(@PathVariable("image_name") String imageName) {
+    @GetMapping(value = "/{filename}")
+    public ResponseEntity<byte[]> getImage(@PathVariable("filename") String filename) {
         try {
-            return imageRepository.getImage(imageName);
+            final HttpHeaders httpHeaders = new HttpHeaders();
+
+            int idx = filename.lastIndexOf(".");
+            if (idx == -1) {
+                throw new Exception("Invalid filename");
+            }
+            String ext = filename.substring(idx + 1);
+
+            switch (ext) {
+                case "jpg" -> httpHeaders.setContentType(MediaType.IMAGE_JPEG);
+                case "png" -> httpHeaders.setContentType(MediaType.IMAGE_PNG);
+                default -> throw new Exception("Image format not supported");
+            }
+
+            return new ResponseEntity<byte[]>(this.imageService.getImage(filename), httpHeaders, HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println("IMAGE GET ERROR");
             return null;
         }
     }

@@ -1,7 +1,6 @@
 package backend.entry.model;
 
 import backend.answer.model.Answer;
-import backend.common.model.Image;
 import backend.user.model.User;
 import backend.common.model.Vote;
 import jakarta.persistence.*;
@@ -42,26 +41,23 @@ public class Entry {
     @Column(name = "content")
     private String content;
 
+    @Column(name = "image")
+    private String image;
+
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isDeleted = false;
+
     @Column(name = "created_at")
     private Timestamp createdAt;
 
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
-    @Column(name = "is_deleted", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean isDeleted = false;
-
     @ManyToMany
     @JoinTable(name = "VoteEntry",
                joinColumns = {@JoinColumn(name = "voted_item_id")},
                inverseJoinColumns = {@JoinColumn(name = "vote_id")})
     private Set<Vote> votes;
-
-    @ManyToMany
-    @JoinTable(name = "ImageEntry",
-               joinColumns = {@JoinColumn(name = "image_item_id")},
-               inverseJoinColumns = {@JoinColumn(name = "image_id")})
-    private Set<Image> images;
 
     @ManyToMany
     @JoinTable(name = "EntryCategory",

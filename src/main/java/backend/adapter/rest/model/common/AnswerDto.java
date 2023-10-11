@@ -68,9 +68,12 @@ public class AnswerDto {
                 .createdAt(answer.getCreatedAt())
                 .updatedAt(answer.getUpdatedAt())
                 .isTopAnswer(answer.getIsTopAnswer())
-                .votes(answer.getVotes().stream().map(Vote::getValue).reduce(0, Integer::sum))
-                .voteValue(answer.getVotes().stream().
-                        filter(vote -> vote.getUser().getId().equals(userId)).mapToInt(Vote::getValue).sum())
+                .votes(answer.getVotes().stream()
+                               .map(Vote::getValue).reduce(0, Integer::sum))
+                .voteValue(answer.getVotes().stream()
+                                   .filter(vote -> vote.getUser().getId().equals(userId))
+                                   .mapToInt(Vote::getValue)
+                                   .sum())
                 .build();
     }
 }
