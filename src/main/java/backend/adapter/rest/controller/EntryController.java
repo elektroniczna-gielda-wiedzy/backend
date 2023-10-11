@@ -2,6 +2,8 @@ package backend.adapter.rest.controller;
 
 import backend.adapter.rest.model.common.CategoryDto;
 import backend.adapter.rest.model.common.EntryDto;
+import backend.answer.model.Answer;
+import backend.answer.service.AnswerService;
 import backend.common.service.ImageService;
 import backend.user.model.AppUserDetails;
 import backend.entry.model.Entry;
@@ -23,9 +25,12 @@ import java.util.*;
 @RequestMapping("/api/v1/entry")
 public class EntryController {
     private final EntryService entryService;
+    private final AnswerService answerService;
 
-    public EntryController(EntryService entryService) {
+
+    public EntryController(EntryService entryService, AnswerService answerService) {
         this.entryService = entryService;
+        this.answerService = answerService;
     }
 
     @GetMapping(path = "/{entry_id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,7 +49,7 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(List.of(EntryDto.buildFromModel(entry, userDetails.getUser(), true, true)))
+                .result(List.of(EntryDto.buildFromModel(entry, userDetails.getUser(), true, true, answerService)))
                 .build();
     }
 
@@ -73,7 +78,7 @@ public class EntryController {
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
                 .result(entries.stream()
-                                .map(e -> EntryDto.buildFromModel(e, userDetails.getUser(), false, false))
+                                .map(e -> EntryDto.buildFromModel(e, userDetails.getUser(), false, false, answerService))
                                 .toList())
                 .build();
     }
@@ -102,7 +107,7 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.CREATED)
-                .result(List.of(EntryDto.buildFromModel(entry, userDetails.getUser(), true, true)))
+                .result(List.of(EntryDto.buildFromModel(entry, userDetails.getUser(), true, true, answerService)))
                 .build();
     }
 
@@ -136,7 +141,7 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(List.of(EntryDto.buildFromModel(entry, userDetails.getUser(), true, true)))
+                .result(List.of(EntryDto.buildFromModel(entry, userDetails.getUser(), true, true, answerService)))
                 .build();
     }
 

@@ -1,5 +1,6 @@
 package backend.adapter.rest.model.common;
 
+import backend.answer.service.AnswerService;
 import backend.common.model.Vote;
 import backend.entry.model.Entry;
 import backend.user.model.User;
@@ -73,7 +74,7 @@ public class EntryDto {
     @JsonProperty("votes")
     private Integer votes;
 
-    public static EntryDto buildFromModel(Entry entry, User user, boolean content, boolean answers) {
+    public static EntryDto buildFromModel(Entry entry, User user, boolean content, boolean answers, AnswerService answerService) {
         EntryDtoBuilder builder = EntryDto.builder()
                 .entryId(entry.getId())
                 .entryTypeId(entry.getType().getId())
@@ -94,8 +95,8 @@ public class EntryDto {
         }
 
         if (answers) {
-            builder.answers(Optional.ofNullable(entry.getAnswers())
-                                    .orElseGet(Collections::emptySet)
+            builder.answers(Optional.ofNullable(answerService.getAnswers(entry.getId()))
+                                    .orElseGet(Collections::emptyList)
                                     .stream()
                                     .map(answer -> AnswerDto.buildFromModel(answer, user.getId()))
                                     .toList());
