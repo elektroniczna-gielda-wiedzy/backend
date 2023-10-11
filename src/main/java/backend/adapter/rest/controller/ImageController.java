@@ -16,6 +16,7 @@ public class ImageController {
     @ResponseBody
     public byte[] getImage(@PathVariable("filename") String filename) {
         try {
+            // TODO: Add Content-Type header
             return this.imageService.getImage(filename);
         } catch (Exception e) {
             return null;
