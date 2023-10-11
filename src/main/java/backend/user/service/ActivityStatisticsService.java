@@ -3,11 +3,13 @@ package backend.user.service;
 import backend.answer.model.Answer;
 import backend.answer.service.AnswerService;
 import backend.common.model.Vote;
+import backend.common.service.GenericServiceException;
 import backend.common.service.VoteService;
 import backend.entry.model.Entry;
 import backend.entry.model.EntryType;
 import backend.entry.service.EntryService;
 import backend.user.model.ActivityInfo;
+import backend.user.model.User;
 import backend.user.model.VotesStatistics;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +30,16 @@ public class ActivityStatisticsService {
     }
 
     public ActivityInfo getUserActivityInfo(Integer userId) {
-        ActivityInfo activityInfo = ActivityInfo.builder().build();
+
+        ActivityInfo.ActivityInfoBuilder activityInfoBuilder = ActivityInfo.builder();
+
+        activityInfoBuilder.noEntries(getUserNoEntries(userId));
+        activityInfoBuilder.noVotes(getUserVotesStatistics(userId));
+
+        return activityInfoBuilder.build();
+    }
+
+    public Map<String, Integer> getUserNoEntries(Integer userId) {
         List<Entry> userEntries = entryService.getEntries(null, null, userId, null, List.of());
         Map<String, List<Entry>> groupedEntries = userEntries.stream().collect(Collectors.groupingBy(
                 (entry) -> entry.getType().getName()
@@ -37,7 +48,15 @@ public class ActivityStatisticsService {
         noEntries.put(EntryType.POST, groupedEntries.getOrDefault(EntryType.POST, List.of()).size());
         noEntries.put(EntryType.NOTE, groupedEntries.getOrDefault(EntryType.NOTE, List.of()).size());
         noEntries.put(EntryType.ANNOUNCEMENT, groupedEntries.getOrDefault(EntryType.ANNOUNCEMENT, List.of()).size());
-        activityInfo.setNoEntries(noEntries);
+        return noEntries;
+    }
+
+    public Map<String, VotesStatistics> getUserVotesStatistics(Integer userId) {
+        List<Entry> userEntries = entryService.getEntries(null, null, userId, null, List.of());
+        Map<String, List<Entry>> groupedEntries = userEntries.stream().collect(Collectors.groupingBy(
+                (entry) -> entry.getType().getName()
+        ));
+
         Map<String, VotesStatistics> noVotes = new HashMap<>();
         for (String entryType : groupedEntries.keySet()) {
             List<Entry> entries = groupedEntries.get(entryType);
@@ -59,9 +78,7 @@ public class ActivityStatisticsService {
         noVotes.putIfAbsent(EntryType.ANNOUNCEMENT, VotesStatistics.builder().positive(0).negative(0).build());
         noVotes.putIfAbsent(EntryType.NOTE, VotesStatistics.builder().positive(0).negative(0).build());
         noVotes.putIfAbsent(EntryType.POST, VotesStatistics.builder().positive(0).negative(0).build());
-        activityInfo.setNoVotes(noVotes);
-
-        return activityInfo;
+        return noVotes;
     }
 
 }
