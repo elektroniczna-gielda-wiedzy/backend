@@ -73,8 +73,8 @@ INSERT INTO category_translation(translation, category_id, language_id) VALUES (
                                                                                ('Quantum Physics', 23, 2),
                                                                                ('Termodynamika', 24, 1),
                                                                                ('Thermodynamics', 24, 2);
-INSERT INTO entry_type(name) VALUES ('Notatka'),
-                                    ('Ogłoszenie'),
+INSERT INTO entry_type(name) VALUES ('Note'),
+                                    ('Announcement'),
                                     ('Post');
 
 INSERT INTO users(first_name, last_name, email, password, is_email_auth, created_at, last_login, is_admin, is_active) VALUES

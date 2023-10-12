@@ -9,6 +9,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class EntryType {
+
+    public static String ANNOUNCEMENT = "Announcement";
+
+    public static String NOTE = "Note";
+
+    public static String POST = "Post";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "entry_type_id")
