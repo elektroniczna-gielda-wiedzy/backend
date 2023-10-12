@@ -12,8 +12,8 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class VotesStatistics {
     @JsonProperty("positive")
-    private Integer positive;
+    private Long positive;
 
     @JsonProperty("negative")
-    private Integer negative;
+    private Long negative;
 }

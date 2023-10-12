@@ -52,7 +52,7 @@ public class AnswerService {
         User user = this.userRepository.findById(userId).orElseThrow(
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
 
-        if(!entry.getType().getName().equals("Post")) {
+        if(!entry.getType().getName().equals(EntryType.POST)) {
             throw new GenericServiceException("Answers can only be created for entries of \"Post\" type");
         }
 

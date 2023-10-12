@@ -1,21 +1,17 @@
 package backend.user.service;
 
-import backend.answer.model.Answer;
-import backend.answer.service.AnswerService;
 import backend.common.model.Vote;
-import backend.common.service.GenericServiceException;
-import backend.common.service.VoteService;
 import backend.entry.model.Entry;
 import backend.entry.model.EntryType;
 import backend.entry.service.EntryService;
 import backend.user.model.ActivityInfo;
-import backend.user.model.User;
 import backend.user.model.VotesStatistics;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.abs;
@@ -32,22 +28,20 @@ public class ActivityStatisticsService {
     public ActivityInfo getUserActivityInfo(Integer userId) {
 
         ActivityInfo.ActivityInfoBuilder activityInfoBuilder = ActivityInfo.builder();
-
         activityInfoBuilder.noEntries(getUserNoEntries(userId));
         activityInfoBuilder.noVotes(getUserVotesStatistics(userId));
 
         return activityInfoBuilder.build();
     }
 
-    public Map<String, Integer> getUserNoEntries(Integer userId) {
+    public Map<String, Long> getUserNoEntries(Integer userId) {
         List<Entry> userEntries = entryService.getEntries(null, null, userId, null, List.of());
-        Map<String, List<Entry>> groupedEntries = userEntries.stream().collect(Collectors.groupingBy(
-                (entry) -> entry.getType().getName()
+        Map<String, Long> noEntries =  userEntries.stream().collect(Collectors.groupingBy(
+                (entry) -> entry.getType().getName(), Collectors.counting()
         ));
-        Map<String, Integer> noEntries = new HashMap<>();
-        noEntries.put(EntryType.POST, groupedEntries.getOrDefault(EntryType.POST, List.of()).size());
-        noEntries.put(EntryType.NOTE, groupedEntries.getOrDefault(EntryType.NOTE, List.of()).size());
-        noEntries.put(EntryType.ANNOUNCEMENT, groupedEntries.getOrDefault(EntryType.ANNOUNCEMENT, List.of()).size());
+        noEntries.putIfAbsent(EntryType.POST, 0L);
+        noEntries.putIfAbsent(EntryType.ANNOUNCEMENT, 0L);
+        noEntries.putIfAbsent(EntryType.NOTE, 0L);
         return noEntries;
     }
 
@@ -58,26 +52,19 @@ public class ActivityStatisticsService {
         ));
 
         Map<String, VotesStatistics> noVotes = new HashMap<>();
-        for (String entryType : groupedEntries.keySet()) {
-            List<Entry> entries = groupedEntries.get(entryType);
+        groupedEntries.forEach((entryType, entries) -> {
+            Map<Object, Long> cummulativeVotes =
+                    entries.stream().flatMap((entry) ->
+                         entry.getVotes().stream().collect(Collectors.groupingBy(Vote::getValue, Collectors.counting())).
+                             entrySet().stream()).collect(Collectors.groupingBy(Map.Entry::getKey,Collectors.summingLong(Map.Entry::getValue)));
             VotesStatistics.VotesStatisticsBuilder statisticsBuilder = VotesStatistics.builder();
-            Map<Integer, Integer> cummulativeVotes = new HashMap<>();
-            cummulativeVotes.put(-1, 0);
-            cummulativeVotes.put(1, 0);
-            for (Entry entry: entries) {
-                Map<Integer, List<Vote>> votes = entry.getVotes().stream().collect(Collectors.groupingBy(Vote::getValue));
-                votes.keySet().stream().forEach((key) -> {
-                    Integer sum = votes.get(key).stream().mapToInt(Vote::getValue).reduce(0, Integer::sum);
-                    cummulativeVotes.computeIfPresent(key, (voteVal ,voteCount) -> voteCount + abs(sum));
-                });
-            }
-            statisticsBuilder.positive(cummulativeVotes.get(1));
-            statisticsBuilder.negative(cummulativeVotes.get(-1));
+            statisticsBuilder.positive(cummulativeVotes.getOrDefault(1, 0L));
+            statisticsBuilder.negative(cummulativeVotes.getOrDefault(-1, 0L));
             noVotes.put(entryType, statisticsBuilder.build());
-        }
-        noVotes.putIfAbsent(EntryType.ANNOUNCEMENT, VotesStatistics.builder().positive(0).negative(0).build());
-        noVotes.putIfAbsent(EntryType.NOTE, VotesStatistics.builder().positive(0).negative(0).build());
-        noVotes.putIfAbsent(EntryType.POST, VotesStatistics.builder().positive(0).negative(0).build());
+        });
+        noVotes.putIfAbsent(EntryType.POST, VotesStatistics.builder().negative(0L).positive(0L).build());
+        noVotes.putIfAbsent(EntryType.ANNOUNCEMENT, VotesStatistics.builder().negative(0L).positive(0L).build());
+        noVotes.putIfAbsent(EntryType.NOTE, VotesStatistics.builder().negative(0L).positive(0L).build());
         return noVotes;
     }
 

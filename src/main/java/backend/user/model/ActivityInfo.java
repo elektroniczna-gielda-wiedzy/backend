@@ -15,7 +15,7 @@ import java.util.Map;
 public class ActivityInfo {
 
     @JsonProperty("no_entries")
-    private Map<String, Integer> noEntries;
+    private Map<String, Long> noEntries;
 
     @JsonProperty("no_votes")
     private Map<String, VotesStatistics> noVotes;
