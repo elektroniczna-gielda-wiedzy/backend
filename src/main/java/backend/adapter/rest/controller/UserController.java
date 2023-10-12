@@ -2,19 +2,19 @@ package backend.adapter.rest.controller;
 
 import backend.adapter.rest.Response;
 import backend.adapter.rest.StandardBody;
+import backend.adapter.rest.model.common.UserDto;
 import backend.user.model.AppUserDetails;
 import backend.user.model.ExtendedUserDto;
 import backend.user.model.User;
 import backend.user.service.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -26,7 +26,8 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/{user_id}")
+    @GetMapping(path = "/{user_id}", consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> getUserInfo(@AuthenticationPrincipal AppUserDetails appUserDetails,
                                                     @PathVariable("user_id") Integer userId) {
 
@@ -45,5 +46,24 @@ public class UserController {
                 .build();
     }
 
+    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StandardBody> findUser(@AuthenticationPrincipal AppUserDetails appUserDetails,
+                                                 @RequestParam Map<String, String> params) {
+        List<UserDto> users;
+
+        try {
+            users = this.userService.findUserByQuery(params.get("q"));
+        } catch (Exception exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+        return Response.builder()
+                .httpStatusCode(HttpStatus.OK)
+                .result(users)
+                .build();
+    }
 
 }

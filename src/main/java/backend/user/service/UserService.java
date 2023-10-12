@@ -3,16 +3,15 @@ package backend.user.service;
 import backend.adapter.rest.model.common.UserDto;
 import backend.common.service.EmailService;
 import backend.common.service.GenericServiceException;
-import backend.user.model.ActivityInfo;
 import backend.user.model.ExtendedUserDto;
 import backend.user.model.User;
 import backend.user.repository.UserRepository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -69,6 +68,14 @@ public class UserService {
                     .userInfo(UserDto.buildFromModel(user)).build();
 
         }
+    }
+
+    public List<UserDto> findUserByQuery(String query) {
+        if (query == null) {
+            throw new GenericServiceException("Query cannot be null");
+        }
+        return this.userRepository.findUsersByQuery(query.toUpperCase())
+                .stream().map(UserDto::buildFromModel).toList();
     }
 
 }
