@@ -19,7 +19,4 @@ public class ActivityInfo {
 
     @JsonProperty("no_votes")
     private Map<String, VotesStatistics> noVotes;
-
-    @JsonProperty("answers_votes")
-    private VotesStatistics answersVotes;
 }

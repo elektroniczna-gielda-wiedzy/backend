@@ -7,14 +7,10 @@ import backend.entry.service.EntryService;
 import backend.user.model.ActivityInfo;
 import backend.user.model.VotesStatistics;
 import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import static java.lang.Math.abs;
 
 @Service
 public class ActivityStatisticsService {
