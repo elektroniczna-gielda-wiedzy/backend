@@ -40,9 +40,10 @@ public class AnswerService {
         Entry entry = this.entryRepository.findById(entryId).orElseThrow(
                 () -> new GenericServiceException(String.format("Entry with id = %d does not exist", entryId)));
 
+
         return this.answerRepository.findAll(where(
             hasEntryId(entryId).and(isNotDeleted())
-        ), Sort.by("votes").descending());
+        ), Sort.by("isTopAnswer", "votes").descending());
     }
 
     public Answer createAnswer(Integer entryId, Integer userId, String content) {

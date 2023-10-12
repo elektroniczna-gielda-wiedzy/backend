@@ -1,5 +1,6 @@
 package backend.adapter.rest.controller;
 
+import backend.adapter.rest.model.vote.BestAnswerDto;
 import backend.adapter.rest.model.vote.FavoriteDto;
 import backend.adapter.rest.model.vote.VoteDto;
 import backend.adapter.rest.Response;
@@ -69,6 +70,25 @@ public class VoteController {
                                                       @AuthenticationPrincipal AppUserDetails userDetails) {
         try {
             this.voteService.voteForAnswer(answerId, userDetails.getId(), voteDto.getValue());
+        } catch (GenericServiceException exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+
+        return Response.builder()
+                .httpStatusCode(HttpStatus.OK)
+                .build();
+    }
+
+    @PutMapping(path = "{entry_id}/answer/{answer_id}/top")
+    public ResponseEntity<StandardBody> markTopAnswer(@PathVariable("entry_id") Integer entryId,
+                                                   @PathVariable("answer_id") Integer answerId,
+                                                   @Valid @RequestBody BestAnswerDto bestAnswerDto,
+                                                   @AuthenticationPrincipal AppUserDetails userDetails) {
+        try {
+            this.voteService.markTopAnswer(entryId, answerId, bestAnswerDto.getValue(), userDetails.getId());
         } catch (GenericServiceException exception) {
             return Response.builder()
                     .httpStatusCode(HttpStatus.BAD_REQUEST)

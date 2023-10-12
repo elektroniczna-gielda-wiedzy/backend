@@ -70,4 +70,8 @@ public class Answer {
     public static Specification<Answer> isNotDeleted() {
         return (answer, cq, cb) -> cb.isFalse(answer.get("isDeleted"));
     }
+
+    public static Specification<Answer> isTopAnswer() {
+        return (answer, cq, cb) -> cb.isTrue(answer.get("isTopAnswer"));
+    }
 }

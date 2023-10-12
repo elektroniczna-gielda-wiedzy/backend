@@ -11,8 +11,12 @@ import backend.user.repository.UserRepository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import static backend.answer.model.Answer.hasEntryId;
+import static backend.answer.model.Answer.isTopAnswer;
 
 @Service
 public class VoteService {
@@ -133,6 +137,38 @@ public class VoteService {
             this.answerRepository.save(answer);
         } catch (DataAccessException exception) {
             throw new GenericServiceException(exception.getMessage());
+        }
+    }
+
+    public void markTopAnswer(Integer entryId, Integer answerId, Integer value, Integer userId) {
+        Answer answer = this.answerRepository.findById(answerId).orElseThrow(
+                () -> new GenericServiceException(String.format("Answer with id = %d does not exist", answerId)));
+
+        Entry entry = this.entryRepository.findById(entryId).orElseThrow(
+                () -> new GenericServiceException(String.format("Entry with id = %d does not exist", entryId)));
+
+        if (!entry.getAuthor().getId().equals(userId)) {
+            throw new GenericServiceException("Only the entry creator can set and unset top answers");
+        }
+
+        if (answer.getUser().getId().equals(userId)) {
+            throw new GenericServiceException("You cannot mark your answer as the best");
+        }
+
+        List<Answer> topAnswers = this.answerRepository.findAll(hasEntryId(entryId).and(isTopAnswer()));
+        topAnswers.forEach((entity) -> entity.setIsTopAnswer(false));
+
+        switch (value) {
+            case 1 -> answer.setIsTopAnswer(true);
+            case -1 -> answer.setIsTopAnswer(false);
+            default -> throw new GenericServiceException("Invalid value sent in request body");
+        }
+
+        try {
+            this.answerRepository.save(answer);
+            this.answerRepository.saveAll(topAnswers);
+        } catch (DataAccessException e) {
+            throw new GenericServiceException(e.getMessage());
         }
     }
 }
