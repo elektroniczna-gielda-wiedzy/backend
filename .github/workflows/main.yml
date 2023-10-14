@@ -53,3 +53,14 @@ jobs:
           ssh mateusz@20.251.9.203 "cd backend; ./gradlew bootjar"
           ssh mateusz@20.251.9.203 "cd backend; ./gradlew --stop"
           ssh -n -f mateusz@20.251.9.203 "cd backend; nohup java -XX:+UseSerialGC -Xss512k -XX:MaxRAM=150m -jar build/libs/knowledge-exchange-project-1.0-SNAPSHOT.jar &"
+
+  test_after_deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure
+        run: |
+          git clone https://github.com/elektroniczna-gielda-wiedzy/backend-tests.git
+          cd backend-tests
+          python3 -m pip install -r requirements.txt
+          pytest -v --url=http://20.251.9.203
