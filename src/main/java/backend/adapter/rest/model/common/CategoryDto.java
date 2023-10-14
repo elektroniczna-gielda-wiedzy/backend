@@ -27,15 +27,20 @@ public class CategoryDto {
     @JsonProperty("parent_id")
     private Integer parentId;
 
+    @JsonProperty("status")
+    private String categoryStatus;
+
     public CategoryDto(Integer categoryId) {
         this.categoryId = categoryId;
     }
 
-    public CategoryDto(Integer categoryId, Integer categoryType, List<CategoryTranslationDto> names, Integer parentId) {
+    public CategoryDto(Integer categoryId, Integer categoryType, List<CategoryTranslationDto> names,
+                       Integer parentId, String categoryStatus) {
         this.categoryId = categoryId;
         this.categoryType = categoryType;
         this.names = names;
         this.parentId = parentId;
+        this.categoryStatus = categoryStatus;
     }
 
     public static CategoryDto buildFromModel(Category category) {
@@ -44,6 +49,7 @@ public class CategoryDto {
                 .categoryType(category.getCategoryType().ordinal())
                 .names(category.getCategoryTranslations().stream().map(CategoryTranslationDto::buildFromModel).toList())
                 .parentId(category.getParentCategory() != null ? category.getParentCategory().getId() : null)
+                .categoryStatus(category.getCategoryStatus().name())
                 .build();
     }
 }

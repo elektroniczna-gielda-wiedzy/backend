@@ -5,8 +5,8 @@ import backend.common.service.GenericServiceException;
 import backend.entry.model.Category;
 import backend.adapter.rest.Response;
 import backend.adapter.rest.StandardBody;
+import backend.entry.model.CategoryStatus;
 import backend.entry.model.CategoryTranslationDto;
-import backend.entry.model.CategoryType;
 import backend.entry.service.CategoryService;
 import backend.user.model.AppUserDetails;
 import jakarta.validation.Valid;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -30,8 +31,19 @@ public class CategoryController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> getCategories() {
-        List<Category> categories = this.categoryService.getCategories();
+    public ResponseEntity<StandardBody> getCategories(@AuthenticationPrincipal AppUserDetails userDetails,
+                                                       @RequestParam Map<String, String> params) {
+        String status = params.getOrDefault("status", "active").toUpperCase();
+        boolean isAdmin = userDetails.getUser().getIsAdmin();
+        if ((!status.equals(CategoryStatus.ACTIVE.name())) && !isAdmin) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage("You do not have permission to view suggestions or deleted categories")
+                    .build();
+        }
+        Integer typeId = params.get("type") != null ? Integer.parseInt(params.get("type")) : null;
+        Integer parentId = params.get("parent_id") != null ? Integer.parseInt(params.get("parent_id")) : null;
+        List<Category> categories = this.categoryService.getCategories(status, typeId, parentId);
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
@@ -43,16 +55,18 @@ public class CategoryController {
     public ResponseEntity<StandardBody> createCategory(@Valid @RequestBody CategoryDto categoryDto,
                                                        @AuthenticationPrincipal AppUserDetails userDetails) {
         Category category;
-
-        if (!userDetails.getUser().getIsAdmin()) {
+        boolean isSuggestion = categoryDto.getCategoryStatus().equals(CategoryStatus.SUGGESTED.name());
+        boolean isAdmin = userDetails.getUser().getIsAdmin();
+        if (!isSuggestion && !isAdmin) {
             return Response.builder()
                     .httpStatusCode(HttpStatus.BAD_REQUEST)
-                    .addMessage("You do not have permission to create a category")
+                    .addMessage("You do not have permission to create a category, you can only suggest one")
                     .build();
         }
 
         try {
             category = this.categoryService.createCategory(
+                    categoryDto.getCategoryStatus(),
                     categoryDto.getCategoryType(),
                     categoryDto.getNames().stream()
                                     .map(t -> new CategoryTranslationDto(t.getLanguageId(), t.getTranslatedName()))
@@ -95,7 +109,8 @@ public class CategoryController {
                             .stream()
                             .map(t -> new CategoryTranslationDto(t.getLanguageId(), t.getTranslatedName()))
                             .toList(),
-                    categoryDto.getParentId()
+                    categoryDto.getParentId(),
+                    categoryDto.getCategoryStatus()
             );
         } catch (GenericServiceException exception) {
             return Response.builder()

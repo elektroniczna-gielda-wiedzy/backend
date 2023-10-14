@@ -114,8 +114,6 @@ public class ChatService {
     }
 
     public void createMessage(Integer chatId, Integer userId, String chatMessage) {
-        System.out.println("New chat message from user with id: " + userId + "\nContent: " + chatMessage);
-
         Chat chat = this.chatRepository.findById(chatId).orElseThrow(
                 () -> new GenericServiceException(String.format("Chat with id = %d does not exist", chatId)));
 
