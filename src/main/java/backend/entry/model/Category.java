@@ -24,8 +24,8 @@ public class Category {
     @JoinColumn(name = "parent_id")
     private Category parentCategory;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    @Column(name = "status")
+    private CategoryStatus categoryStatus;
 
     @ManyToMany(mappedBy = "categories")
     private Set<Entry> entries;
@@ -33,7 +33,18 @@ public class Category {
     @OneToMany(mappedBy = "category")
     private Set<CategoryTranslation> categoryTranslations;
 
-    public static Specification<Category> isNotDeleted() {
-        return (entry, cq, cb) -> cb.isFalse(entry.get("isDeleted"));
+    public static Specification<Category> hasStatus(CategoryStatus status) {
+        if (status == null) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+        }
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("categoryStatus"), status);
     }
+
+    public static Specification<Category> hasType(Integer type) {
+        if (type == null) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+        }
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("categoryType"), type);
+    }
+
 }
