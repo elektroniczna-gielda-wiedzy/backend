@@ -1,28 +1,28 @@
 INSERT INTO language(name) VALUES ('polish'), ('english');
-INSERT INTO category(type, is_deleted, parent_id) VALUES (0, false, NULL),
-                                                         (0, false, NULL),
-                                                         (0, false, NULL);
-INSERT INTO category(type, is_deleted, parent_id) VALUES (0, false, 1),
-                                                         (0, false, 1),
-                                                         (0, false, 1),
-                                                         (0, false, 1),
-                                                         (0, false, 2),
-                                                         (0, false, 2),
-                                                         (0, false, 2),
-                                                         (0, false, 3),
-                                                         (0, false, 3);
-INSERT INTO category(type, is_deleted, parent_id) VALUES (1, false, NULL),
-                                                         (1, false, NULL),
-                                                         (1, false, NULL);
-INSERT INTO category(type, is_deleted, parent_id) VALUES (1, false, 13),
-                                                         (1, false, 13),
-                                                         (1, false, 13),
-                                                         (1, false, 13),
-                                                         (1, false, 14),
-                                                         (1, false, 14),
-                                                         (1, false, 14),
-                                                         (1, false, 15),
-                                                         (1, false, 15);
+INSERT INTO category(type, status, parent_id) VALUES (0, 0, NULL),
+                                                         (0, 0, NULL),
+                                                         (0, 1, NULL);
+INSERT INTO category(type, status, parent_id) VALUES (0, 1, 1),
+                                                         (0, 1, 1),
+                                                         (0, 0, 1),
+                                                         (0, 1, 1),
+                                                         (0, 0, 2),
+                                                         (0, 0, 2),
+                                                         (0, 0, 2),
+                                                         (0, 0, 3),
+                                                         (0, 0, 3);
+INSERT INTO category(type, status, parent_id) VALUES (1, 0, NULL),
+                                                         (1, 0, NULL),
+                                                         (1, 0, NULL);
+INSERT INTO category(type, status, parent_id) VALUES (1, 0, 13),
+                                                         (1, 0, 13),
+                                                         (1, 0, 13),
+                                                         (1, 1, 13),
+                                                         (1, 1, 14),
+                                                         (1, 0, 14),
+                                                         (1, 0, 14),
+                                                         (1, 0, 15),
+                                                         (1, 0, 15);
 
 
 INSERT INTO category_translation(translation, category_id, language_id) VALUES ('WIET', 1, 1),
