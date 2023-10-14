@@ -75,7 +75,7 @@ public class CategoryService {
                 () -> new GenericServiceException("Invalid category type"));
         CategoryStatus status = CategoryStatus.valueOfLabel(categoryStatus).orElseThrow(
                 () -> new GenericServiceException("Invalid category status"));
-        System.out.println(status);
+
         Category parent = null;
         if (parentId != null) {
             parent = this.categoryRepository.findById(parentId).orElseThrow(
