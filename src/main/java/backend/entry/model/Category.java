@@ -40,11 +40,21 @@ public class Category {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("categoryStatus"), status);
     }
 
-    public static Specification<Category> hasType(Integer type) {
+    public static Specification<Category> hasType(CategoryType type) {
         if (type == null) {
             return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
         }
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("categoryType"), type);
+    }
+
+    public static Specification<Category> hasParent(Integer parentId) {
+        if (parentId == null) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+        }
+        if (parentId == -1) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.isNull(root.get("parentCategory"));
+        }
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("parentCategory").get("id"), parentId);
     }
 
 }

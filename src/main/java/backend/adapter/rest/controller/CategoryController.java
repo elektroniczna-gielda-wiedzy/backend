@@ -7,7 +7,6 @@ import backend.adapter.rest.Response;
 import backend.adapter.rest.StandardBody;
 import backend.entry.model.CategoryStatus;
 import backend.entry.model.CategoryTranslationDto;
-import backend.entry.model.CategoryType;
 import backend.entry.service.CategoryService;
 import backend.user.model.AppUserDetails;
 import jakarta.validation.Valid;
@@ -42,7 +41,9 @@ public class CategoryController {
                     .addMessage("You do not have permission to view suggestions or deleted categories")
                     .build();
         }
-        List<Category> categories = this.categoryService.getCategories(status);
+        Integer typeId = params.get("type") != null ? Integer.parseInt(params.get("type")) : null;
+        Integer parentId = params.get("parent_id") != null ? Integer.parseInt(params.get("parent_id")) : null;
+        List<Category> categories = this.categoryService.getCategories(status, typeId, parentId);
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)

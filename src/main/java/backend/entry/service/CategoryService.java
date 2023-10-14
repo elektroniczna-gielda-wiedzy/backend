@@ -35,11 +35,17 @@ public class CategoryService {
         this.entryRepository = entryRepository;
     }
 
-    public List<Category> getCategories(String categoryStatus) {
+    public List<Category> getCategories(String categoryStatus, Integer typeId, Integer parentId) {
+        CategoryType type = null;
+        if (typeId != null) {
+            type = CategoryType.valueOf(typeId).orElseThrow(
+                    () -> new GenericServiceException("Invalid category type"));
+        }
         CategoryStatus status = CategoryStatus.valueOfLabel(categoryStatus).orElseThrow(
                 () -> new GenericServiceException("Invalid category status"));
 
-        List<Category> allCategories = this.categoryRepository.findAll(where(hasStatus(status)));
+        List<Category> allCategories = this.categoryRepository.findAll(where(
+                hasStatus(status).and(hasParent(parentId)).and(hasType(type))));
 
         return processCategoriesForConditions(allCategories, status);
     }
