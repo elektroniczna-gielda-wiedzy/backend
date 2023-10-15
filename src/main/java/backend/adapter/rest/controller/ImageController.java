@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/image")
+@RequestMapping("/api/v1/image")
 public class ImageController {
     private final ImageService imageService;
 
@@ -32,6 +32,7 @@ public class ImageController {
                 case "png" -> httpHeaders.setContentType(MediaType.IMAGE_PNG);
                 default -> throw new Exception("Image format not supported");
             }
+            System.out.println("ImageController: " + filename);
 
             return new ResponseEntity<byte[]>(this.imageService.getImage(filename), httpHeaders, HttpStatus.OK);
         } catch (Exception e) {
