@@ -32,7 +32,6 @@ public class ImageController {
                 case "png" -> httpHeaders.setContentType(MediaType.IMAGE_PNG);
                 default -> throw new Exception("Image format not supported");
             }
-            System.out.println("ImageController: " + filename);
 
             return new ResponseEntity<byte[]>(this.imageService.getImage(filename), httpHeaders, HttpStatus.OK);
         } catch (Exception e) {
