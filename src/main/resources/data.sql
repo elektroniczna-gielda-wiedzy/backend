@@ -1,11 +1,11 @@
 INSERT INTO language(name) VALUES ('polish'), ('english');
 INSERT INTO category(type, status, parent_id) VALUES (0, 0, NULL),
                                                          (0, 0, NULL),
-                                                         (0, 1, NULL);
-INSERT INTO category(type, status, parent_id) VALUES (0, 1, 1),
-                                                         (0, 1, 1),
+                                                         (0, 0, NULL);
+INSERT INTO category(type, status, parent_id) VALUES (0, 0, 1),
                                                          (0, 0, 1),
-                                                         (0, 1, 1),
+                                                         (0, 0, 1),
+                                                         (0, 0, 1),
                                                          (0, 0, 2),
                                                          (0, 0, 2),
                                                          (0, 0, 2),
@@ -17,13 +17,15 @@ INSERT INTO category(type, status, parent_id) VALUES (1, 0, NULL),
 INSERT INTO category(type, status, parent_id) VALUES (1, 0, 13),
                                                          (1, 0, 13),
                                                          (1, 0, 13),
-                                                         (1, 1, 13),
-                                                         (1, 1, 14),
+                                                         (1, 0, 13),
+                                                         (1, 0, 14),
                                                          (1, 0, 14),
                                                          (1, 0, 14),
                                                          (1, 0, 15),
                                                          (1, 0, 15);
 
+INSERT INTO category(type, status, parent_id) VALUES (0, 1, NULL);
+INSERT INTO category(type, status, parent_id) VALUES (1, 1, 13);
 
 INSERT INTO category_translation(translation, category_id, language_id) VALUES ('WIET', 1, 1),
                                                                                ('WIET', 1, 2),
@@ -73,7 +75,11 @@ INSERT INTO category_translation(translation, category_id, language_id) VALUES (
                                                                                ('Fizyka Kwantowa', 23, 1),
                                                                                ('Quantum Physics', 23, 2),
                                                                                ('Termodynamika', 24, 1),
-                                                                               ('Thermodynamics', 24, 2);
+                                                                               ('Thermodynamics', 24, 2),
+                                                                               ('Wydział Informatyki', 25, 1),
+                                                                               ('Computes Science Faculty', 25, 2),
+                                                                               ('Systemy Rekomendacyjne', 26, 1),
+                                                                               ('Recommendation Systems', 26, 2);
 INSERT INTO entry_type(name) VALUES ('Note'),
                                     ('Announcement'),
                                     ('Post');
