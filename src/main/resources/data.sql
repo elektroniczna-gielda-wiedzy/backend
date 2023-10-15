@@ -246,29 +246,31 @@ INSERT INTO answer(answer_id, entry_id, user_id, content, created_at, updated_at
 Dodatkowo warte wspomnienia jest to, że python umożliwia prostrzą zamianę wartości zmiennych bez tworzenia zmiennej tymczasowej',
                                                                                                    current_timestamp - INTERVAL '60 minutes', current_timestamp - INTERVAL '60 minutes', false, true),
                                                                                                   (49, 13, 1, 'Czy mógłbyś podać kod, którego dotyczy problem?', current_timestamp - INTERVAL '5 minutes', current_timestamp - INTERVAL '5 minutes', false, false);
+UPDATE entry
+SET image = 'image1.jpg'
+WHERE entry_id = 5;
 
+UPDATE entry
+SET image = 'image2.jpg'
+WHERE entry_id = 6;
 
--- INSERT INTO image(filename) VALUES
---                              ('image1.jpg'),
---                              ('image2.jpg'),
---                              ('image3.jpg'),
---                              ('image4.jpg'),
---                              ('image5.jpg'),
---                              ('image6.png');
+UPDATE entry
+SET image = 'image3.jpg'
+WHERE entry_id = 3;
 
+UPDATE entry
+SET image = 'image4.jpg'
+WHERE entry_id = 1;
+
+UPDATE entry
+SET image = 'image6.png'
+WHERE entry_id = 14;
+
+UPDATE answer
+SET image = 'image5.jpg'
+WHERE answer_id = 50;
 
 INSERT INTO favorites(user_id, entry_id) VALUES (1, 1), (1, 2);
-
--- INSERT INTO image_entry(image_item_id, image_id) VALUES
---                                                     (5, 1),
---                                                     (6, 2),
---                                                     (3, 3),
---                                                     (1, 4),
---                                                     (14, 6);
-
--- INSERT INTO image_answer(image_item_id, image_id) VALUES
---                                                     (50, 5);
---
 
 INSERT INTO chat(user_one_last_read, user_two_last_read, user_one_id, user_two_id) VALUES
 (current_timestamp - INTERVAL '92 minutes', current_timestamp - INTERVAL '89 minutes', 1, 2),
