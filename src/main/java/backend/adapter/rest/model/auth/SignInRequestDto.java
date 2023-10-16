@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SignInRequest {
+public class SignInRequestDto {
     @JsonProperty("email")
     @NotNull(message = "email cannot be null")
     private String email;
