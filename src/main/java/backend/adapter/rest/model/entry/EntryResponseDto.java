@@ -1,5 +1,8 @@
-package backend.adapter.rest.model.common;
+package backend.adapter.rest.model.entry;
 
+import backend.adapter.rest.model.answer.AnswerResponseDto;
+import backend.adapter.rest.model.common.CategoryDto;
+import backend.adapter.rest.model.common.UserDto;
 import backend.answer.service.AnswerService;
 import backend.common.model.Vote;
 import backend.entry.model.Entry;
@@ -21,7 +24,7 @@ import java.util.*;
 @Builder
 @Jacksonized
 @AllArgsConstructor
-public class EntryDto {
+public class EntryResponseDto {
     @JsonProperty("entry_id")
     private Integer entryId;
 
@@ -48,15 +51,9 @@ public class EntryDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
     private Date createdAt;
 
-    // Used only for response
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonProperty("image_url")
-    private String imageUrl;
-
-    // Used only for request
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("image")
-    private ImageDto image;
+    private String image;
 
     @JsonProperty("categories")
     @NotNull(message = "categories cannot be null")
@@ -68,14 +65,14 @@ public class EntryDto {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("answers")
-    private List<AnswerDto> answers;
+    private List<AnswerResponseDto> answers;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("votes")
     private Integer votes;
 
-    public static EntryDto buildFromModel(Entry entry, User user, boolean content, boolean answers, AnswerService answerService) {
-        EntryDtoBuilder builder = EntryDto.builder()
+    public static EntryResponseDto buildFromModel(Entry entry, User user, boolean content, boolean answers, AnswerService answerService) {
+        EntryResponseDtoBuilder builder = EntryResponseDto.builder()
                 .entryId(entry.getId())
                 .entryTypeId(entry.getType().getId())
                 .title(entry.getTitle())
@@ -87,7 +84,7 @@ public class EntryDto {
                                    .filter(vote -> vote.getUser().getId().equals(user.getId()))
                                    .mapToInt(Vote::getValue).sum())
                 .favorite(entry.getLikedBy().stream().anyMatch(u -> u.getId().equals(user.getId())))
-                .imageUrl(entry.getImage() != null ? "/image/" + entry.getImage() : null); // TODO: Generate valid URL.
+                .image(entry.getImage() != null ? "/image/" + entry.getImage() : null); // TODO: Generate valid URL.
 
 
         if (content) {
@@ -98,7 +95,7 @@ public class EntryDto {
             builder.answers(Optional.ofNullable(answerService.getAnswers(entry.getId()))
                                     .orElseGet(Collections::emptyList)
                                     .stream()
-                                    .map(answer -> AnswerDto.buildFromModel(answer, user.getId()))
+                                    .map(answer -> AnswerResponseDto.buildFromModel(answer, user.getId()))
                                     .toList());
         }
 

@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
 public class ImageDto {
     @JsonProperty("filename")
     @NotNull(message = "filename cannot be null")

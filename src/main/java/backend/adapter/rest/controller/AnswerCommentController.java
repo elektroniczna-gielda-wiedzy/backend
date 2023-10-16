@@ -1,6 +1,6 @@
 package backend.adapter.rest.controller;
 
-import backend.adapter.rest.model.common.CommentDto;
+import backend.adapter.rest.model.answer.CommentDto;
 import backend.adapter.rest.Response;
 import backend.adapter.rest.StandardBody;
 import backend.answer.model.Comment;

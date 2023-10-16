@@ -1,7 +1,7 @@
-package backend.adapter.rest.model.common;
+package backend.adapter.rest.model.answer;
 
+import backend.adapter.rest.model.common.UserDto;
 import backend.answer.model.Answer;
-import backend.answer.model.Comment;
 import backend.common.model.Vote;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @Setter
 @Builder
 @Jacksonized
-public class AnswerDto {
+public class AnswerResponseDto {
     @JsonProperty("answer_id")
     private Integer answerId;
 
@@ -54,9 +54,8 @@ public class AnswerDto {
     @JsonProperty("image")
     private String image;
 
-
-    public static AnswerDto buildFromModel(Answer answer, Integer userId) {
-        return AnswerDto.builder()
+    public static AnswerResponseDto buildFromModel(Answer answer, Integer userId) {
+        return AnswerResponseDto.builder()
                 .answerId(answer.getId())
                 .author(UserDto.buildFromModel(answer.getUser()))
                 .content(answer.getContent())
@@ -74,6 +73,7 @@ public class AnswerDto {
                                    .filter(vote -> vote.getUser().getId().equals(userId))
                                    .mapToInt(Vote::getValue)
                                    .sum())
+                .image(answer.getImage() != null ? "/image/" + answer.getImage() : null) // TODO: Generate valid URL.
                 .build();
     }
 }

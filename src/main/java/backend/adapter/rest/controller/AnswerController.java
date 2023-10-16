@@ -1,6 +1,7 @@
 package backend.adapter.rest.controller;
 
-import backend.adapter.rest.model.common.AnswerDto;
+import backend.adapter.rest.model.answer.AnswerRequestDto;
+import backend.adapter.rest.model.answer.AnswerResponseDto;
 import backend.user.model.AppUserDetails;
 import backend.answer.model.Answer;
 import backend.adapter.rest.Response;
@@ -41,15 +42,14 @@ public class AnswerController {
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
                 .result(answers.stream().
-                        map((answer) -> AnswerDto.buildFromModel(answer, appUserDetails.getId())).toList())
+                        map((answer) -> AnswerResponseDto.buildFromModel(answer, appUserDetails.getId())).toList())
                 .build();
     }
 
     @PostMapping(path ="{entry_id}/answer", consumes = MediaType.APPLICATION_JSON_VALUE,
                  produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> createAnswer(@PathVariable("entry_id") Integer entryId,
-                                                     @Valid @RequestBody
-                                                     AnswerDto answerDto,
+                                                     @Valid @RequestBody AnswerRequestDto answerRequestDto,
                                                      @AuthenticationPrincipal AppUserDetails userDetails) {
         Answer answer;
 
@@ -57,7 +57,7 @@ public class AnswerController {
             answer = this.answerService.createAnswer(
                     entryId,
                     userDetails.getId(),
-                    answerDto.getContent()
+                    answerRequestDto.getContent()
             );
         } catch (Exception exception) {
             return Response.builder()
@@ -68,7 +68,7 @@ public class AnswerController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.CREATED)
-                .result(List.of(AnswerDto.buildFromModel(answer, userDetails.getId())))
+                .result(List.of(AnswerResponseDto.buildFromModel(answer, userDetails.getId())))
                 .build();
     }
 
@@ -76,7 +76,7 @@ public class AnswerController {
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> editAnswer(@PathVariable("entry_id") Integer entryId,
                                                    @PathVariable("answer_id") Integer answerId,
-                                                   @RequestBody AnswerDto answerDto,
+                                                   @RequestBody AnswerRequestDto answerRequestDto,
                                                    @AuthenticationPrincipal AppUserDetails userDetails) {
         Answer answer;
 
@@ -84,7 +84,7 @@ public class AnswerController {
             answer = this.answerService.editAnswer(
                     answerId,
                     userDetails.getId(),
-                    answerDto.getContent()
+                    answerRequestDto.getContent()
             );
         } catch (Exception exception) {
             return Response.builder()
@@ -95,7 +95,7 @@ public class AnswerController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(List.of(AnswerDto.buildFromModel(answer, userDetails.getId())))
+                .result(List.of(AnswerResponseDto.buildFromModel(answer, userDetails.getId())))
                 .build();
     }
 
