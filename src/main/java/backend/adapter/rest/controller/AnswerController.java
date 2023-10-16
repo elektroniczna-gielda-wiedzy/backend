@@ -8,6 +8,7 @@ import backend.adapter.rest.Response;
 import backend.adapter.rest.StandardBody;
 import backend.answer.service.AnswerService;
 import jakarta.validation.Valid;
+import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.base64.Base64;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,8 +42,9 @@ public class AnswerController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(answers.stream().
-                        map((answer) -> AnswerResponseDto.buildFromModel(answer, appUserDetails.getId())).toList())
+                .result(answers.stream()
+                                .map((answer) -> AnswerResponseDto.buildFromModel(answer, appUserDetails.getId()))
+                                .toList())
                 .build();
     }
 
@@ -57,7 +59,9 @@ public class AnswerController {
             answer = this.answerService.createAnswer(
                     entryId,
                     userDetails.getId(),
-                    answerRequestDto.getContent()
+                    answerRequestDto.getContent(),
+                    answerRequestDto.getImage() != null ? answerRequestDto.getImage().getFilename() : null,
+                    answerRequestDto.getImage() != null ? Base64.decode(answerRequestDto.getImage().getData()) : null
             );
         } catch (Exception exception) {
             return Response.builder()
@@ -84,7 +88,9 @@ public class AnswerController {
             answer = this.answerService.editAnswer(
                     answerId,
                     userDetails.getId(),
-                    answerRequestDto.getContent()
+                    answerRequestDto.getContent(),
+                    answerRequestDto.getImage() != null ? answerRequestDto.getImage().getFilename() : null,
+                    answerRequestDto.getImage() != null ? Base64.decode(answerRequestDto.getImage().getData()) : null
             );
         } catch (Exception exception) {
             return Response.builder()
