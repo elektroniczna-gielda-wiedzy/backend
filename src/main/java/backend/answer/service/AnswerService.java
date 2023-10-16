@@ -1,6 +1,7 @@
 package backend.answer.service;
 
 import backend.answer.model.Answer;
+import backend.common.service.ImageService;
 import backend.entry.model.Entry;
 import backend.entry.model.EntryType;
 import backend.user.model.User;
@@ -28,12 +29,16 @@ public class AnswerService {
 
     private final UserRepository userRepository;
 
+    private final ImageService imageService;
+
     public AnswerService(AnswerRepository answerRepository,
                          EntryRepository entryRepository,
-                         UserRepository userRepository) {
+                         UserRepository userRepository,
+                         ImageService imageService) {
         this.answerRepository = answerRepository;
         this.entryRepository = entryRepository;
         this.userRepository = userRepository;
+        this.imageService = imageService;
     }
 
     public List<Answer> getAnswers(Integer entryId) {
@@ -46,7 +51,7 @@ public class AnswerService {
         ), Sort.by("isTopAnswer", "votes").descending());
     }
 
-    public Answer createAnswer(Integer entryId, Integer userId, String content) {
+    public Answer createAnswer(Integer entryId, Integer userId, String content, String imageFilename, byte[] imageData) {
         Entry entry = this.entryRepository.findById(entryId).orElseThrow(
                 () -> new GenericServiceException(String.format("Entry with id = %d does not exist", entryId)));
 
@@ -68,7 +73,9 @@ public class AnswerService {
         answer.setIsDeleted(false);
         answer.setIsTopAnswer(false);
 
-        // TODO: Implement image.
+        if (imageFilename != null) {
+            answer.setImage(this.imageService.createImage(imageFilename, imageData));
+        }
 
         try {
             this.answerRepository.save(answer);
@@ -79,7 +86,7 @@ public class AnswerService {
         return answer;
     }
 
-    public Answer editAnswer(Integer answerId, Integer userId, String content) {
+    public Answer editAnswer(Integer answerId, Integer userId, String content, String imageFilename, byte[] imageData) {
         Answer answer = this.answerRepository.findById(answerId).orElseThrow(
                 () -> new GenericServiceException(String.format("Answer with id = %d does not exist", answerId)));
 
@@ -93,6 +100,15 @@ public class AnswerService {
         if (content != null) {
             answer.setContent(content);
         }
+
+        if (imageFilename != null) {
+            String currentImage = answer.getImage();
+            if (currentImage != null) {
+                this.imageService.deleteImage(currentImage);
+            }
+            answer.setImage(this.imageService.createImage(imageFilename, imageData));
+        }
+
         answer.setUpdatedAt(Timestamp.from(Instant.now()));
 
         try {

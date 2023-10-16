@@ -1,5 +1,6 @@
-package backend.adapter.rest.model.common;
+package backend.adapter.rest.model.answer;
 
+import backend.adapter.rest.model.common.UserDto;
 import backend.answer.model.Comment;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;

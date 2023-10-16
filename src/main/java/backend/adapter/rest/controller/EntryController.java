@@ -1,10 +1,9 @@
 package backend.adapter.rest.controller;
 
 import backend.adapter.rest.model.common.CategoryDto;
-import backend.adapter.rest.model.common.EntryDto;
-import backend.answer.model.Answer;
+import backend.adapter.rest.model.entry.EntryRequestDto;
+import backend.adapter.rest.model.entry.EntryResponseDto;
 import backend.answer.service.AnswerService;
-import backend.common.service.ImageService;
 import backend.user.model.AppUserDetails;
 import backend.entry.model.Entry;
 import backend.adapter.rest.Response;
@@ -49,7 +48,7 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(List.of(EntryDto.buildFromModel(entry, userDetails.getUser(), true, true, answerService)))
+                .result(List.of(EntryResponseDto.buildFromModel(entry, userDetails.getUser(), true, true, answerService)))
                 .build();
     }
 
@@ -78,25 +77,25 @@ public class EntryController {
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
                 .result(entries.stream()
-                                .map(e -> EntryDto.buildFromModel(e, userDetails.getUser(), false, false, answerService))
+                                .map(e -> EntryResponseDto.buildFromModel(e, userDetails.getUser(), false, false, answerService))
                                 .toList())
                 .build();
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> createEntry(@AuthenticationPrincipal AppUserDetails userDetails,
-                                                    @Valid @RequestBody EntryDto entryDto) {
+                                                    @Valid @RequestBody EntryRequestDto entryRequestDto) {
         Entry entry;
 
         try {
             entry = entryService.createEntry(
-                    entryDto.getEntryTypeId(),
-                    entryDto.getTitle(),
-                    entryDto.getContent(),
-                    entryDto.getCategories().stream().map(CategoryDto::getCategoryId).toList(),
+                    entryRequestDto.getEntryTypeId(),
+                    entryRequestDto.getTitle(),
+                    entryRequestDto.getContent(),
+                    entryRequestDto.getCategories().stream().map(CategoryDto::getCategoryId).toList(),
                     userDetails.getId(),
-                    entryDto.getImage() != null ? entryDto.getImage().getFilename() : null,
-                    entryDto.getImage() != null ? Base64.decode(entryDto.getImage().getData()) : null
+                    entryRequestDto.getImage() != null ? entryRequestDto.getImage().getFilename() : null,
+                    entryRequestDto.getImage() != null ? Base64.decode(entryRequestDto.getImage().getData()) : null
             );
         } catch (Exception exception) {
             return Response.builder()
@@ -107,30 +106,30 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.CREATED)
-                .result(List.of(EntryDto.buildFromModel(entry, userDetails.getUser(), true, true, answerService)))
+                .result(List.of(EntryResponseDto.buildFromModel(entry, userDetails.getUser(), true, true, answerService)))
                 .build();
     }
 
     @PutMapping(path = "/{entry_id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> updateEntry(@AuthenticationPrincipal AppUserDetails userDetails,
                                                     @PathVariable("entry_id") Integer entryId,
-                                                    @RequestBody EntryDto entryDto) {
+                                                    @RequestBody EntryRequestDto entryRequestDto) {
         Entry entry;
 
         try {
             entry = entryService.updateEntry(
                     entryId,
-                    entryDto.getEntryTypeId(),
-                    entryDto.getTitle(),
-                    entryDto.getContent(),
-                    Optional.ofNullable(entryDto.getCategories())
+                    entryRequestDto.getEntryTypeId(),
+                    entryRequestDto.getTitle(),
+                    entryRequestDto.getContent(),
+                    Optional.ofNullable(entryRequestDto.getCategories())
                             .orElseGet(Collections::emptyList)
                             .stream()
                             .map(CategoryDto::getCategoryId)
                             .toList(),
                     userDetails.getId(),
-                    entryDto.getImage() != null ? entryDto.getImage().getFilename() : null,
-                    entryDto.getImage() != null ? Base64.decode(entryDto.getImage().getData()) : null
+                    entryRequestDto.getImage() != null ? entryRequestDto.getImage().getFilename() : null,
+                    entryRequestDto.getImage() != null ? Base64.decode(entryRequestDto.getImage().getData()) : null
             );
         } catch (Exception exception) {
             return Response.builder()
@@ -141,7 +140,7 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(List.of(EntryDto.buildFromModel(entry, userDetails.getUser(), true, true, answerService)))
+                .result(List.of(EntryResponseDto.buildFromModel(entry, userDetails.getUser(), true, true, answerService)))
                 .build();
     }
 

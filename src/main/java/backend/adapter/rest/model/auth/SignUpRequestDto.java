@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SignUpRequest {
+public class SignUpRequestDto {
     @JsonProperty("email")
     @NotNull(message = "email cannot be null")
     @Email(regexp = "[a-zA-Z0-9_.+-]+@student.agh.edu.pl")

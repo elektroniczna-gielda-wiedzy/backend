@@ -1,8 +1,8 @@
 package backend.adapter.rest.controller;
 
-import backend.adapter.rest.model.auth.SignInRequest;
-import backend.adapter.rest.model.auth.SignInResult;
-import backend.adapter.rest.model.auth.SignUpRequest;
+import backend.adapter.rest.model.auth.SignInRequestDto;
+import backend.adapter.rest.model.auth.SignInResultDto;
+import backend.adapter.rest.model.auth.SignUpRequestDto;
 import backend.user.model.AppUserDetails;
 import backend.adapter.rest.Response;
 import backend.adapter.rest.StandardBody;
@@ -44,7 +44,8 @@ public class AuthController {
 
     @PostMapping(path = "/sign_in", consumes = MediaType.APPLICATION_JSON_VALUE,
                  produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> sign_in(@Valid @RequestBody SignInRequest request) {
+    public ResponseEntity<StandardBody> sign_in(@Valid @RequestBody
+                                                SignInRequestDto request) {
         Authentication auth;
 
         try {
@@ -67,13 +68,14 @@ public class AuthController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.CREATED)
-                .result(List.of(new SignInResult(jwt)))
+                .result(List.of(new SignInResultDto(jwt)))
                 .build();
     }
 
     @PostMapping(path = "/sign_up", consumes = MediaType.APPLICATION_JSON_VALUE,
                  produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> sign_up(@Valid @RequestBody SignUpRequest request) {
+    public ResponseEntity<StandardBody> sign_up(@Valid @RequestBody
+                                                SignUpRequestDto request) {
         try {
             this.userService.createUser(request.getEmail(),
                                         request.getPassword(),

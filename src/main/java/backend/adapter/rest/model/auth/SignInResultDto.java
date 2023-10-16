@@ -12,7 +12,7 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @Jacksonized
 @AllArgsConstructor
-public class SignInResult {
+public class SignInResultDto {
     @JsonProperty("session_token")
     private String sessionToken;
 }
