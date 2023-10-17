@@ -1,6 +1,6 @@
 package backend.adapter.rest.model.chat;
 
-import backend.adapter.rest.model.common.UserDto;
+import backend.adapter.rest.model.user.UserDto;
 import backend.chat.model.Message;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -34,7 +34,7 @@ public class MessageDto {
         return MessageDto.builder()
                 .messageId(message.getId())
                 .chatId(message.getChat().getId())
-                .sender(UserDto.buildFromModel(message.getSenderUser()))
+                .sender(UserDto.buildFromModel(message.getSenderUser(), null, false))
                 .content(message.getContent())
                 .dateSent(message.getDateSent())
                 .build();

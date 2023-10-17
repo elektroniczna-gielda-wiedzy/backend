@@ -1,6 +1,6 @@
 package backend.adapter.rest.model.answer;
 
-import backend.adapter.rest.model.common.UserDto;
+import backend.adapter.rest.model.user.UserDto;
 import backend.answer.model.Answer;
 import backend.common.model.Vote;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -57,7 +57,7 @@ public class AnswerResponseDto {
     public static AnswerResponseDto buildFromModel(Answer answer, Integer userId) {
         return AnswerResponseDto.builder()
                 .answerId(answer.getId())
-                .author(UserDto.buildFromModel(answer.getUser()))
+                .author(UserDto.buildFromModel(answer.getUser(), null, false))
                 .content(answer.getContent())
                 .comments(Optional.ofNullable(answer.getComments())
                                   .orElseGet(Collections::emptySet)

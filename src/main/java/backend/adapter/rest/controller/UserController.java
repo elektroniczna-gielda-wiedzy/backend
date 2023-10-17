@@ -2,9 +2,9 @@ package backend.adapter.rest.controller;
 
 import backend.adapter.rest.Response;
 import backend.adapter.rest.StandardBody;
-import backend.adapter.rest.model.common.UserDto;
+import backend.adapter.rest.model.user.UserDto;
+import backend.common.service.GenericServiceException;
 import backend.user.model.AppUserDetails;
-import backend.user.model.ExtendedUserDto;
 import backend.user.model.User;
 import backend.user.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -28,13 +28,13 @@ public class UserController {
 
     @GetMapping(path = "/{user_id}", consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> getUserInfo(@AuthenticationPrincipal AppUserDetails appUserDetails,
-                                                    @PathVariable("user_id") Integer userId) {
+    public ResponseEntity<StandardBody> getUser(@AuthenticationPrincipal AppUserDetails appUserDetails,
+                                                @PathVariable("user_id") Integer userId) {
+        User user;
 
-        ExtendedUserDto userDto;
         try {
-            userDto = this.userService.getUserInfo(userId, appUserDetails.getId());
-        } catch (Exception exception) {
+            user = this.userService.getUser(userId);
+        } catch (GenericServiceException exception) {
             return Response.builder()
                     .httpStatusCode(HttpStatus.BAD_REQUEST)
                     .addMessage(exception.getMessage())
@@ -42,15 +42,15 @@ public class UserController {
         }
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(List.of(userDto))
+                .result(List.of(UserDto.buildFromModel(user, appUserDetails.getUser(), true)))
                 .build();
     }
 
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
+    @GetMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> findUser(@AuthenticationPrincipal AppUserDetails appUserDetails,
+    public ResponseEntity<StandardBody> getUsers(@AuthenticationPrincipal AppUserDetails appUserDetails,
                                                  @RequestParam Map<String, String> params) {
-        List<UserDto> users;
+        List<User> users;
 
         try {
             users = this.userService.findUserByQuery(params.get("q"));
@@ -62,8 +62,9 @@ public class UserController {
         }
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(users)
+                .result(users.stream()
+                                .map(u -> UserDto.buildFromModel(u, appUserDetails.getUser(), false))
+                                .toList())
                 .build();
     }
-
 }

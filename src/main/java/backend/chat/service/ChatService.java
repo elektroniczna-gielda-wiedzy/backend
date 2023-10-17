@@ -8,7 +8,7 @@ import backend.adapter.rest.model.chat.MessageDto;
 import backend.chat.repository.ChatRepository;
 import backend.chat.repository.MessageRepository;
 import backend.user.repository.UserRepository;
-import backend.adapter.rest.model.common.UserDto;
+import backend.adapter.rest.model.user.UserDto;
 import backend.common.service.GenericServiceException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -138,7 +138,7 @@ public class ChatService {
 
         MessageDto messageDto = MessageDto.builder()
                 .messageId(message.getId())
-                .sender(UserDto.buildFromModel(message.getSenderUser()))
+                .sender(UserDto.buildFromModel(message.getSenderUser(), null, false))
                 .content(message.getContent())
                 .dateSent(new Date(message.getDateSent().getTime()))
                 .chatId(message.getChat().getId())

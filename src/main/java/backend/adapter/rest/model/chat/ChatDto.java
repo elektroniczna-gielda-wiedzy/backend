@@ -1,6 +1,6 @@
 package backend.adapter.rest.model.chat;
 
-import backend.adapter.rest.model.common.UserDto;
+import backend.adapter.rest.model.user.UserDto;
 import backend.chat.model.Chat;
 import backend.chat.model.Message;
 import backend.user.model.User;
@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Builder
 @Getter
@@ -71,7 +70,7 @@ public class ChatDto {
         return ChatDto.builder()
                 .chatId(chat.getId())
                 .otherUserId(otherUser.getId())
-                .otherUser(UserDto.buildFromModel(otherUser))
+                .otherUser(UserDto.buildFromModel(otherUser, null, false))
                 .messages(allMessageDtos)
                 .lastMessage(lastMessageDto.orElse(null))
                 .isRead(isRead)

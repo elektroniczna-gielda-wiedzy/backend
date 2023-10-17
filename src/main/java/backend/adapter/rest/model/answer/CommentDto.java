@@ -1,6 +1,6 @@
 package backend.adapter.rest.model.answer;
 
-import backend.adapter.rest.model.common.UserDto;
+import backend.adapter.rest.model.user.UserDto;
 import backend.answer.model.Comment;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -38,7 +38,7 @@ public class CommentDto {
     public static CommentDto buildFromModel(Comment comment) {
         return CommentDto.builder()
                 .commentId(comment.getId())
-                .author(UserDto.buildFromModel(comment.getAuthor()))
+                .author(UserDto.buildFromModel(comment.getAuthor(), null, false))
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
