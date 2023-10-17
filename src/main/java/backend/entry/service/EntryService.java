@@ -95,9 +95,10 @@ public class EntryService {
         User user = this.userRepository.findById(userId).orElseThrow(
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
 
+        EntryType type = EntryType.valueOf(typeId).orElseThrow(
+                () -> new GenericServiceException(String.format("Entry type with id = %d does not exist", typeId)));
+
         Entry entry = new Entry();
-        EntryType type = new EntryType();
-        type.setId(typeId);
 
         entry.setType(type);
         entry.setTitle(title);
@@ -134,8 +135,8 @@ public class EntryService {
         }
 
         if (typeId != null) {
-            EntryType type = new EntryType();
-            type.setId(typeId);
+            EntryType type = EntryType.valueOf(typeId).orElseThrow(
+                    () -> new GenericServiceException(String.format("Entry type with id = %d does not exist", typeId)));
             entry.setType(type);
         }
 

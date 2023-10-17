@@ -2,8 +2,7 @@ package backend.adapter.rest.model.entry;
 
 import backend.adapter.rest.model.answer.AnswerResponseDto;
 import backend.adapter.rest.model.common.CategoryDto;
-import backend.adapter.rest.model.common.UserDto;
-import backend.answer.service.AnswerService;
+import backend.adapter.rest.model.user.UserDto;
 import backend.common.model.Vote;
 import backend.entry.model.Entry;
 import backend.user.model.User;
@@ -71,12 +70,12 @@ public class EntryResponseDto {
     @JsonProperty("votes")
     private Integer votes;
 
-    public static EntryResponseDto buildFromModel(Entry entry, User user, boolean content, boolean answers, AnswerService answerService) {
+    public static EntryResponseDto buildFromModel(Entry entry, User user, boolean content, boolean answers) {
         EntryResponseDtoBuilder builder = EntryResponseDto.builder()
                 .entryId(entry.getId())
                 .entryTypeId(entry.getType().getId())
                 .title(entry.getTitle())
-                .author(UserDto.buildFromModel(entry.getAuthor()))
+                .author(UserDto.buildFromModel(entry.getAuthor(), user, false))
                 .createdAt(entry.getCreatedAt())
                 .categories(entry.getCategories().stream().map(CategoryDto::buildFromModel).toList())
                 .votes(entry.getVotes().stream().mapToInt(Vote::getValue).sum())
@@ -92,8 +91,8 @@ public class EntryResponseDto {
         }
 
         if (answers) {
-            builder.answers(Optional.ofNullable(answerService.getAnswers(entry.getId()))
-                                    .orElseGet(Collections::emptyList)
+            builder.answers(Optional.ofNullable(entry.getAnswers())
+                                    .orElseGet(Collections::emptySet)
                                     .stream()
                                     .map(answer -> AnswerResponseDto.buildFromModel(answer, user.getId()))
                                     .toList());

@@ -31,8 +31,8 @@ public class Entry {
     @JoinColumn(name = "user_id")
     private User author;
 
-    @ManyToOne
-    @JoinColumn(name = "entry_type_id")
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "entry_type_id")
     private EntryType type;
 
     @Column(name = "title")

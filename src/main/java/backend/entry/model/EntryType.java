@@ -1,26 +1,34 @@
 package backend.entry.model;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Arrays;
+import java.util.Optional;
 
-@Entity
-@Table(name = "EntryType")
-@Getter
-@Setter
-public class EntryType {
+public enum EntryType {
+    NOTE(0, "note"),
+    ANNOUNCEMENT(1, "announcement"),
+    POST(2, "post");
 
-    public static String ANNOUNCEMENT = "Announcement";
+    private final Integer id;
 
-    public static String NOTE = "Note";
+    private final String name;
 
-    public static String POST = "Post";
+    EntryType(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "entry_type_id")
-    private Integer id;
+    public static Optional<EntryType> valueOf(Integer id) {
+        return Arrays.stream(values())
+                .filter(type -> type.id.equals(id))
+                .findFirst();
+    }
 
-    @Column(name = "name")
-    private String name;
+    public Integer getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
+

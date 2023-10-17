@@ -4,9 +4,9 @@ import backend.entry.model.Entry;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -48,4 +48,7 @@ public class User {
 
     @ManyToMany(mappedBy = "likedBy")
     private Set<Entry> favorites;
+
+    @OneToMany(mappedBy = "author")
+    private List<Entry> entries;
 }

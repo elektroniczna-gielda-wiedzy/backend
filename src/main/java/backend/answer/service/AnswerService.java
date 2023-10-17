@@ -58,17 +58,18 @@ public class AnswerService {
         User user = this.userRepository.findById(userId).orElseThrow(
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
 
-        if(!entry.getType().getName().equals(EntryType.POST)) {
+        if (!entry.getType().equals(EntryType.POST)) {
             throw new GenericServiceException("Answers can only be created for entries of \"Post\" type");
         }
+
+        Timestamp timeNow = Timestamp.from(Instant.now());
 
         Answer answer = new Answer();
         answer.setEntry(entry);
         answer.setUser(user);
         answer.setContent(content);
-        Timestamp createdAt = Timestamp.from(Instant.now());
-        answer.setCreatedAt(createdAt);
-        answer.setUpdatedAt(createdAt);
+        answer.setCreatedAt(timeNow);
+        answer.setUpdatedAt(timeNow);
         answer.setVotes(Set.of());
         answer.setIsDeleted(false);
         answer.setIsTopAnswer(false);

@@ -1,4 +1,4 @@
-package backend.user.model;
+package backend.adapter.rest.model.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -6,11 +6,17 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.jackson.Jacksonized;
 
-@Getter
-@Setter
 @Builder
+@Setter
+@Getter
 @Jacksonized
-public class VotesStatistics {
+public class UserVotesCountDto {
+    @JsonProperty("entry_type_id")
+    private Integer entryTypeId;
+
+    @JsonProperty("name")
+    private String name;
+
     @JsonProperty("positive")
     private Long positive;
 
