@@ -35,45 +35,21 @@ public class CategoryService {
         this.entryRepository = entryRepository;
     }
 
-    public List<Category> getCategories(String categoryStatus, Integer typeId, Integer parentId) {
-        CategoryType type = null;
-        if (typeId != null) {
-            type = CategoryType.valueOf(typeId).orElseThrow(
-                    () -> new GenericServiceException("Invalid category type"));
-        }
-        CategoryStatus status = CategoryStatus.valueOfLabel(categoryStatus).orElseThrow(
-                () -> new GenericServiceException("Invalid category status"));
-
-        List<Category> allCategories = this.categoryRepository.findAll(where(
-                hasStatus(status).and(hasParent(parentId)).and(hasType(type))));
-
-        return processCategoriesForConditions(allCategories, status);
+    public List<Category> getCategories(Integer statusId, Integer typeId, Integer parentId) {
+        return this.categoryRepository.findAll(where(
+                hasStatus(statusId)
+                .and(hasParent(parentId))
+                .and(hasType(typeId))
+                .and(hasParentActive())
+        ));
     }
 
-        private List<Category> processCategoriesForConditions(List<Category> allCategories, CategoryStatus status) {
-            Set<Category> result = new HashSet<>(allCategories);
-            for (Category category : allCategories) {
-                if (category.getParentCategory() != null) {
-                    if (status == CategoryStatus.ACTIVE) {
-                        if (category.getParentCategory().getCategoryStatus() != CategoryStatus.ACTIVE) {
-                            result.remove(category);
-                        }
-                    } else {
-                        if (category.getParentCategory().getCategoryStatus() == CategoryStatus.ACTIVE) {
-                            result.add(category.getParentCategory());
-                        }
-                    }
-                }
-            }
-            return result.stream().toList();
-        }
-
-
-    public Category createCategory(String categoryStatus, Integer typeId, List<CategoryTranslationDto> translations,
+    public Category createCategory(Integer statusId, Integer typeId, List<CategoryTranslationDto> translations,
                                    Integer parentId) {
         CategoryType type = CategoryType.valueOf(typeId).orElseThrow(
                 () -> new GenericServiceException("Invalid category type"));
-        CategoryStatus status = CategoryStatus.valueOfLabel(categoryStatus).orElseThrow(
+
+        CategoryStatus status = CategoryStatus.valueOf(statusId).orElseThrow(
                 () -> new GenericServiceException("Invalid category status"));
 
         Category parent = null;
@@ -83,9 +59,9 @@ public class CategoryService {
         }
 
         Category category = new Category();
-        category.setCategoryType(type);
-        category.setCategoryStatus(status);
-        category.setParentCategory(parent);
+        category.setType(type);
+        category.setStatus(status);
+        category.setParent(parent);
 
         try {
             this.categoryRepository.save(category);
@@ -99,7 +75,7 @@ public class CategoryService {
                                                                     translation.getLanguageId(),
                                                                     translation.getTranslation()));
         }
-        category.setCategoryTranslations(categoryTranslations);
+        category.setTranslations(categoryTranslations);
 
         try {
             this.categoryRepository.save(category);
@@ -110,19 +86,25 @@ public class CategoryService {
         return category;
     }
 
-    public Category updateCategory(Integer categoryId, Integer typeId, List<CategoryTranslationDto> translations,
-                                   Integer parentId, String categoryStatus) {
+    public Category updateCategory(Integer categoryId, Integer statusId, Integer typeId,
+                                   List<CategoryTranslationDto> translations, Integer parentId) {
         Category category = this.categoryRepository.findById(categoryId).orElseThrow(
                 () -> new GenericServiceException(String.format("Category with id = %d does not exist", categoryId)));
+
+        if (statusId != null) {
+            CategoryStatus status = CategoryStatus.valueOf(statusId).orElseThrow(
+                    () -> new GenericServiceException("Invalid category status"));
+            category.setStatus(status);
+        }
 
         if (typeId != null) {
             CategoryType type = CategoryType.valueOf(typeId).orElseThrow(
                     () -> new GenericServiceException("Invalid category type"));
-            category.setCategoryType(type);
+            category.setType(type);
         }
 
         if (translations.size() > 0) {
-            this.categoryTranslationRepository.deleteAll(category.getCategoryTranslations());
+            this.categoryTranslationRepository.deleteAll(category.getTranslations());
 
             Set<CategoryTranslation> categoryTranslations = new HashSet<>();
             for (CategoryTranslationDto translation: translations) {
@@ -130,19 +112,13 @@ public class CategoryService {
                                                                         translation.getLanguageId(),
                                                                         translation.getTranslation()));
             }
-            category.setCategoryTranslations(categoryTranslations);
+            category.setTranslations(categoryTranslations);
         }
 
         if (parentId != null) {
             Category parent = this.categoryRepository.findById(parentId).orElseThrow(
                     () -> new GenericServiceException(String.format("Category with id = %d does not exist", parentId)));
-            category.setParentCategory(parent);
-        }
-
-        if (categoryStatus != null) {
-            CategoryStatus status = CategoryStatus.valueOfLabel(categoryStatus).orElseThrow(
-                    () -> new GenericServiceException("Invalid category status"));
-            category.setCategoryStatus(status);
+            category.setParent(parent);
         }
 
         try {
@@ -160,10 +136,10 @@ public class CategoryService {
 
         try {
             if (this.entryRepository.CategoryExistsById(categoryId)) {
-                category.setCategoryStatus(CategoryStatus.DELETED);
+                category.setStatus(CategoryStatus.DELETED);
                 this.categoryRepository.save(category);
             } else {
-                this.categoryTranslationRepository.deleteAll(category.getCategoryTranslations());
+                this.categoryTranslationRepository.deleteAll(category.getTranslations());
                 this.categoryRepository.delete(category);
             }
         } catch (DataAccessException exception) {

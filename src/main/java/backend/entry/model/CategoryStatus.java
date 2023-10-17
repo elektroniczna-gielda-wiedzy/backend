@@ -4,24 +4,35 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public enum CategoryStatus {
-    ACTIVE(0),
-    SUGGESTED(1),
-    DELETED(2);
+    ACTIVE(0, "active"),
+    SUGGESTED(1, "suggested"),
+    DELETED(2, "deleted");
 
-    private final int value;
+    private final Integer id;
 
-    CategoryStatus(final int value) {
-        this.value = value;
+    private final String name;
+
+    CategoryStatus(final Integer id, final String name) {
+        this.id = id;
+        this.name = name;
     }
 
-    public static Optional<CategoryStatus> valueOf(int value) {
+    public static Optional<CategoryStatus> valueOf(int id) {
         return Arrays.stream(values())
-                .filter(cs -> cs.value == value)
+                .filter(cs -> cs.id == id)
                 .findFirst();
     }
     public static Optional<CategoryStatus> valueOfLabel(String value) {
         return Arrays.stream(values())
                 .filter(cs -> cs.name().equals(value))
                 .findFirst();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 }

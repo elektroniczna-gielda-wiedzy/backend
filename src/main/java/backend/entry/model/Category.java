@@ -18,33 +18,33 @@ public class Category {
     private Integer id;
 
     @Column(name = "type")
-    private CategoryType categoryType;
+    private CategoryType type;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    private Category parentCategory;
+    private Category parent;
 
     @Column(name = "status")
-    private CategoryStatus categoryStatus;
+    private CategoryStatus status;
 
     @ManyToMany(mappedBy = "categories")
     private Set<Entry> entries;
 
     @OneToMany(mappedBy = "category")
-    private Set<CategoryTranslation> categoryTranslations;
+    private Set<CategoryTranslation> translations;
 
-    public static Specification<Category> hasStatus(CategoryStatus status) {
+    public static Specification<Category> hasStatus(Integer status) {
         if (status == null) {
             return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
         }
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("categoryStatus"), status);
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), status);
     }
 
-    public static Specification<Category> hasType(CategoryType type) {
+    public static Specification<Category> hasType(Integer type) {
         if (type == null) {
             return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
         }
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("categoryType"), type);
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("type"), type);
     }
 
     public static Specification<Category> hasParent(Integer parentId) {
@@ -52,9 +52,13 @@ public class Category {
             return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
         }
         if (parentId == -1) {
-            return (root, query, criteriaBuilder) -> criteriaBuilder.isNull(root.get("parentCategory"));
+            return (root, query, criteriaBuilder) -> criteriaBuilder.isNull(root.get("parent"));
         }
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("parentCategory").get("id"), parentId);
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("parent").get("id"), parentId);
     }
 
+    public static Specification<Category> hasParentActive() {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("parent").get("status"),
+                                                                       CategoryStatus.ACTIVE);
+    }
 }

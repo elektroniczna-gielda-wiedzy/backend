@@ -18,7 +18,7 @@ public class CategoryDto {
 
     @JsonProperty("type")
     @NotNull(message = "type cannot be null")
-    private Integer categoryType;
+    private Integer type;
 
     @JsonProperty("names")
     @NotNull(message = "names cannot be null")
@@ -28,28 +28,28 @@ public class CategoryDto {
     private Integer parentId;
 
     @JsonProperty("status")
-    private String categoryStatus;
+    private Integer status;
 
     public CategoryDto(Integer categoryId) {
         this.categoryId = categoryId;
     }
 
-    public CategoryDto(Integer categoryId, Integer categoryType, List<CategoryTranslationDto> names,
-                       Integer parentId, String categoryStatus) {
+    public CategoryDto(Integer categoryId, Integer type, List<CategoryTranslationDto> names,
+                       Integer parentId, Integer status) {
         this.categoryId = categoryId;
-        this.categoryType = categoryType;
+        this.type = type;
         this.names = names;
         this.parentId = parentId;
-        this.categoryStatus = categoryStatus;
+        this.status = status;
     }
 
     public static CategoryDto buildFromModel(Category category) {
         return CategoryDto.builder()
                 .categoryId(category.getId())
-                .categoryType(category.getCategoryType().ordinal())
-                .names(category.getCategoryTranslations().stream().map(CategoryTranslationDto::buildFromModel).toList())
-                .parentId(category.getParentCategory() != null ? category.getParentCategory().getId() : null)
-                .categoryStatus(category.getCategoryStatus().name())
+                .type(category.getType().ordinal())
+                .names(category.getTranslations().stream().map(CategoryTranslationDto::buildFromModel).toList())
+                .parentId(category.getParent() != null ? category.getParent().getId() : null)
+                .status(category.getStatus().getId())
                 .build();
     }
 }

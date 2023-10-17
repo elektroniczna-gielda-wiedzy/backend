@@ -16,10 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/category")
@@ -32,18 +29,27 @@ public class CategoryController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> getCategories(@AuthenticationPrincipal AppUserDetails userDetails,
-                                                       @RequestParam Map<String, String> params) {
-        String status = params.getOrDefault("status", "active").toUpperCase();
-        boolean isAdmin = userDetails.getUser().getIsAdmin();
-        if ((!status.equals(CategoryStatus.ACTIVE.name())) && !isAdmin) {
+                                                      @RequestParam Map<String, String> params) {
+        List<Category> categories;
+
+        try {
+            Integer statusId = params.get("status") != null
+                    ? Integer.parseInt(params.get("status"))
+                    : CategoryStatus.ACTIVE.getId();
+            Integer typeId = params.get("type") != null ? Integer.parseInt(params.get("type")) : null;
+            Integer parentId = params.get("parent") != null ? Integer.parseInt(params.get("parent")) : null;
+
+            if ((!statusId.equals(CategoryStatus.ACTIVE.getId()) && !userDetails.getUser().getIsAdmin())) {
+                throw new Exception("You do not have permission to view suggestions or deleted categories");
+            }
+
+            categories = this.categoryService.getCategories(statusId, typeId, parentId);
+        } catch (Exception exception) {
             return Response.builder()
                     .httpStatusCode(HttpStatus.BAD_REQUEST)
-                    .addMessage("You do not have permission to view suggestions or deleted categories")
+                    .addMessage(exception.getMessage())
                     .build();
         }
-        Integer typeId = params.get("type") != null ? Integer.parseInt(params.get("type")) : null;
-        Integer parentId = params.get("parent_id") != null ? Integer.parseInt(params.get("parent_id")) : null;
-        List<Category> categories = this.categoryService.getCategories(status, typeId, parentId);
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
@@ -55,8 +61,10 @@ public class CategoryController {
     public ResponseEntity<StandardBody> createCategory(@Valid @RequestBody CategoryDto categoryDto,
                                                        @AuthenticationPrincipal AppUserDetails userDetails) {
         Category category;
-        boolean isSuggestion = categoryDto.getCategoryStatus().equals(CategoryStatus.SUGGESTED.name());
+
+        boolean isSuggestion = categoryDto.getStatus().equals(CategoryStatus.SUGGESTED.getId());
         boolean isAdmin = userDetails.getUser().getIsAdmin();
+
         if (!isSuggestion && !isAdmin) {
             return Response.builder()
                     .httpStatusCode(HttpStatus.BAD_REQUEST)
@@ -66,8 +74,8 @@ public class CategoryController {
 
         try {
             category = this.categoryService.createCategory(
-                    categoryDto.getCategoryStatus(),
-                    categoryDto.getCategoryType(),
+                    categoryDto.getStatus(),
+                    categoryDto.getType(),
                     categoryDto.getNames().stream()
                                     .map(t -> new CategoryTranslationDto(t.getLanguageId(), t.getTranslatedName()))
                                     .toList(),
@@ -103,14 +111,14 @@ public class CategoryController {
         try {
             category = this.categoryService.updateCategory(
                     categoryId,
-                    categoryDto.getCategoryType(),
+                    categoryDto.getStatus(),
+                    categoryDto.getType(),
                     Optional.ofNullable(categoryDto.getNames())
                             .orElseGet(Collections::emptyList)
                             .stream()
                             .map(t -> new CategoryTranslationDto(t.getLanguageId(), t.getTranslatedName()))
                             .toList(),
-                    categoryDto.getParentId(),
-                    categoryDto.getCategoryStatus()
+                    categoryDto.getParentId()
             );
         } catch (GenericServiceException exception) {
             return Response.builder()
