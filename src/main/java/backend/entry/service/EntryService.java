@@ -54,41 +54,38 @@ public class EntryService {
     }
 
     public List<Entry> getEntries(String query, Integer type, Integer userId, Integer user, List<Integer> categoryIds) {
-//        List<Entry> entries = this.entryRepository.findAll(where(
-//                (titleContains(query).or(contentContains(query)))
-//                .and(hasType(type))
-//                .and(hasAuthor(userId))
-//                .and(favoriteBy(user))
-//                .and(isNotDeleted())
-//        ), Sort.by("createdAt").descending());
-
-
-        List<Entry> entries = this.entryRepository.findAll();
+        List<Entry> entries = this.entryRepository.findAll(where(
+                (titleContains(query).or(contentContains(query)))
+                .and(hasType(type))
+                .and(hasAuthor(userId))
+                .and(favoriteBy(user))
+                .and(isNotDeleted())
+        ), Sort.by("createdAt").descending());
 
         // TODO: To rewrite.
-//        if (categoryIds.size() > 0) {
-//            Set<Category> categories = categoryRepository.getCategoriesByIdIsIn(categoryIds);
-//            List<Integer> fieldIds = categories.stream()
-//                    .filter(category -> category.getCategoryType() == CategoryType.FIELD)
-//                    .map(Category::getId)
-//                    .toList();
-//            List<Integer> departmentIds = categories.stream()
-//                    .filter(category -> category.getCategoryType() == CategoryType.DEPARTMENT)
-//                    .map(Category::getId)
-//                    .toList();
-//
-//            entries = entries.stream().filter(entry -> {
-//                boolean matchFields = fieldIds.isEmpty() || entry.getCategories()
-//                        .stream()
-//                        .filter(category -> category.getCategoryType() == CategoryType.FIELD)
-//                        .anyMatch(category -> fieldIds.contains(category.getId()));
-//                boolean matchDepartments = departmentIds.isEmpty() || entry.getCategories()
-//                        .stream()
-//                        .filter(category -> category.getCategoryType() == CategoryType.DEPARTMENT)
-//                        .anyMatch(category -> departmentIds.contains(category.getId()));
-//                return matchFields && matchDepartments;
-//            }).toList();
-//        }
+        if (categoryIds.size() > 0) {
+            Set<Category> categories = categoryRepository.getCategoriesByIdIsIn(categoryIds);
+            List<Integer> fieldIds = categories.stream()
+                    .filter(category -> category.getCategoryType() == CategoryType.FIELD)
+                    .map(Category::getId)
+                    .toList();
+            List<Integer> departmentIds = categories.stream()
+                    .filter(category -> category.getCategoryType() == CategoryType.DEPARTMENT)
+                    .map(Category::getId)
+                    .toList();
+
+            entries = entries.stream().filter(entry -> {
+                boolean matchFields = fieldIds.isEmpty() || entry.getCategories()
+                        .stream()
+                        .filter(category -> category.getCategoryType() == CategoryType.FIELD)
+                        .anyMatch(category -> fieldIds.contains(category.getId()));
+                boolean matchDepartments = departmentIds.isEmpty() || entry.getCategories()
+                        .stream()
+                        .filter(category -> category.getCategoryType() == CategoryType.DEPARTMENT)
+                        .anyMatch(category -> departmentIds.contains(category.getId()));
+                return matchFields && matchDepartments;
+            }).toList();
+        }
 
         return entries;
     }
