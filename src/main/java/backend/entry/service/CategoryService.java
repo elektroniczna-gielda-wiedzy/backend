@@ -36,12 +36,36 @@ public class CategoryService {
     }
 
     public List<Category> getCategories(Integer statusId, Integer typeId, Integer parentId) {
-        return this.categoryRepository.findAll(where(
+        CategoryStatus status = CategoryStatus.valueOf(statusId).orElseThrow(
+                () -> new GenericServiceException("Invalid category status"));
+        List<Category> allCategories = this.categoryRepository.findAll(where(
                 hasStatus(statusId)
-                .and(hasParent(parentId))
                 .and(hasType(typeId))
-                .and(hasParentActive())
+                .and(hasParent(parentId))
         ));
+        return processCategoriesForConditions(allCategories, status);
+    }
+
+    private List<Category> processCategoriesForConditions(List<Category> allCategories, CategoryStatus status) {
+        Set<Category> result = new HashSet<>(allCategories);
+        for (Category category : allCategories) {
+            if (category.getParent() == null || category.getParent().getStatus() == null) {
+                continue;
+            }
+            CategoryStatus parentStatus = category.getParent().getStatus();
+
+            if (status == CategoryStatus.ACTIVE) {
+                if (parentStatus != CategoryStatus.ACTIVE) {
+                    result.remove(category);
+                }
+            } else {
+                if (parentStatus == CategoryStatus.ACTIVE) {
+                    result.add(category.getParent());
+                }
+            }
+
+        }
+        return result.stream().toList();
     }
 
     public Category createCategory(Integer statusId, Integer typeId, List<CategoryTranslationDto> translations,
