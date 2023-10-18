@@ -57,7 +57,7 @@ public class UserDto {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName());
 
-        if (statistics && user.getId().equals(requestedUser.getId())) {
+        if (statistics && (requestedUser.getIsAdmin() || user.getId().equals(requestedUser.getId()))) {
             Map<EntryType, Long> entriesCount = user.getEntries().stream()
                     .map(Entry::getType)
                     .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
