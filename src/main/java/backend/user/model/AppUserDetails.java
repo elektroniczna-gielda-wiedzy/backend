@@ -46,21 +46,21 @@ public class AppUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return user.getIsActive();
+        return !user.getIsBanned();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return user.getIsActive();
+        return !user.getIsBanned();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return user.getIsActive();
+        return !user.getIsBanned();
     }
 
     @Override
     public boolean isEnabled() {
-        return user.getIsActive() && user.getIsEmailAuth();
+        return !user.getIsBanned() && user.getIsEmailAuth();
     }
 }

@@ -12,10 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -32,6 +29,18 @@ public class UserDto {
 
     @JsonProperty("last_name")
     private String lastName;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("is_banned")
+    private Boolean isBanned;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("is_email_auth")
+    private Boolean isEmailAuth;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("email")
+    private String email;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("created_at")
@@ -58,7 +67,12 @@ public class UserDto {
                 .lastName(user.getLastName());
 
         if (statistics && (requestedUser.getIsAdmin() || user.getId().equals(requestedUser.getId()))) {
+            builder.email(user.getEmail())
+                    .isBanned(user.getIsBanned())
+                    .isEmailAuth(user.getIsEmailAuth());
+
             Map<EntryType, Long> entriesCount = user.getEntries().stream()
+                    .filter(entry -> !entry.getIsDeleted())
                     .map(Entry::getType)
                     .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
@@ -104,9 +118,11 @@ public class UserDto {
                     .lastLogin(user.getLastLogin())
                     .entries_count(entriesCount.entrySet().stream()
                         .map(e -> new UserEntriesCountDto(e.getKey().getId(), e.getKey().getName(), e.getValue()))
+                                           .sorted(Comparator.comparingInt(UserEntriesCountDto::getEntryTypeId))
                         .toList()
                     )
-                    .votes_count(votesCount.values().stream().toList());
+                    .votes_count(votesCount.values().stream().
+                            sorted(Comparator.comparingInt(UserVotesCountDto::getEntryTypeId)).toList());
         }
 
         return builder.build();

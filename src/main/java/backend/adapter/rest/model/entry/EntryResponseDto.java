@@ -94,6 +94,7 @@ public class EntryResponseDto {
             builder.answers(Optional.ofNullable(entry.getAnswers())
                                     .orElseGet(Collections::emptySet)
                                     .stream()
+                                    .filter(answer -> !answer.getIsDeleted())
                                     .map(answer -> AnswerResponseDto.buildFromModel(answer, user.getId()))
                                     .toList());
         }

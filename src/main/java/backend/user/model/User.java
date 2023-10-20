@@ -43,8 +43,8 @@ public class User {
     @Column(name = "is_admin")
     private Boolean isAdmin;
 
-    @Column(name = "is_active")
-    private Boolean isActive;
+    @Column(name = "is_banned")
+    private Boolean isBanned;
 
     @ManyToMany(mappedBy = "likedBy")
     private Set<Entry> favorites;

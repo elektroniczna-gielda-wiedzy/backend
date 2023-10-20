@@ -46,7 +46,7 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> getUsers(@AuthenticationPrincipal AppUserDetails appUserDetails,
                                                  @RequestParam Map<String, String> params) {

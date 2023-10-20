@@ -46,7 +46,7 @@ public class UserService {
         user.setFirstName(firstname);
         user.setLastName(lastname);
 
-        user.setIsActive(true);
+        user.setIsBanned(false);
         user.setIsEmailAuth(true);  // FIXME
         user.setIsAdmin(isAdmin);
         user.setCreatedAt(Timestamp.from(Instant.now()));
