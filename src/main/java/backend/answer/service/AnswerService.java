@@ -48,13 +48,12 @@ public class AnswerService {
         Entry entry = this.entryRepository.findById(entryId).orElseThrow(
                 () -> new GenericServiceException(String.format("Entry with id = %d does not exist", entryId)));
 
-
         return this.answerRepository.findAll(where(
             hasEntryId(entryId).and(isNotDeleted())
         )).stream().sorted(
                 Comparator.comparing(Answer::getIsTopAnswer).thenComparing
                         (answer -> answer.getVotes().stream().map(Vote::getValue)
-                                .reduce(0, Integer::sum)).reversed()
+                                .reduce(0, Integer::sum)).reversed().thenComparing(Answer::getCreatedAt)
         ).toList();
     }
 

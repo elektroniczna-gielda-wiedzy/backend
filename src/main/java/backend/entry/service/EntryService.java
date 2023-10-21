@@ -1,10 +1,8 @@
 package backend.entry.service;
 
+import backend.common.model.Vote;
 import backend.common.service.ImageService;
-import backend.entry.model.CategoryType;
-import backend.entry.model.Category;
-import backend.entry.model.Entry;
-import backend.entry.model.EntryType;
+import backend.entry.model.*;
 import backend.user.model.User;
 import backend.entry.repository.CategoryRepository;
 import backend.entry.repository.EntryRepository;
@@ -16,8 +14,10 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static backend.entry.model.Entry.*;
 import static org.springframework.data.jpa.domain.Specification.where;
@@ -53,14 +53,16 @@ public class EntryService {
         return entry;
     }
 
-    public List<Entry> getEntries(String query, Integer type, Integer userId, Integer user, List<Integer> categoryIds) {
+    public List<Entry> getEntries(String query, Integer type, Integer userId, Integer user,
+                                  List<Integer> categoryIds, EntrySortMode sort) {
         List<Entry> entries = this.entryRepository.findAll(where(
                 (titleContains(query).or(contentContains(query)))
                 .and(hasType(type))
                 .and(hasAuthor(userId))
                 .and(favoriteBy(user))
                 .and(isNotDeleted())
-        ), Sort.by("createdAt").descending());
+        ));
+
 
         // TODO: To rewrite.
         if (categoryIds.size() > 0) {
@@ -87,6 +89,16 @@ public class EntryService {
             }).toList();
         }
 
+        if (sort != null) {
+            Stream<Entry> entryStream = entries.stream();
+            entries = switch (sort) {
+                case CREATED_DATE -> entryStream.sorted(Comparator.comparing(Entry::getCreatedAt).reversed()).toList();
+                case MODIFIED_DATE -> entryStream.sorted(Comparator.comparing(Entry::getUpdatedAt).reversed()).toList();
+                case VOTES -> entryStream.sorted(Comparator.comparing(entry -> entry.getVotes().stream().map(Vote::getValue)
+                        .reduce(0, Integer::sum), Comparator.reverseOrder()
+                    )).toList();
+            };
+        }
         return entries;
     }
 
@@ -107,7 +119,9 @@ public class EntryService {
         entry.setAuthor(user);
         entry.setVotes(Set.of());
         entry.setLikedBy(Set.of());
-        entry.setCreatedAt(Timestamp.from(Instant.now()));
+        Timestamp createdAt = Timestamp.from(Instant.now());
+        entry.setCreatedAt(createdAt);
+        entry.setUpdatedAt(createdAt);
 
         if (imageFilename != null) {
             entry.setImage(this.imageService.createImage(imageFilename, imageData));
@@ -159,6 +173,8 @@ public class EntryService {
             }
             entry.setImage(this.imageService.createImage(imageFilename, imageData));
         }
+
+        entry.setUpdatedAt(Timestamp.from(Instant.now()));
 
         try {
             this.entryRepository.save(entry);

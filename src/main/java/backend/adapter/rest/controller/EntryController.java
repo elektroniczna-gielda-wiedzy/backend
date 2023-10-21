@@ -5,6 +5,7 @@ import backend.adapter.rest.model.entry.EntryRequestDto;
 import backend.adapter.rest.model.entry.EntryResponseDto;
 import backend.answer.model.Answer;
 import backend.answer.service.AnswerService;
+import backend.entry.model.EntrySortMode;
 import backend.entry.model.EntryType;
 import backend.user.model.AppUserDetails;
 import backend.entry.model.Entry;
@@ -68,8 +69,10 @@ public class EntryController {
             List<Integer> categoryIds = params.get("categories") != null ?
                     Arrays.stream(params.get("categories").split(",")).map(Integer::parseInt).toList() :
                     List.of();
+            EntrySortMode sortMode = params.get("sort") != null ?
+                    EntrySortMode.getModeByValue(Integer.parseInt(params.get("sort"))) : EntrySortMode.CREATED_DATE;
 
-            entries = entryService.getEntries(query, typeId, authorId, userId, categoryIds);
+            entries = entryService.getEntries(query, typeId, authorId, userId, categoryIds, sortMode);
         } catch (Exception exception) {
             return Response.builder()
                     .httpStatusCode(HttpStatus.BAD_REQUEST)
