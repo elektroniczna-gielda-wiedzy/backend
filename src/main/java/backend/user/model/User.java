@@ -4,6 +4,7 @@ import backend.entry.model.Entry;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -51,4 +52,41 @@ public class User {
 
     @OneToMany(mappedBy = "author")
     private List<Entry> entries;
+
+
+    public static Specification<User> hasIsBanned(Boolean isBanned) {
+        if (isBanned == null) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+        }
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isBanned"), isBanned);
+    }
+
+    public static Specification<User> hasIsEmailAuth(Boolean isEmailAuth) {
+        if (isEmailAuth == null) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+        }
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isEmailAuth"), isEmailAuth);
+    }
+
+    public static Specification<User> matchesQuery(String query) {
+        if (query == null) {
+            return (root, query1, criteriaBuilder) -> criteriaBuilder.conjunction();
+        }
+        return (root, query1, criteriaBuilder) -> criteriaBuilder.or(
+                criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), "%" + query.toLowerCase() + "%"),
+                criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), "%" + query.toLowerCase() + "%"),
+                criteriaBuilder.like(criteriaBuilder.lower(
+                                             criteriaBuilder.concat(
+                                                     criteriaBuilder.concat(root.get("firstName"), " "),
+                                                     root.get("lastName"))),
+                                     "%" + query.toLowerCase() + "%"),
+
+                criteriaBuilder.like(criteriaBuilder.lower(
+                                             criteriaBuilder.concat(
+                                                     criteriaBuilder.concat(root.get("lastName"), " "),
+                                                     root.get("firstName"))),
+                                     "%" + query.toLowerCase() + "%")
+        );
+    }
+
 }

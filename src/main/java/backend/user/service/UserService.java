@@ -11,6 +11,9 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 
+import static backend.user.model.User.*;
+import static org.springframework.data.jpa.domain.Specification.where;
+
 @Service
 public class UserService {
     private final PasswordEncoder encoder;
@@ -32,11 +35,12 @@ public class UserService {
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
     }
 
-    public List<User> findUserByQuery(String query) {
-        if (query == null) {
-            throw new GenericServiceException("Query cannot be null");
-        }
-        return this.userRepository.findUsersByQuery(query.toUpperCase());
+    public List<User> findUserByQuery(String query, Boolean isBanned, Boolean isAuth) {
+        return this.userRepository.findAll(where(
+                matchesQuery(query)
+                .and(hasIsBanned(isBanned))
+                .and(hasIsEmailAuth(isAuth))
+        ));
     }
 
     public void createUser(String email, String password, String firstname, String lastname, boolean isAdmin) {

@@ -63,6 +63,8 @@ public class UserDto {
     public static UserDto buildFromModel(User user, User requestedUser, boolean statistics) {
         UserDtoBuilder builder = UserDto.builder()
                 .userId(user.getId())
+                .isBanned(user.getIsBanned())
+                .isEmailAuth(user.getIsEmailAuth())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName());
 

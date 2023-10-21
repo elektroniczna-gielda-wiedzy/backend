@@ -53,7 +53,10 @@ public class UserController {
         List<User> users;
 
         try {
-            users = this.userService.findUserByQuery(params.get("q"));
+            String query = params.get("query");
+            Boolean isBanned = params.get("is_banned") != null ? Boolean.parseBoolean(params.get("is_banned")) : null;
+            Boolean isEmailAuth = params.get("is_email_auth") != null ? Boolean.parseBoolean(params.get("is_email_auth")) : null;
+            users = this.userService.findUserByQuery(query, isBanned, isEmailAuth);
         } catch (Exception exception) {
             return Response.builder()
                     .httpStatusCode(HttpStatus.BAD_REQUEST)
