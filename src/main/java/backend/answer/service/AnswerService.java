@@ -51,9 +51,11 @@ public class AnswerService {
         return this.answerRepository.findAll(where(
             hasEntryId(entryId).and(isNotDeleted())
         )).stream().sorted(
-                Comparator.comparing(Answer::getIsTopAnswer).thenComparing
+                Comparator.comparing
+                        (Answer::getIsTopAnswer, Comparator.reverseOrder()).thenComparing
                         (answer -> answer.getVotes().stream().map(Vote::getValue)
-                                .reduce(0, Integer::sum)).reversed().thenComparing(Answer::getCreatedAt)
+                                .reduce(0, Integer::sum), Comparator.reverseOrder()).thenComparing
+                        (Answer::getCreatedAt)
         ).toList();
     }
 
