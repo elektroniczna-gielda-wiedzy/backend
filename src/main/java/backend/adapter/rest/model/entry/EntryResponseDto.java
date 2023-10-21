@@ -3,6 +3,7 @@ package backend.adapter.rest.model.entry;
 import backend.adapter.rest.model.answer.AnswerResponseDto;
 import backend.adapter.rest.model.common.CategoryDto;
 import backend.adapter.rest.model.user.UserDto;
+import backend.answer.model.Answer;
 import backend.common.model.Vote;
 import backend.entry.model.Entry;
 import backend.user.model.User;
@@ -70,7 +71,7 @@ public class EntryResponseDto {
     @JsonProperty("votes")
     private Integer votes;
 
-    public static EntryResponseDto buildFromModel(Entry entry, User user, boolean content, boolean answers) {
+    public static EntryResponseDto buildFromModel(Entry entry, User user, boolean content, List<Answer> answers) {
         EntryResponseDtoBuilder builder = EntryResponseDto.builder()
                 .entryId(entry.getId())
                 .entryTypeId(entry.getType().getId())
@@ -90,11 +91,8 @@ public class EntryResponseDto {
             builder.content(entry.getContent());
         }
 
-        if (answers) {
-            builder.answers(Optional.ofNullable(entry.getAnswers())
-                                    .orElseGet(Collections::emptySet)
-                                    .stream()
-                                    .filter(answer -> !answer.getIsDeleted())
+        if (answers != null) {
+            builder.answers(answers.stream()
                                     .map(answer -> AnswerResponseDto.buildFromModel(answer, user.getId()))
                                     .toList());
         }

@@ -3,6 +3,8 @@ package backend.adapter.rest.controller;
 import backend.adapter.rest.model.common.CategoryDto;
 import backend.adapter.rest.model.entry.EntryRequestDto;
 import backend.adapter.rest.model.entry.EntryResponseDto;
+import backend.answer.model.Answer;
+import backend.answer.service.AnswerService;
 import backend.entry.model.EntryType;
 import backend.user.model.AppUserDetails;
 import backend.entry.model.Entry;
@@ -24,18 +26,22 @@ import java.util.*;
 @RequestMapping("/api/v1/entry")
 public class EntryController {
     private final EntryService entryService;
+    private final AnswerService answerService;
 
-    public EntryController(EntryService entryService) {
+    public EntryController(EntryService entryService, AnswerService answerService) {
         this.entryService = entryService;
+        this.answerService = answerService;
     }
 
     @GetMapping(path = "/{entry_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> getEntry(@AuthenticationPrincipal AppUserDetails userDetails,
                                                  @PathVariable("entry_id") Integer entryId) {
         Entry entry;
+        List<Answer> answers;
 
         try {
             entry = entryService.getEntry(entryId);
+            answers = answerService.getAnswers(entryId);
         } catch (GenericServiceException exception) {
             return Response.builder()
                     .httpStatusCode(HttpStatus.BAD_REQUEST)
@@ -45,7 +51,7 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(List.of(EntryResponseDto.buildFromModel(entry, userDetails.getUser(), true, true)))
+                .result(List.of(EntryResponseDto.buildFromModel(entry, userDetails.getUser(), true, answers)))
                 .build();
     }
 
@@ -74,7 +80,8 @@ public class EntryController {
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
                 .result(entries.stream()
-                                .map(e -> EntryResponseDto.buildFromModel(e, userDetails.getUser(), false, false))
+                                .map(e -> EntryResponseDto.buildFromModel(e, userDetails.getUser(), false,
+                                                                          null))
                                 .toList())
                 .build();
     }
@@ -103,7 +110,8 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.CREATED)
-                .result(List.of(EntryResponseDto.buildFromModel(entry, userDetails.getUser(), true, true)))
+                .result(List.of(EntryResponseDto.buildFromModel(entry, userDetails.getUser(), true,
+                                                                null)))
                 .build();
     }
 
@@ -112,6 +120,7 @@ public class EntryController {
                                                     @PathVariable("entry_id") Integer entryId,
                                                     @RequestBody EntryRequestDto entryRequestDto) {
         Entry entry;
+        List<Answer> answers;
 
         try {
             entry = entryService.updateEntry(
@@ -128,6 +137,7 @@ public class EntryController {
                     entryRequestDto.getImage() != null ? entryRequestDto.getImage().getFilename() : null,
                     entryRequestDto.getImage() != null ? Base64.decode(entryRequestDto.getImage().getData()) : null
             );
+            answers = answerService.getAnswers(entryId);
         } catch (Exception exception) {
             return Response.builder()
                     .httpStatusCode(HttpStatus.BAD_REQUEST)
@@ -137,7 +147,7 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(List.of(EntryResponseDto.buildFromModel(entry, userDetails.getUser(), true, true)))
+                .result(List.of(EntryResponseDto.buildFromModel(entry, userDetails.getUser(), true, answers)))
                 .build();
     }
 

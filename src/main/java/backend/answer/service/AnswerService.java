@@ -1,6 +1,7 @@
 package backend.answer.service;
 
 import backend.answer.model.Answer;
+import backend.common.model.Vote;
 import backend.common.service.ImageService;
 import backend.entry.model.Entry;
 import backend.entry.model.EntryType;
@@ -12,9 +13,11 @@ import backend.common.service.GenericServiceException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.comparator.BooleanComparator;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -48,7 +51,11 @@ public class AnswerService {
 
         return this.answerRepository.findAll(where(
             hasEntryId(entryId).and(isNotDeleted())
-        ), Sort.by("isTopAnswer", "votes").descending());
+        )).stream().sorted(
+                Comparator.comparing(Answer::getIsTopAnswer).thenComparing
+                        (answer -> answer.getVotes().stream().map(Vote::getValue)
+                                .reduce(0, Integer::sum)).reversed()
+        ).toList();
     }
 
     public Answer createAnswer(Integer entryId, Integer userId, String content, String imageFilename, byte[] imageData) {

@@ -53,7 +53,9 @@ public class CategoryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(categories.stream().map(CategoryDto::buildFromModel).toList())
+                .result(categories.stream().map(CategoryDto::buildFromModel).sorted(
+                        Comparator.comparingInt(CategoryDto::getCategoryId)
+                ).toList())
                 .build();
     }
 
