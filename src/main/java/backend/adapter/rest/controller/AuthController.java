@@ -8,6 +8,8 @@ import backend.adapter.rest.Response;
 import backend.adapter.rest.StandardBody;
 import backend.common.service.GenericServiceException;
 import backend.adapter.rest.security.JwtService;
+import backend.user.model.User;
+import backend.user.repository.UserRepository;
 import backend.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,13 +37,16 @@ public class AuthController {
     private final UserService userService;
 
     private final AuthenticationManager authManager;
+    private final UserRepository userRepository;
 
     private final JwtService jwtService;
 
-    public AuthController(UserService userService, AuthenticationManager authenticationManager, JwtService jwtService) {
+    public AuthController(UserService userService, AuthenticationManager authenticationManager,
+                          JwtService jwtService, UserRepository userRepository) {
         this.userService = userService;
         this.authManager = authenticationManager;
         this.jwtService = jwtService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping(path = "/sign_in", consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -59,6 +66,11 @@ public class AuthController {
         }
 
         AppUserDetails principal = (AppUserDetails) auth.getPrincipal();
+
+        User user = userService.getUser(principal.getId());
+        user.setLastLogin(Timestamp.from(Instant.now()));
+        userRepository.save(user);
+
         SimpleGrantedAuthority grantedAuthority = (SimpleGrantedAuthority) auth.getAuthorities().toArray()[0];
 
         Map<String, Object> claims = new HashMap<>();

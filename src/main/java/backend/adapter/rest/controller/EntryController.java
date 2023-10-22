@@ -38,11 +38,9 @@ public class EntryController {
     public ResponseEntity<StandardBody> getEntry(@AuthenticationPrincipal AppUserDetails userDetails,
                                                  @PathVariable("entry_id") Integer entryId) {
         Entry entry;
-        List<Answer> answers;
 
         try {
             entry = entryService.getEntry(entryId);
-            answers = answerService.getAnswers(entryId);
         } catch (GenericServiceException exception) {
             return Response.builder()
                     .httpStatusCode(HttpStatus.BAD_REQUEST)
@@ -52,7 +50,7 @@ public class EntryController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(List.of(EntryResponseDto.buildFromModel(entry, userDetails.getUser(), true, answers)))
+                .result(List.of(EntryResponseDto.buildFromModel(entry, userDetails.getUser(), true, null)))
                 .build();
     }
 
