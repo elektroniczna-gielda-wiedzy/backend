@@ -61,6 +61,6 @@ public class UserService {
             throw new GenericServiceException(exception.getMessage());
         }
 
-//        this.emailService.sendEmail("mfurga@student.agh.edu.pl", "test", "test:)");
+        this.emailService.sendEmail(email, "test", "test:)");
     }
 }

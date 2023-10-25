@@ -15,7 +15,7 @@ public class EmailService {
     public void sendEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
-        message.setFrom("");
+        message.setFrom("Knowledge Exchange <knowledge-exchange-agh@outlook.com>");
         message.setSubject(subject);
         message.setText(body);
         mailSender.send(message);
