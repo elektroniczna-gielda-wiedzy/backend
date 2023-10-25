@@ -53,7 +53,6 @@ public class User {
     @OneToMany(mappedBy = "author")
     private List<Entry> entries;
 
-
     public static Specification<User> hasIsBanned(Boolean isBanned) {
         if (isBanned == null) {
             return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
@@ -88,5 +87,4 @@ public class User {
                                      "%" + query.toLowerCase() + "%")
         );
     }
-
 }
