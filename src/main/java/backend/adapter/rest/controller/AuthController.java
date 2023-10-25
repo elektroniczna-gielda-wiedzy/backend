@@ -1,8 +1,6 @@
 package backend.adapter.rest.controller;
 
-import backend.adapter.rest.model.auth.SignInRequestDto;
-import backend.adapter.rest.model.auth.SignInResultDto;
-import backend.adapter.rest.model.auth.SignUpRequestDto;
+import backend.adapter.rest.model.auth.*;
 import backend.user.model.AppUserDetails;
 import backend.adapter.rest.Response;
 import backend.adapter.rest.StandardBody;
@@ -20,10 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -51,8 +46,7 @@ public class AuthController {
 
     @PostMapping(path = "/sign_in", consumes = MediaType.APPLICATION_JSON_VALUE,
                  produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> sign_in(@Valid @RequestBody
-                                                SignInRequestDto request) {
+    public ResponseEntity<StandardBody> sign_in(@Valid @RequestBody SignInRequestDto request) {
         Authentication auth;
 
         try {
@@ -86,8 +80,7 @@ public class AuthController {
 
     @PostMapping(path = "/sign_up", consumes = MediaType.APPLICATION_JSON_VALUE,
                  produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StandardBody> sign_up(@Valid @RequestBody
-                                                SignUpRequestDto request) {
+    public ResponseEntity<StandardBody> sign_up(@Valid @RequestBody SignUpRequestDto request) {
         try {
             this.userService.createUser(request.getEmail(),
                                         request.getPassword(),
@@ -104,6 +97,40 @@ public class AuthController {
 
         return Response.builder()
                 .httpStatusCode(HttpStatus.CREATED)
+                .build();
+    }
+
+    @PutMapping(path = "/confirm_email", consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StandardBody> confirmEmail(@Valid @RequestBody ConfirmEmailDto confirmEmailDto) {
+        try {
+            this.userService.confirmEmail(confirmEmailDto.getToken());
+        } catch (Exception exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+
+        return Response.builder()
+                .httpStatusCode(HttpStatus.OK)
+                .build();
+    }
+
+    @PutMapping(path = "/resend_email", consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StandardBody> resendEmail(@Valid @RequestBody ResendEmailDto resendEmailDto) {
+        try {
+            this.userService.resendEmail(resendEmailDto.getEmail());
+        } catch (Exception exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+
+        return Response.builder()
+                .httpStatusCode(HttpStatus.OK)
                 .build();
     }
 }

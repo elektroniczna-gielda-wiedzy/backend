@@ -1,5 +1,6 @@
 package backend.user.service;
 
+import backend.common.service.GenericServiceException;
 import backend.user.model.AppUserDetails;
 import backend.user.model.User;
 import backend.user.repository.UserRepository;
@@ -18,10 +19,8 @@ public class AppUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findUserDaoByEmail(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("Email not found");
-        }
+        User user = this.userRepository.findUserByEmail(username).orElseThrow(
+                () -> new GenericServiceException(String.format("User with email = %s does not exist", username)));
         return new AppUserDetails(user);
     }
 }
