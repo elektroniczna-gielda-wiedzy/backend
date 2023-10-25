@@ -22,12 +22,16 @@ public class UserService {
 
     private final EmailService emailService;
 
+    private final EmailTokenService emailTokenService;
+
     public UserService(PasswordEncoder encoder,
                        UserRepository userRepository,
-                       EmailService emailService) {
+                       EmailService emailService,
+                       EmailTokenService emailTokenService) {
         this.encoder = encoder;
         this.userRepository = userRepository;
         this.emailService = emailService;
+        this.emailTokenService = emailTokenService;
     }
 
     public User getUser(Integer userId) {
@@ -51,7 +55,7 @@ public class UserService {
         user.setLastName(lastname);
 
         user.setIsBanned(false);
-        user.setIsEmailAuth(true);  // FIXME
+        user.setIsEmailAuth(false);
         user.setIsAdmin(isAdmin);
         user.setCreatedAt(Timestamp.from(Instant.now()));
 
@@ -61,6 +65,38 @@ public class UserService {
             throw new GenericServiceException(exception.getMessage());
         }
 
-        this.emailService.sendEmail(email, "test", "test:)");
+        this.sendEmailConfirmation(user.getId(), user.getEmail());
+    }
+
+    public void confirmEmail(String token) {
+        if (!this.emailTokenService.verify(token)) {
+            throw new GenericServiceException("Invalid email confirmation token");
+        }
+
+        Integer userId = this.emailTokenService.getUserId(token);
+
+        User user = this.userRepository.findById(userId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
+
+        user.setIsEmailAuth(true);
+
+        try {
+            userRepository.save(user);
+        } catch (DataAccessException exception) {
+            throw new GenericServiceException(exception.getMessage());
+        }
+    }
+
+    public void resendEmail(String email) {
+        User user = this.userRepository.findUserByEmail(email).orElseThrow(
+                () -> new GenericServiceException(String.format("User with email = %s does not exist", email)));
+        this.sendEmailConfirmation(user.getId(), user.getEmail());
+    }
+
+    private void sendEmailConfirmation(Integer userId, String email) {
+        String token = this.emailTokenService.generate(userId);
+        String url = "http://20.251.9.203/email-confirm?token=" + token;
+        String message = "Confirm your email address at: " + url;
+        this.emailService.sendEmail(email, "Email confirmation", message);
     }
 }
