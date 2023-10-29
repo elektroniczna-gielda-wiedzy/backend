@@ -6,7 +6,6 @@ import backend.adapter.rest.model.entry.EntryResponseDto;
 import backend.answer.model.Answer;
 import backend.answer.service.AnswerService;
 import backend.entry.model.EntrySortMode;
-import backend.entry.model.EntryType;
 import backend.user.model.AppUserDetails;
 import backend.entry.model.Entry;
 import backend.adapter.rest.Response;
