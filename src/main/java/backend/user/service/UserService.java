@@ -48,6 +48,9 @@ public class UserService {
     }
 
     public void createUser(String email, String password, String firstname, String lastname, boolean isAdmin) {
+        this.userRepository.findUserByEmail(email).orElseThrow(
+                () -> new GenericServiceException(String.format("User with email = %s already exists", email)));
+
         User user = new User();
         user.setEmail(email);
         user.setPassword(encoder.encode(password));
@@ -77,6 +80,10 @@ public class UserService {
 
         User user = this.userRepository.findById(userId).orElseThrow(
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
+
+        if (user.getIsEmailAuth()) {
+            throw new GenericServiceException("Email already confirmed");
+        }
 
         user.setIsEmailAuth(true);
 

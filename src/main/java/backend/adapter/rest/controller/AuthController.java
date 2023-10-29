@@ -65,6 +65,13 @@ public class AuthController {
         user.setLastLogin(Timestamp.from(Instant.now()));
         userRepository.save(user);
 
+        if (!user.getIsEmailAuth()) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.UNAUTHORIZED)
+                    .addMessage("Email address has not been confirmed")
+                    .build();
+        }
+
         SimpleGrantedAuthority grantedAuthority = (SimpleGrantedAuthority) auth.getAuthorities().toArray()[0];
 
         Map<String, Object> claims = new HashMap<>();
