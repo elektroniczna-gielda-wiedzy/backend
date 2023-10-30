@@ -106,4 +106,28 @@ public class UserService {
         String message = "Confirm your email address at: " + url;
         this.emailService.sendEmail(email, "Email confirmation", message);
     }
+
+    public void setUserBanned(Integer requestingUser, Integer userId, Integer opcode) {
+        User reqUser = this.userRepository.findById(requestingUser).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", requestingUser)));
+
+        if (!reqUser.getIsAdmin()) {
+            throw new GenericServiceException(String.format("User with id = %d is not an admin", requestingUser));
+        }
+
+        User bannedUser = this.userRepository.findById(userId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
+
+        switch (opcode) {
+            case 1 -> {
+                bannedUser.setIsBanned(true);
+            }
+            case -1 -> {
+                bannedUser.setIsBanned(false);
+            }
+            default -> throw new GenericServiceException("Invalid opcode");
+        }
+
+        this.userRepository.save(bannedUser);
+    }
 }

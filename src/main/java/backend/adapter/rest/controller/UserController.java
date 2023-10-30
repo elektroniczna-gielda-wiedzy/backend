@@ -2,11 +2,14 @@ package backend.adapter.rest.controller;
 
 import backend.adapter.rest.Response;
 import backend.adapter.rest.StandardBody;
+import backend.adapter.rest.model.answer.CommentDto;
+import backend.adapter.rest.model.user.BanDto;
 import backend.adapter.rest.model.user.UserDto;
 import backend.common.service.GenericServiceException;
 import backend.user.model.AppUserDetails;
 import backend.user.model.User;
 import backend.user.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +71,24 @@ public class UserController {
                 .result(users.stream()
                                 .map(u -> UserDto.buildFromModel(u, appUserDetails.getUser(), false))
                                 .toList())
+                .build();
+    }
+
+    @PostMapping(path = "/{user_id}/ban", consumes = MediaType.APPLICATION_JSON_VALUE,
+                 produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StandardBody> banUser(@AuthenticationPrincipal AppUserDetails appUserDetails,
+                                                @PathVariable("user_id") Integer userId,
+                                                @Valid @RequestBody BanDto banDto) {
+        try {
+            this.userService.setUserBanned(appUserDetails.getId(), userId, banDto.getValue());
+        } catch (Exception exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+        return Response.builder()
+                .httpStatusCode(HttpStatus.OK)
                 .build();
     }
 }
