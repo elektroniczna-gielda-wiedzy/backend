@@ -2,7 +2,6 @@ package backend.adapter.rest.controller;
 
 import backend.adapter.rest.Response;
 import backend.adapter.rest.StandardBody;
-import backend.adapter.rest.model.answer.CommentDto;
 import backend.adapter.rest.model.user.BanDto;
 import backend.adapter.rest.model.user.UserDto;
 import backend.common.service.GenericServiceException;
@@ -74,7 +73,7 @@ public class UserController {
                 .build();
     }
 
-    @PostMapping(path = "/{user_id}/ban", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PutMapping(path = "/{user_id}/ban", consumes = MediaType.APPLICATION_JSON_VALUE,
                  produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> banUser(@AuthenticationPrincipal AppUserDetails appUserDetails,
                                                 @PathVariable("user_id") Integer userId,
