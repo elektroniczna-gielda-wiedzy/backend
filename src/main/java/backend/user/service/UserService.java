@@ -122,7 +122,7 @@ public class UserService {
         User bannedUser = this.userRepository.findById(userId).orElseThrow(
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
 
-        if (bannedUser.getIsAdmin()) {
+        if (bannedUser.getIsAdmin() && isBanned) {
             throw new GenericServiceException(String.format("User with id = %d is an admin", userId));
         }
 
