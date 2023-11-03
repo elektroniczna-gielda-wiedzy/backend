@@ -17,6 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
@@ -129,6 +130,25 @@ public class AuthController {
     public ResponseEntity<StandardBody> resendEmail(@Valid @RequestBody ResendEmailDto resendEmailDto) {
         try {
             this.userService.resendEmail(resendEmailDto.getEmail());
+        } catch (Exception exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+
+        return Response.builder()
+                .httpStatusCode(HttpStatus.OK)
+                .build();
+    }
+
+    @PutMapping(path = "/reset_password", consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StandardBody> resetPassword(@AuthenticationPrincipal AppUserDetails userDetails,
+                                                      @Valid @RequestBody ResetPasswordRequestDto passwordRequestDto) {
+        try {
+            this.userService.resetPassword(userDetails.getId(), passwordRequestDto.getOldPassword(),
+                                           passwordRequestDto.getNewPassword());
         } catch (Exception exception) {
             return Response.builder()
                     .httpStatusCode(HttpStatus.BAD_REQUEST)

@@ -130,4 +130,20 @@ public class UserService {
 
         this.userRepository.save(bannedUser);
     }
+
+    public void resetPassword(Integer userId, String oldPassword, String newPassword) {
+        User user = this.userRepository.findById(userId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
+
+        if (!encoder.matches(oldPassword, user.getPassword())) {
+            throw new GenericServiceException("Old password does not match the database value");
+        }
+
+        user.setPassword(encoder.encode(newPassword));
+        try {
+            this.userRepository.save(user);
+        } catch (DataAccessException exception) {
+            throw new GenericServiceException(exception.getMessage());
+        }
+    }
 }
