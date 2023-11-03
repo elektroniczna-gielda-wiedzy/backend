@@ -34,11 +34,11 @@ public class ReportResponseDto {
         ReportResponseDto.ReportResponseDtoBuilder builder = ReportResponseDto.builder()
                 .reportId(report.getReportId())
                 .topic(report.getTopic())
-                .reporterId(report.getReporter().getId())
-                .entryId(report.getEntry().getId());
+                .description(report.getDescription());
 
         if (details) {
-            builder.description(report.getDescription());
+            builder.reporterId(report.getReporter().getId())
+            .entryId(report.getEntry().getId());
         }
         return builder.build();
     }
