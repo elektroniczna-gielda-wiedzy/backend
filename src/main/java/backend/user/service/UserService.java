@@ -108,6 +108,10 @@ public class UserService {
     }
 
     public void setUserBanned(Integer requestingUser, Integer userId, Boolean isBanned) {
+        if (requestingUser.equals(userId)) {
+            throw new GenericServiceException("Cannot ban yourself");
+        }
+
         User reqUser = this.userRepository.findById(requestingUser).orElseThrow(
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", requestingUser)));
 
@@ -117,6 +121,10 @@ public class UserService {
 
         User bannedUser = this.userRepository.findById(userId).orElseThrow(
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
+
+        if (bannedUser.getIsAdmin()) {
+            throw new GenericServiceException(String.format("User with id = %d is an admin", userId));
+        }
 
         bannedUser.setIsBanned(isBanned);
         this.userRepository.save(bannedUser);
