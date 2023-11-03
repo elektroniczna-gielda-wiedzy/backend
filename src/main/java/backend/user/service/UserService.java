@@ -107,7 +107,7 @@ public class UserService {
         this.emailService.sendEmail(email, "Email confirmation", message);
     }
 
-    public void setUserBanned(Integer requestingUser, Integer userId, Integer opcode) {
+    public void setUserBanned(Integer requestingUser, Integer userId, Boolean isBanned) {
         User reqUser = this.userRepository.findById(requestingUser).orElseThrow(
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", requestingUser)));
 
@@ -118,16 +118,7 @@ public class UserService {
         User bannedUser = this.userRepository.findById(userId).orElseThrow(
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
 
-        switch (opcode) {
-            case 1 -> {
-                bannedUser.setIsBanned(true);
-            }
-            case -1 -> {
-                bannedUser.setIsBanned(false);
-            }
-            default -> throw new GenericServiceException("Invalid opcode");
-        }
-
+        bannedUser.setIsBanned(isBanned);
         this.userRepository.save(bannedUser);
     }
 

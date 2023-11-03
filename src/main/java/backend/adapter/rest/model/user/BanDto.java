@@ -10,5 +10,5 @@ import lombok.Setter;
 public class BanDto {
     @JsonProperty("value")
     @NotNull(message = "value cannot be null")
-    public Integer value;
+    public Boolean value;
 }
