@@ -63,7 +63,6 @@ public class EntryService {
                 .and(isNotDeleted())
         ));
 
-
         // TODO: To rewrite.
         if (categoryIds.size() > 0) {
             Set<Category> categories = categoryRepository.getCategoriesByIdIsIn(categoryIds);
