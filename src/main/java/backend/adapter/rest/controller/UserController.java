@@ -1,10 +1,13 @@
 package backend.adapter.rest.controller;
 
+import backend.adapter.rest.Paginator;
 import backend.adapter.rest.Response;
+import backend.adapter.rest.ResultInfo;
 import backend.adapter.rest.StandardBody;
 import backend.adapter.rest.model.user.BanDto;
 import backend.adapter.rest.model.user.UserDto;
 import backend.common.service.GenericServiceException;
+import backend.entry.model.Entry;
 import backend.user.model.AppUserDetails;
 import backend.user.model.User;
 import backend.user.service.UserService;
@@ -53,11 +56,16 @@ public class UserController {
     public ResponseEntity<StandardBody> getUsers(@AuthenticationPrincipal AppUserDetails appUserDetails,
                                                  @RequestParam Map<String, String> params) {
         List<User> users;
+        Integer page;
+        Integer perPage;
 
         try {
             String query = params.get("query");
             Boolean isBanned = params.get("is_banned") != null ? Boolean.parseBoolean(params.get("is_banned")) : null;
             Boolean isEmailAuth = params.get("is_email_auth") != null ? Boolean.parseBoolean(params.get("is_email_auth")) : null;
+            page = params.get("page") != null ? Integer.parseInt(params.get("page")) : 1;
+            perPage = params.get("per_page") != null ? Integer.parseInt(params.get("per_page")) : 20;
+
             users = this.userService.findUserByQuery(query, isBanned, isEmailAuth);
         } catch (Exception exception) {
             return Response.builder()
@@ -65,11 +73,15 @@ public class UserController {
                     .addMessage(exception.getMessage())
                     .build();
         }
+
+        Paginator<User> paginator = new Paginator<>(users, page, perPage);
+
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(users.stream()
+                .result(paginator.getResult().stream()
                                 .map(u -> UserDto.buildFromModel(u, appUserDetails.getUser(), false))
                                 .toList())
+                .resultInfo(ResultInfo.buildFromPaginator(paginator))
                 .build();
     }
 

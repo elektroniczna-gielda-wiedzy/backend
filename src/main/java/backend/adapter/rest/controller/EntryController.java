@@ -1,5 +1,7 @@
 package backend.adapter.rest.controller;
 
+import backend.adapter.rest.Paginator;
+import backend.adapter.rest.ResultInfo;
 import backend.adapter.rest.model.common.CategoryDto;
 import backend.adapter.rest.model.entry.EntryRequestDto;
 import backend.adapter.rest.model.entry.EntryResponseDto;
@@ -57,6 +59,8 @@ public class EntryController {
     public ResponseEntity<StandardBody> getEntries(@AuthenticationPrincipal AppUserDetails userDetails,
                                                    @RequestParam Map<String, String> params) {
         List<Entry> entries;
+        Integer page;
+        Integer perPage;
 
         try {
             String query = params.get("query");
@@ -68,6 +72,8 @@ public class EntryController {
                     List.of();
             EntrySortMode sortMode = params.get("sort") != null ?
                     EntrySortMode.getModeByValue(Integer.parseInt(params.get("sort"))) : EntrySortMode.CREATED_DATE;
+            page = params.get("page") != null ? Integer.parseInt(params.get("page")) : 1;
+            perPage = params.get("per_page") != null ? Integer.parseInt(params.get("per_page")) : 20;
 
             entries = entryService.getEntries(query, typeId, authorId, userId, categoryIds, sortMode);
         } catch (Exception exception) {
@@ -77,12 +83,15 @@ public class EntryController {
                     .build();
         }
 
+        Paginator<Entry> paginator = new Paginator<>(entries, page, perPage);
+
         return Response.builder()
                 .httpStatusCode(HttpStatus.OK)
-                .result(entries.stream()
+                .result(paginator.getResult().stream()
                                 .map(e -> EntryResponseDto.buildFromModel(e, userDetails.getUser(), false,
                                                                           null))
                                 .toList())
+                .resultInfo(ResultInfo.buildFromPaginator(paginator))
                 .build();
     }
 
