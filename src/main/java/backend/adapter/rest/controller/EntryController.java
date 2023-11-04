@@ -72,8 +72,8 @@ public class EntryController {
                     List.of();
             EntrySortMode sortMode = params.get("sort") != null ?
                     EntrySortMode.getModeByValue(Integer.parseInt(params.get("sort"))) : EntrySortMode.CREATED_DATE;
-            page = params.get("page") != null ? Integer.parseInt(params.get("page")) : 1;
-            perPage = params.get("per_page") != null ? Integer.parseInt(params.get("per_page")) : 20;
+            page = params.get("page") != null ? Integer.parseInt(params.get("page")) : null;
+            perPage = params.get("per_page") != null ? Integer.parseInt(params.get("per_page")) : null;
 
             entries = entryService.getEntries(query, typeId, authorId, userId, categoryIds, sortMode);
         } catch (Exception exception) {
