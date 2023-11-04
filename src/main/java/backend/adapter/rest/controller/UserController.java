@@ -63,8 +63,8 @@ public class UserController {
             String query = params.get("query");
             Boolean isBanned = params.get("is_banned") != null ? Boolean.parseBoolean(params.get("is_banned")) : null;
             Boolean isEmailAuth = params.get("is_email_auth") != null ? Boolean.parseBoolean(params.get("is_email_auth")) : null;
-            page = params.get("page") != null ? Integer.parseInt(params.get("page")) : 1;
-            perPage = params.get("per_page") != null ? Integer.parseInt(params.get("per_page")) : 20;
+            page = params.get("page") != null ? Integer.parseInt(params.get("page")) : null;
+            perPage = params.get("per_page") != null ? Integer.parseInt(params.get("per_page")) : null;
 
             users = this.userService.findUserByQuery(query, isBanned, isEmailAuth);
         } catch (Exception exception) {
