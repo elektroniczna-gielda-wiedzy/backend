@@ -48,9 +48,9 @@ public class UserService {
     }
 
     public void createUser(String email, String password, String firstname, String lastname, boolean isAdmin) {
-        this.userRepository.findUserByEmail(email).orElseThrow(
-                () -> new GenericServiceException(String.format("User with email = %s already exists", email)));
-
+        if(this.userRepository.findUserByEmail(email).isPresent()) {
+            throw new GenericServiceException(String.format("User with email = %s already exists", email));
+        }
         User user = new User();
         user.setEmail(email);
         user.setPassword(encoder.encode(password));
