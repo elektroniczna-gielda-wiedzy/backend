@@ -56,7 +56,7 @@ public class AuthController {
         } catch (AuthenticationException e) {
             return Response.builder()
                     .httpStatusCode(HttpStatus.UNAUTHORIZED)
-                    .addMessage("Invalid email or password")
+                    .addMessage(e.getMessage())
                     .build();
         }
 
@@ -65,13 +65,6 @@ public class AuthController {
         User user = userService.getUser(principal.getId());
         user.setLastLogin(Timestamp.from(Instant.now()));
         userRepository.save(user);
-
-        if (!user.getIsEmailAuth()) {
-            return Response.builder()
-                    .httpStatusCode(HttpStatus.UNAUTHORIZED)
-                    .addMessage("Email address has not been confirmed")
-                    .build();
-        }
 
         SimpleGrantedAuthority grantedAuthority = (SimpleGrantedAuthority) auth.getAuthorities().toArray()[0];
 
