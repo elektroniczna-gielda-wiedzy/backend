@@ -78,7 +78,9 @@ public class EntryResponseDto {
                 .title(entry.getTitle())
                 .author(UserDto.buildFromModel(entry.getAuthor(), user, false))
                 .createdAt(entry.getCreatedAt())
-                .categories(entry.getCategories().stream().map(CategoryDto::buildFromModel).toList())
+                .categories(entry.getCategories().stream().map(CategoryDto::buildFromModel).sorted(Comparator.comparingInt(
+                        CategoryDto::getCategoryId)
+                ).toList())
                 .votes(entry.getVotes().stream().mapToInt(Vote::getValue).sum())
                 .voteValue(entry.getVotes().stream()
                                    .filter(vote -> vote.getUser().getId().equals(user.getId()))
