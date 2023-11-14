@@ -24,14 +24,19 @@ public class UserService {
 
     private final EmailTokenService emailTokenService;
 
+    private final PasswordReminderTokenService reminderTokenService;
+
+
     public UserService(PasswordEncoder encoder,
                        UserRepository userRepository,
                        EmailService emailService,
-                       EmailTokenService emailTokenService) {
+                       EmailTokenService emailTokenService,
+                       PasswordReminderTokenService reminderTokenService) {
         this.encoder = encoder;
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.emailTokenService = emailTokenService;
+        this.reminderTokenService = reminderTokenService;
     }
 
     public User getUser(Integer userId) {
@@ -107,6 +112,15 @@ public class UserService {
         this.emailService.sendEmail(email, "Email confirmation", message);
     }
 
+    public void sendResetPasswordEmail(String email) {
+        User user = this.userRepository.findUserByEmail(email).orElseThrow(
+                () -> new GenericServiceException(String.format("User with email = %s does not exist", email)));
+        String token = this.reminderTokenService.generate(user.getId());
+        String url = "http://20.251.9.203/reset-password?token=" + token;
+        String message = "Reset your password at: " + url;
+        this.emailService.sendEmail(email, "Password reset", message);
+    }
+
     public void setUserBanned(Integer requestingUser, Integer userId, Boolean isBanned) {
         if (requestingUser.equals(userId)) {
             throw new GenericServiceException("Cannot ban yourself");
@@ -128,6 +142,22 @@ public class UserService {
 
         bannedUser.setIsBanned(isBanned);
         this.userRepository.save(bannedUser);
+    }
+
+    public void resetPassword(String passwordToken, String newPassword) {
+        if (!this.reminderTokenService.verify(passwordToken)) {
+            throw new GenericServiceException("Invalid password reset token");
+        }
+        Integer userId = this.reminderTokenService.getUserId(passwordToken);
+        User user = this.userRepository.findById(userId).orElseThrow(
+                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
+
+        user.setPassword(encoder.encode(newPassword));
+        try {
+            this.userRepository.save(user);
+        } catch (DataAccessException exception) {
+            throw new GenericServiceException(exception.getMessage());
+        }
     }
 
     public void resetPassword(Integer userId, String oldPassword, String newPassword) {

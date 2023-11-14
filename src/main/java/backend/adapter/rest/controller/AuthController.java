@@ -153,4 +153,40 @@ public class AuthController {
                 .httpStatusCode(HttpStatus.OK)
                 .build();
     }
+
+    @PostMapping(path="/remind_password", consumes = MediaType.APPLICATION_JSON_VALUE,
+                 produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StandardBody> remindPassword(
+            @Valid @RequestBody RemindPasswordRequestDto remindPasswordRequestDto) {
+        try {
+            this.userService.sendResetPasswordEmail(remindPasswordRequestDto.getEmail());
+        } catch (Exception exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+
+        return Response.builder()
+                .httpStatusCode(HttpStatus.OK)
+                .build();
+    }
+
+    @PutMapping(path="modify_password", consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StandardBody> modifyPassword(@Valid @RequestBody ModifyPasswordRequestDto modifyPasswordRequestDto) {
+        try {
+            this.userService.resetPassword(modifyPasswordRequestDto.getToken(),
+                                           modifyPasswordRequestDto.getNewPassword());
+        } catch (Exception exception) {
+            return Response.builder()
+                    .httpStatusCode(HttpStatus.BAD_REQUEST)
+                    .addMessage(exception.getMessage())
+                    .build();
+        }
+
+        return Response.builder()
+                .httpStatusCode(HttpStatus.OK)
+                .build();
+    }
 }
