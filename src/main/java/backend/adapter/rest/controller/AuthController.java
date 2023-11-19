@@ -154,8 +154,8 @@ public class AuthController {
                 .build();
     }
 
-    @PostMapping(path="/remind_password", consumes = MediaType.APPLICATION_JSON_VALUE,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path="/remind_password", consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StandardBody> remindPassword(
             @Valid @RequestBody RemindPasswordRequestDto remindPasswordRequestDto) {
         try {
