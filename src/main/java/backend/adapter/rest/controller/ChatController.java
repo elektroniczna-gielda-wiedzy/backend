@@ -1,12 +1,17 @@
 package backend.adapter.rest.controller;
 
 import backend.adapter.rest.model.chat.ChatDto;
+import backend.adapter.rest.model.chat.MessageDto;
+import backend.chat.model.Message;
 import backend.user.model.AppUserDetails;
 import backend.chat.model.Chat;
 import backend.adapter.rest.Response;
 import backend.adapter.rest.StandardBody;
 import backend.chat.service.ChatService;
 import backend.common.service.GenericServiceException;
+import backend.user.model.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -25,16 +31,47 @@ import java.util.List;
 @RequestMapping("/api/v1/chat")
 public class ChatController {
     private final ChatService chatService;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
-    public ChatController(ChatService chatService) {
+    public ChatController(ChatService chatService, SimpMessagingTemplate simpMessagingTemplate) {
         this.chatService = chatService;
+        this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
     @MessageMapping("/{chatId}")
     public void newMessage(@AuthenticationPrincipal Authentication authentication,
                            @DestinationVariable Integer chatId,
                            @Payload String chatMessage) {
-        this.chatService.createMessage(chatId, ((AppUserDetails) authentication.getPrincipal()).getId(), chatMessage);
+
+        Integer userId = ((AppUserDetails) authentication.getPrincipal()).getId();
+        String chatContent;
+        try {
+            MessageDto messageDto = new ObjectMapper().readValue(chatMessage, MessageDto.class);
+            chatContent = messageDto.getContent();
+        } catch (JsonProcessingException e) {
+            System.out.println("ERROR: " + "Error parsing message");
+            return;
+        }
+
+        Message message;
+        User oppositeUser;
+        try {
+            message = this.chatService.createMessage(chatId, userId, chatContent);
+            oppositeUser = message.getChat().getOppositeUser(userId);
+        } catch (Exception exception) {
+            System.out.println("ERROR: " + exception.getMessage());
+            return;
+        }
+
+        this.simpMessagingTemplate.convertAndSendToUser(
+                oppositeUser.getEmail(),
+                "/queue/notification",
+                chatId
+        );
+        this.simpMessagingTemplate.convertAndSend(
+                "/topic/chat/" + chatId,
+                MessageDto.buildFromModel(message)
+        );
     }
 
     @GetMapping(path = "/{chat_id}", produces = MediaType.APPLICATION_JSON_VALUE)

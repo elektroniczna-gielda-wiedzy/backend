@@ -3,22 +3,16 @@ package backend.chat.service;
 import backend.chat.model.Chat;
 import backend.chat.model.Message;
 import backend.user.model.User;
-import backend.adapter.rest.model.chat.ChatDto;
-import backend.adapter.rest.model.chat.MessageDto;
 import backend.chat.repository.ChatRepository;
 import backend.chat.repository.MessageRepository;
 import backend.user.repository.UserRepository;
-import backend.adapter.rest.model.user.UserDto;
 import backend.common.service.GenericServiceException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Sort;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 import static backend.chat.model.Chat.*;
@@ -26,7 +20,7 @@ import static org.springframework.data.jpa.domain.Specification.where;
 
 @Service
 public class ChatService {
-    private final SimpMessagingTemplate simpMessagingTemplate;
+
 
     private final UserRepository userRepository;
 
@@ -34,11 +28,9 @@ public class ChatService {
 
     private final MessageRepository messageRepository;
 
-    public ChatService(SimpMessagingTemplate simpMessagingTemplate,
-                       ChatRepository chatRepository,
+    public ChatService(ChatRepository chatRepository,
                        UserRepository userRepository,
                        MessageRepository messageRepository) {
-        this.simpMessagingTemplate = simpMessagingTemplate;
         this.chatRepository = chatRepository;
         this.userRepository = userRepository;
         this.messageRepository = messageRepository;
@@ -79,8 +71,8 @@ public class ChatService {
                 .filter((chat) -> {
                     User oppositeUser = chat.getOppositeUser(userId);
                     Timestamp lastReadDate = chat.getLastReadForUser(userId);
-                    return this.messageRepository.findMessagesBySenderUserAndDateSentGreaterThan(
-                            oppositeUser, lastReadDate).size() > 0;
+                    return !this.messageRepository.findMessagesBySenderUserAndDateSentGreaterThan(
+                            oppositeUser, lastReadDate).isEmpty();
                 })
                 .toList()
                 .size();
@@ -98,7 +90,7 @@ public class ChatService {
             .or(userOneIs(userTwoId).and(userTwoIs(userOneId)))
         ));
 
-        if (chats.size() > 0) {
+        if (!chats.isEmpty()) {
             return chats.get(0);
         }
 
@@ -113,50 +105,26 @@ public class ChatService {
         return chat;
     }
 
-    public void createMessage(Integer chatId, Integer userId, String chatMessage) {
+    public Message createMessage(Integer chatId, Integer userId, String chatContent) {
         Chat chat = this.chatRepository.findById(chatId).orElseThrow(
                 () -> new GenericServiceException(String.format("Chat with id = %d does not exist", chatId)));
 
         User user = this.userRepository.findById(userId).orElseThrow(
                 () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
 
-        User oppositeUser = chat.getOppositeUser(user.getId());
-
         Message message = new Message();
         message.setChat(chat);
         message.setDateSent(Timestamp.from(Instant.now()));
         message.setSenderUser(user);
+        message.setContent(chatContent);
 
         try {
-            MessageDto messageDto = new ObjectMapper().readValue(chatMessage, MessageDto.class);
-            message.setContent(messageDto.getContent());
-        } catch (JsonProcessingException e) {
-            throw new GenericServiceException("Invalid message format");
+            this.messageRepository.save(message);
+        } catch (DataAccessException exception) {
+            throw new GenericServiceException(exception.getMessage());
         }
 
-        this.messageRepository.save(message);
-
-        MessageDto messageDto = MessageDto.builder()
-                .messageId(message.getId())
-                .sender(UserDto.buildFromModel(message.getSenderUser(), null, false))
-                .content(message.getContent())
-                .dateSent(new Date(message.getDateSent().getTime()))
-                .chatId(message.getChat().getId())
-                .build();
-
-        ChatDto chatDto = ChatDto.builder()
-                .chatId(chatId)
-                .build();
-
-        try {
-            this.simpMessagingTemplate.convertAndSendToUser(oppositeUser.getEmail(),
-                                                            "/queue/notification",
-                                                            new ObjectMapper().writeValueAsString(chatDto));
-        } catch (JsonProcessingException e) {
-            throw new GenericServiceException("convertAndSendToUser error: " + e.getMessage());
-        }
-
-        this.simpMessagingTemplate.convertAndSend("/topic/chat/" + chatId, messageDto);
+        return message;
     }
 
     public void readChat(Integer chatId, Integer userId) {

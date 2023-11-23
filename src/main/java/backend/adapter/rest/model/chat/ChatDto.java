@@ -52,7 +52,7 @@ public class ChatDto {
 
         List<Message> allMessages = Optional.ofNullable(chat.getMessages()).orElseGet(Collections::emptyList);
         List<MessageDto> allMessageDtos = allMessages.stream()
-                .map(MessageDto::buildFromObject)
+                .map(MessageDto::buildFromModel)
                 .toList();
 
         // Find all unread messages sent by the other user

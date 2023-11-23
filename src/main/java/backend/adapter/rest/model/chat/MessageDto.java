@@ -30,7 +30,7 @@ public class MessageDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
     private Date dateSent;
 
-    public static MessageDto buildFromObject(Message message) {
+    public static MessageDto buildFromModel(Message message) {
         return MessageDto.builder()
                 .messageId(message.getId())
                 .chatId(message.getChat().getId())
