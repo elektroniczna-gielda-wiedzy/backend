@@ -32,6 +32,8 @@ import java.util.List;
 public class ChatController {
     private final ChatService chatService;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final String MESSAGE_QUEUE = "/queue/message";
+    private final String NOTIFICATION_QUEUE = "/queue/notification";
 
     public ChatController(ChatService chatService, SimpMessagingTemplate simpMessagingTemplate) {
         this.chatService = chatService;
@@ -49,7 +51,14 @@ public class ChatController {
             MessageDto messageDto = new ObjectMapper().readValue(chatMessage, MessageDto.class);
             chatContent = messageDto.getContent();
         } catch (JsonProcessingException e) {
-            System.out.println("ERROR: " + "Error parsing message");
+            this.simpMessagingTemplate.convertAndSendToUser(
+                    authentication.getName(),
+                    MESSAGE_QUEUE,
+                    Response.builder()
+                            .httpStatusCode(HttpStatus.BAD_REQUEST)
+                            .addMessage("Error parsing message")
+                            .build()
+            );
             return;
         }
 
@@ -59,18 +68,39 @@ public class ChatController {
             message = this.chatService.createMessage(chatId, userId, chatContent);
             oppositeUser = message.getChat().getOppositeUser(userId);
         } catch (Exception exception) {
-            System.out.println("ERROR: " + exception.getMessage());
+            this.simpMessagingTemplate.convertAndSendToUser(
+                    authentication.getName(),
+                    MESSAGE_QUEUE,
+                    Response.builder()
+                            .httpStatusCode(HttpStatus.BAD_REQUEST)
+                            .addMessage(exception.getMessage())
+                            .build()
+            );
             return;
         }
 
+        ResponseEntity<StandardBody> response = Response.builder()
+                .httpStatusCode(HttpStatus.OK)
+                .result(List.of(MessageDto.buildFromModel(message)))
+                .build();
+
+                
+        this.simpMessagingTemplate.convertAndSendToUser(
+                authentication.getName(),
+                MESSAGE_QUEUE,
+                response
+        );
+
         this.simpMessagingTemplate.convertAndSendToUser(
                 oppositeUser.getEmail(),
-                "/queue/notification",
-                chatId
+                MESSAGE_QUEUE,
+                response
         );
-        this.simpMessagingTemplate.convertAndSend(
-                "/topic/chat/" + chatId,
-                MessageDto.buildFromModel(message)
+
+        this.simpMessagingTemplate.convertAndSendToUser(
+                oppositeUser.getEmail(),
+                NOTIFICATION_QUEUE,
+                chatId
         );
     }
 
