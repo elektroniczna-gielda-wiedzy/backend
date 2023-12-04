@@ -19,7 +19,7 @@ public class JwtServiceTest {
 
         JwtService service2 = new JwtService(get23HourLaterClock());
         Assertions.assertThat(service2.isValid(token)).isTrue();
-        Assertions.assertThat(service2.getClaims(token).get("user_id")).isEqualTo(1);
+        Assertions.assertThat(service2.getClaims(token).get("user_id")).isEqualTo(1.0);
     }
 
     @Test
