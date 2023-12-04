@@ -18,4 +18,8 @@ public enum CategoryType {
                 .filter(ct -> ct.value == value)
                 .findFirst();
     }
+
+    public Integer getId() {
+        return value;
+    }
 }

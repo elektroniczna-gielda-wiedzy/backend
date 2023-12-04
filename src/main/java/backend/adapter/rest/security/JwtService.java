@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import io.jsonwebtoken.Clock;
 import java.util.Date;
 import java.util.Map;
 
@@ -19,18 +20,24 @@ public class JwtService {
 
     private static final Integer expiration = 24 * 60 * 60 * 1000;  /* 24 hours */
 
+    private Clock clock;
+
+    public JwtService(Clock clock) {
+        this.clock = clock;
+    }
+
     public String generateToken(Map<String, Object> claims) {
         return Jwts.builder()
                 .addClaims(claims)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + expiration))
+                .setIssuedAt(clock.now())
+                .setExpiration(new Date(clock.now().getTime() + expiration))
                 .signWith(key)
                 .compact();
     }
 
     public Claims getClaims(String token) {
         try {
-            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+            return Jwts.parserBuilder().setClock(clock).setSigningKey(key).build().parseClaimsJws(token).getBody();
         } catch (Exception exception) {
             throw new GenericServiceException(exception.getMessage());
         }
@@ -38,7 +45,7 @@ public class JwtService {
 
     public boolean isValid(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setClock(clock).setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;

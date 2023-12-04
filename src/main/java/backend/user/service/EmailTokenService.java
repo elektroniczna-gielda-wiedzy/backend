@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import io.jsonwebtoken.Clock;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,14 +21,20 @@ public class EmailTokenService {
 
     private static final Integer expiration = 4 * 60 * 60 * 1000;  /* 4 hours */
 
+    private Clock clock;
+
+    public EmailTokenService(Clock clock) {
+        this.clock = clock;
+    }
+
     public String generate(Integer userId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("user", userId);
 
         return Jwts.builder()
                 .addClaims(claims)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + expiration))
+                .setIssuedAt(clock.now())
+                .setExpiration(new Date(clock.now().getTime() + expiration))
                 .signWith(key)
                 .compact();
     }
@@ -43,7 +50,8 @@ public class EmailTokenService {
 
     public Integer getUserId(String token) {
         try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+            Claims claims =
+                    Jwts.parserBuilder().setClock(clock).setSigningKey(key).build().parseClaimsJws(token).getBody();
             return ((Double) claims.get("user")).intValue();
         } catch (Exception exception) {
             throw new GenericServiceException(exception.getMessage());

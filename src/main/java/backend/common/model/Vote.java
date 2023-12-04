@@ -19,6 +19,6 @@ public class Vote {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "value")
+    @Column(name = "val")
     private Integer value;
 }

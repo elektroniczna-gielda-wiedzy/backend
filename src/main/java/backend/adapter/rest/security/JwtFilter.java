@@ -4,6 +4,7 @@ import backend.user.model.AppUserDetails;
 import backend.user.model.User;
 import backend.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Clock;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 public class JwtFilter extends OncePerRequestFilter {
@@ -29,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String token = request.getHeader("Authorization");
-        JwtService jwtService = new JwtService();
+        JwtService jwtService = new JwtService(Date::new);
         if (token != null && jwtService.isValid(token)) {
             Claims userClaims = jwtService.getClaims(token);
             Integer userId = ((Double) userClaims.get("user")).intValue();

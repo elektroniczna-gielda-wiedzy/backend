@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import io.jsonwebtoken.Clock;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,14 +21,20 @@ public class PasswordReminderTokenService {
 
     private static final Integer expiration = 24 * 60 * 60 * 1000;
 
+    private Clock clock;
+
+    public PasswordReminderTokenService(Clock clock) {
+        this.clock = clock;
+    }
+
     public String generate(Integer userId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("user", userId);
 
         return Jwts.builder()
                 .addClaims(claims)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + expiration))
+                .setIssuedAt(clock.now())
+                .setExpiration(new Date(clock.now().getTime() + expiration))
                 .signWith(key)
                 .compact();
     }

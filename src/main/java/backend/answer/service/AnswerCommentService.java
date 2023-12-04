@@ -4,6 +4,7 @@ import backend.answer.model.Answer;
 import backend.answer.model.Comment;
 import backend.answer.repository.AnswerCommentRepository;
 import backend.answer.repository.AnswerRepository;
+import backend.common.model.ErrorMessageFormat;
 import backend.common.service.GenericServiceException;
 import backend.user.model.User;
 import backend.user.repository.UserRepository;
@@ -34,17 +35,17 @@ public class AnswerCommentService {
 
     public List<Comment> getComments(Integer answerId) {
         Answer answer = this.answerRepository.findById(answerId).orElseThrow(
-                () -> new GenericServiceException(String.format("Answer with id = %d does not exist", answerId)));
+                () -> new GenericServiceException(String.format(ErrorMessageFormat.ANSWER_NOT_FOUND, answerId)));
 
         return this.answerCommentRepository.findAll(where(hasAnswerId(answerId)));
     }
 
     public Comment createComment(Integer answerId, Integer userId, String content) {
         Answer answer = this.answerRepository.findById(answerId).orElseThrow(
-                () -> new GenericServiceException(String.format("Answer with id = %d does not exist", answerId)));
+                () -> new GenericServiceException(String.format(ErrorMessageFormat.ANSWER_NOT_FOUND, answerId)));
 
         User user = this.userRepository.findById(userId).orElseThrow(
-                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
+                () -> new GenericServiceException(String.format(ErrorMessageFormat.USER_NOT_FOUND, userId)));
 
         Comment comment = new Comment();
         comment.setAuthor(user);
@@ -65,10 +66,10 @@ public class AnswerCommentService {
 
     public Comment editComment(Integer commentId, Integer userId, String content) {
         Comment comment = this.answerCommentRepository.findById(commentId).orElseThrow(
-                () -> new GenericServiceException(String.format("Comment with id = %d does not exist", commentId)));
+                () -> new GenericServiceException(String.format(ErrorMessageFormat.COMMENT_NOT_FOUND, commentId)));
 
         User user = this.userRepository.findById(userId).orElseThrow(
-                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
+                () -> new GenericServiceException(String.format(ErrorMessageFormat.USER_NOT_FOUND, userId)));
 
         if (!comment.getAuthor().getId().equals(userId) && !user.getIsAdmin()) {
             throw new GenericServiceException("You are not allowed to edit this comment");
@@ -90,10 +91,10 @@ public class AnswerCommentService {
 
     public void deleteComment(Integer commentId, Integer userId) {
         Comment comment = this.answerCommentRepository.findById(commentId).orElseThrow(
-                () -> new GenericServiceException(String.format("Comment with id = %d does not exist", commentId)));
+                () -> new GenericServiceException(String.format(ErrorMessageFormat.COMMENT_NOT_FOUND, commentId)));
 
         User user = this.userRepository.findById(userId).orElseThrow(
-                () -> new GenericServiceException(String.format("User with id = %d does not exist", userId)));
+                () -> new GenericServiceException(String.format(ErrorMessageFormat.USER_NOT_FOUND, userId)));
 
         if (!comment.getAuthor().getId().equals(userId) && !user.getIsAdmin()) {
             throw new GenericServiceException("You are not allowed to delete this comment");
