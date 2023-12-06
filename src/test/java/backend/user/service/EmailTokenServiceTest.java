@@ -17,33 +17,30 @@ public class EmailTokenServiceTest extends SpringContextRequiringTestBase {
     @Autowired
     private EmailTokenService service;
 
-    /* TODO: fix
     @Test
     public void correctTokenTest() {
         String token = service.generate(1);
 
-        EmailTokenService service2 = new EmailTokenService(get23HourLaterClock());
-        service2.verify(token);
+        EmailTokenService service2 = new EmailTokenService(get3HourLaterClock());
         Assertions.assertThat(service2.verify(token)).isTrue();
         Assertions.assertThat(service2.getUserId(token)).isEqualTo(1);
-    }*/
+    }
 
-    /*TODO: fix
     @Test
     public void expiredTokenTest() {
         String token = service.generate(1);
 
-        EmailTokenService service2 = new EmailTokenService(get25HourLaterClock());
+        EmailTokenService service2 = new EmailTokenService(get5HourLaterClock());
         service2.verify(token);
         Assertions.assertThat(service2.verify(token)).isFalse();
-    }*/
-
-    private Clock get25HourLaterClock() {
-        return () -> new Date(new Date().getTime() + 25 * 60 * 60 * 1000);
     }
 
-    private Clock get23HourLaterClock() {
-        return () -> new Date(new Date().getTime() + 23 * 60 * 60 * 1000);
+    private Clock get5HourLaterClock() {
+        return () -> new Date(new Date().getTime() + 5 * 60 * 60 * 1000);
+    }
+
+    private Clock get3HourLaterClock() {
+        return () -> new Date(new Date().getTime() + 3 * 60 * 60 * 1000);
     }
 
 

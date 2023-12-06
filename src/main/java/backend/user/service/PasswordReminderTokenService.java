@@ -41,7 +41,7 @@ public class PasswordReminderTokenService {
 
     public boolean verify(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setClock(clock).setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;
@@ -50,7 +50,8 @@ public class PasswordReminderTokenService {
 
     public Integer getUserId(String token) {
         try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+            Claims claims =
+                    Jwts.parserBuilder().setClock(clock).setSigningKey(key).build().parseClaimsJws(token).getBody();
             return ((Double) claims.get("user")).intValue();
         } catch (Exception exception) {
             throw new GenericServiceException(exception.getMessage());

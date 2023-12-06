@@ -2,6 +2,7 @@ package backend.entry.service;
 
 import backend.SpringContextRequiringTestBase;
 import backend.entry.model.*;
+import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -41,10 +42,12 @@ public class CategoryServiceIntegrationTest extends SpringContextRequiringTestBa
         Assertions.assertThat(categoriesAfterAdd.size()).isEqualTo(categories.size() + 1);
     }
 
-    /* TODO: fix
+
     @Test
+    @Transactional
     @Order(2)
     public void testEditingCategory() {
+
         List<Category> categories = categoryService.getCategories(CategoryStatus.ACTIVE.getId(),
                                                                   CategoryType.DEPARTMENT.getId(), 1);
         List<CategoryTranslationDto> translations = new ArrayList<>();
@@ -73,6 +76,7 @@ public class CategoryServiceIntegrationTest extends SpringContextRequiringTestBa
     }
 
     @Test
+    @Transactional
     @Order(3)
     public void testDeletingCategory() {
         List<Category> categories = categoryService.getCategories(CategoryStatus.ACTIVE.getId(),
@@ -90,7 +94,7 @@ public class CategoryServiceIntegrationTest extends SpringContextRequiringTestBa
                                                                   CategoryType.DEPARTMENT.getId(), 1);
 
         Assertions.assertThat(categoriesAfterDelete.size()).isEqualTo(categories.size() - 1);
-    }*/
+    }
 
 
 }

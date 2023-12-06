@@ -22,14 +22,14 @@ public class PasswordReminderTokenServiceTest extends SpringContextRequiringTest
         Assertions.assertThat(service2.getUserId(token)).isEqualTo(1);
     }
 
-    /*@Test
+    @Test
     public void expiredTokenTest() {
         String token = service.generate(1);
 
         PasswordReminderTokenService service2 = new PasswordReminderTokenService(get25HourLaterClock());
         service2.verify(token);
         Assertions.assertThat(service2.verify(token)).isFalse();
-    }*/
+    }
 
     private Clock get25HourLaterClock() {
         return () -> new Date(new Date().getTime() + 25 * 60 * 60 * 1000);
